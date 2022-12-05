@@ -21,7 +21,7 @@ class Score
     private \DateTimeImmutable $createdAt;
 
     #[ORM\Column]
-    private \DateTimeImmutable $time;
+    private int $time;
 
     #[ORM\ManyToOne(inversedBy: 'scores')]
     private Level $levels;
@@ -76,18 +76,18 @@ class Score
     }
 
     /**
-     * @return \DateTimeInterface
+     * @return int
      */
-    public function getTime(): \DateTimeInterface
+    public function getTime(): int
     {
         return $this->time;
     }
 
     /**
-     * @param \DateTimeInterface $time
+     * @param int $time
      * @return $this
      */
-    public function setTime(\DateTimeInterface $time): self
+    public function setTime(int $time): self
     {
         $this->time = $time;
 

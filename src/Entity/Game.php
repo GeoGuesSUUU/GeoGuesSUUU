@@ -24,7 +24,7 @@ class Game
     #[ORM\Column(length: 1024)]
     private string $tags;
 
-    #[ORM\ManyToMany(targetEntity: Level::class, mappedBy: 'games')]
+    #[ORM\OneToMany(mappedBy: 'games', targetEntity: Level::class)]
     private Collection $levels;
 
     public function __construct()
