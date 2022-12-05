@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ItemType index{% endblock %}
+
+{% block body %}
+    <h1>ItemType index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Type</th>
+                <th>Rarity</th>
+                <th>Fantastic</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item_type in item_types %}
+            <tr>
+                <td>{{ item_type.id }}</td>
+                <td>{{ item_type.name }}</td>
+                <td>{{ item_type.description }}</td>
+                <td>{{ item_type.type }}</td>
+                <td>{{ item_type.rarity }}</td>
+                <td>{{ item_type.fantastic ? 'Yes' : 'No' }}</td>
+                <td>
+                    <a href="{{ path('app_item_type_show', {'id': item_type.id}) }}">show</a>
+                    <a href="{{ path('app_item_type_edit', {'id': item_type.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_item_type_new') }}">Create new</a>
+{% endblock %}

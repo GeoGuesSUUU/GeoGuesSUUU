@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New ItemType{% endblock %}
+
+{% block body %}
+    <h1>Create new ItemType</h1>
+
+    {{ include('item_type/_form.html.twig') }}
+
+    <a href="{{ path('app_item_type_index') }}">back to list</a>
+{% endblock %}
