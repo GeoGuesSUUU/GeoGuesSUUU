@@ -2,26 +2,26 @@
 
 namespace App\Repository;
 
-use App\Entity\Item;
+use App\Entity\ItemType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Item>
+ * @extends ServiceEntityRepository<ItemType>
  *
- * @method Item|null find($id, $lockMode = null, $lockVersion = null)
- * @method Item|null findOneBy(array $criteria, array $orderBy = null)
- * @method Item[]    findAll()
- * @method Item[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method ItemType|null find($id, $lockMode = null, $lockVersion = null)
+ * @method ItemType|null findOneBy(array $criteria, array $orderBy = null)
+ * @method ItemType[]    findAll()
+ * @method ItemType[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ItemRepository extends ServiceEntityRepository
+class ItemTypeRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Item::class);
+        parent::__construct($registry, ItemType::class);
     }
 
-    public function save(Item $entity, bool $flush = false): void
+    public function save(ItemType $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -30,7 +30,7 @@ class ItemRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(Item $entity, bool $flush = false): void
+    public function remove(ItemType $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
@@ -40,7 +40,7 @@ class ItemRepository extends ServiceEntityRepository
     }
 
 //    /**
-//     * @return Item[] Returns an array of Item objects
+//     * @return ItemType[] Returns an array of ItemType objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -54,7 +54,7 @@ class ItemRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Item
+//    public function findOneBySomeField($value): ?ItemType
 //    {
 //        return $this->createQueryBuilder('i')
 //            ->andWhere('i.exampleField = :val')

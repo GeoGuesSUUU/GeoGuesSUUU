@@ -28,16 +28,23 @@ class User
     #[ORM\Column]
     private int $coins = 0;
 
+    #[ORM\Column]
+    private bool $admin = false;
+
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Score::class)]
     private Collection $scores;
 
-    #[ORM\ManyToMany(targetEntity: Item::class, mappedBy: 'users')]
-    private Collection $items;
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserItem::class)]
+    private Collection $userItems;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Country::class)]
+    private Collection $countries;
 
     public function __construct()
     {
         $this->scores = new ArrayCollection();
-        $this->items = new ArrayCollection();
+        $this->userItems = new ArrayCollection();
+        $this->countries = new ArrayCollection();
     }
 
     /**
@@ -126,6 +133,25 @@ class User
     }
 
     /**
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        return $this->admin;
+    }
+
+    /**
+     * @param bool $admin
+     * @return User
+     */
+    public function setAdmin(bool $admin): self
+    {
+        $this->admin = $admin;
+
+        return $this;
+    }
+
+    /**
      * @return Collection<int, Score>
      */
     public function getScores(): Collection
@@ -164,35 +190,76 @@ class User
     }
 
     /**
-     * @return Collection<int, Item>
+     * @return Collection<int, UserItem>
      */
-    public function getItems(): Collection
+    public function getUserItems(): Collection
     {
-        return $this->items;
+        return $this->userItems;
     }
 
     /**
-     * @param Item $item
+     * @param UserItem $userItem
      * @return $this
      */
-    public function addItem(Item $item): self
+    public function addUserItem(UserItem $userItem): self
     {
-        if (!$this->items->contains($item)) {
-            $this->items->add($item);
-            $item->addUser($this);
+        if (!$this->userItems->contains($userItem)) {
+            $this->userItems->add($userItem);
+            $userItem->setUser($this);
         }
 
         return $this;
     }
 
     /**
-     * @param Item $item
+     * @param UserItem $userItem
      * @return $this
      */
-    public function removeItem(Item $item): self
+    public function removeUserItem(UserItem $userItem): self
     {
-        if ($this->items->removeElement($item)) {
-            $item->removeUser($this);
+        if ($this->userItems->removeElement($userItem)) {
+            // set the owning side to null (unless already changed)
+            if ($userItem->getUser() === $this) {
+                $userItem->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Country>
+     */
+    public function getCountries(): Collection
+    {
+        return $this->countries;
+    }
+
+    /**
+     * @param Country $country
+     * @return $this
+     */
+    public function addCountry(Country $country): self
+    {
+        if (!$this->countries->contains($country)) {
+            $this->countries->add($country);
+            $country->setUser($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Country $country
+     * @return $this
+     */
+    public function removeCountry(Country $country): self
+    {
+        if ($this->countries->removeElement($country)) {
+            // set the owning side to null (unless already changed)
+            if ($country->getUser() === $this) {
+                $country->setUser(null);
+            }
         }
 
         return $this;
