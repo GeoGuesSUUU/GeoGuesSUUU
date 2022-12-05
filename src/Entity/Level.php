@@ -21,15 +21,14 @@ class Level
     #[ORM\Column(length: 1024)]
     private string $description;
 
-    #[ORM\ManyToMany(targetEntity: Game::class, inversedBy: 'levels')]
-    private Collection $games;
+    #[ORM\ManyToOne(inversedBy: 'levels')]
+    private Game $game;
 
     #[ORM\OneToMany(mappedBy: 'levels', targetEntity: Score::class)]
     private Collection $scores;
 
     public function __construct()
     {
-        $this->games = new ArrayCollection();
         $this->scores = new ArrayCollection();
     }
 
@@ -80,33 +79,20 @@ class Level
     }
 
     /**
-     * @return Collection<int, Game>
+     * @return Game
      */
-    public function getGames(): Collection
+    public function getGame(): Game
     {
-        return $this->games;
+        return $this->game;
     }
 
     /**
      * @param Game $game
-     * @return $this
+     * @return Level
      */
-    public function addGame(Game $game): self
+    public function setGame(Game $game): self
     {
-        if (!$this->games->contains($game)) {
-            $this->games->add($game);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param Game $game
-     * @return $this
-     */
-    public function removeGame(Game $game): self
-    {
-        $this->games->removeElement($game);
+        $this->game = $game;
 
         return $this;
     }
