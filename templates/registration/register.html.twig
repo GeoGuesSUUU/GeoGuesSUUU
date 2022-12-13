@@ -3,19 +3,52 @@
 {% block title %}Register{% endblock %}
 
 {% block body %}
-    {% for flash_error in app.flashes('verify_email_error') %}
-        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
-    {% endfor %}
+    <main class="form-signin w-100 m-auto">
+        {% for flash_error in app.flashes('verify_email_error') %}
+            <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+        {% endfor %}
 
-    <h1>Register</h1>
+        {{ form_start(registrationForm) }}
+        <img src="https://media.tenor.com/ZgsyS1epGSYAAAAd/siuuu-ronaldo.gif" alt="" width="72">
+        <h1 class="h3 mb-3 fw-normal">Please register</h1>
+        <div class="form-floating mb-3">
+            {{ form_widget(registrationForm.email, {
+                'attr': {
+                    'class': 'form-control',
+                    'placeholder': 'name@example.com'
+                }
+            }) }}
+            {{ form_label(registrationForm.email) }}
+        </div>
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+        <div class="form-floating mb-3">
+            {{ form_widget(registrationForm.name, {
+                'attr': {
+                    'class': 'form-control',
+                    'placeholder': 'Name'
+                }
+            }) }}
+            {{ form_label(registrationForm.name) }}
+        </div>
 
-        <button type="submit" class="btn">Register</button>
-    {{ form_end(registrationForm) }}
+        <div class="form-floating mb-3">
+            {{ form_widget(registrationForm.plainPassword, {
+                'attr': {
+                    'class': 'form-control',
+                    'placeholder': 'Password'
+                }
+            }) }}
+            {{ form_label(registrationForm.plainPassword, 'Password') }}
+        </div>
+
+        <div class="checkbox mb-3">
+            <label>
+                {{ form_widget(registrationForm.agreeTerms) }}
+                Agree terms
+            </label>
+        </div>
+
+        <button class="w-100 btn btn-lg btn-primary" type="submit">Register</button>
+        {{ form_end(registrationForm) }}
+    </main>
 {% endblock %}

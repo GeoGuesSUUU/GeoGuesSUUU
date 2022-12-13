@@ -29,7 +29,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private int $coins = 0;
 
     #[ORM\Column]
-    private array $roles = [];
+    private array $roles = ['ROLE_USER'];
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Score::class)]
     private Collection $scores;
