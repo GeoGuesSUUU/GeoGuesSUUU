@@ -8,8 +8,6 @@ class UserEditDTO extends UserSaveDTO
 
     private ?int $coins;
 
-    private array $roles;
-
     /**
      * @return int
      */
@@ -42,29 +40,12 @@ class UserEditDTO extends UserSaveDTO
         $this->coins = $coins;
     }
 
-    /**
-     * @return array
-     */
-    public function getRoles(): array
-    {
-        return $this->roles;
-    }
-
-    /**
-     * @param array $roles
-     */
-    public function setRoles(array $roles): void
-    {
-        $this->roles = $roles;
-    }
-
     public function edit(User $user): User
     {
         $user->setName($this->getName());
         $user->setEmail($this->getEmail());
         $user->setPassword($this->getPassword());
         $user->setCoins($this->coins);
-        $user->setRoles($this->roles);
         return $user;
     }
 }
