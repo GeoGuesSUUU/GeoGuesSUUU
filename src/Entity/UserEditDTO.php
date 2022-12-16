@@ -8,7 +8,7 @@ class UserEditDTO extends UserSaveDTO
 
     private ?int $coins;
 
-    private ?bool $admin;
+    private array $roles;
 
     /**
      * @return int
@@ -43,19 +43,19 @@ class UserEditDTO extends UserSaveDTO
     }
 
     /**
-     * @return bool|null
+     * @return array
      */
-    public function getAdmin(): ?bool
+    public function getRoles(): array
     {
-        return $this->admin;
+        return $this->roles;
     }
 
     /**
-     * @param bool|null $admin
+     * @param array $roles
      */
-    public function setAdmin(?bool $admin): void
+    public function setRoles(array $roles): void
     {
-        $this->admin = $admin;
+        $this->roles = $roles;
     }
 
     public function edit(User $user): User
@@ -64,7 +64,7 @@ class UserEditDTO extends UserSaveDTO
         $user->setEmail($this->getEmail());
         $user->setPassword($this->getPassword());
         $user->setCoins($this->coins);
-        $user->setAdmin($this->admin);
+        $user->setRoles($this->roles);
         return $user;
     }
 }
