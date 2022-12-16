@@ -6,31 +6,30 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: '`user`')]
-class User
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $id;
+    private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     private string $name;
 
-    #[ORM\Column(length: 255)]
-    private string $email;
-
-    #[ORM\Column(length: 255)]
-    private string $password;
+    #[ORM\Column(length: 180, unique: true)]
+    private ?string $email = null;
 
     #[ORM\Column]
     private int $coins = 0;
 
     #[ORM\Column]
-    private bool $admin = false;
+    private array $roles = ['ROLE_USER'];
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Score::class)]
     private Collection $scores;
@@ -41,6 +40,15 @@ class User
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Country::class)]
     private Collection $countries;
 
+    /**
+     * @var string|null The hashed password
+     */
+    #[ORM\Column]
+    private ?string $password = null;
+
+    #[ORM\Column(type: 'boolean')]
+    private $isVerified = false;
+
     public function __construct()
     {
         $this->scores = new ArrayCollection();
@@ -49,9 +57,9 @@ class User
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -84,9 +92,9 @@ class User
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getEmail(): string
+    public function getEmail(): ?string
     {
         return $this->email;
     }
@@ -103,23 +111,13 @@ class User
     }
 
     /**
-     * @return string
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
      */
-    public function getPassword(): string
+    public function getUserIdentifier(): string
     {
-        return $this->password;
-    }
-
-
-    /**
-     * @param string $password
-     * @return $this
-     */
-    public function setPassword(string $password): self
-    {
-        $this->password = $password;
-
-        return $this;
+        return (string) $this->email;
     }
 
     /**
@@ -142,22 +140,54 @@ class User
     }
 
     /**
-     * @return bool
+     * @see UserInterface
      */
-    public function isAdmin(): bool
+    public function getRoles(): array
     {
-        return $this->admin;
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
     }
 
     /**
-     * @param bool $admin
-     * @return User
+     * @param array $roles
+     * @return $this
      */
-    public function setAdmin(bool $admin): self
+    public function setRoles(array $roles): self
     {
-        $this->admin = $admin;
+        $this->roles = $roles;
 
         return $this;
+    }
+
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    /**
+     * @param string $password
+     * @return $this
+     */
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials()
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 
     /**
@@ -270,6 +300,18 @@ class User
                 $country->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): self
+    {
+        $this->isVerified = $isVerified;
 
         return $this;
     }
