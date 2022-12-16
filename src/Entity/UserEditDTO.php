@@ -2,8 +2,6 @@
 
 namespace App\Entity;
 
-use Symfony\Component\Serializer\Annotation\Groups;
-
 class UserEditDTO extends UserSaveDTO
 {
     private int $id;
