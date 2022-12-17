@@ -17,14 +17,15 @@ php .\bin\console doctrine:migration:migrate
 
 ### User
 
-| **key** | **name** | **type**     | **null** | **default value** |
-|:-------:|----------|--------------|----------|-------------------|
-| **PK**  | id       | int          | false    | auto_increment    |
-|         | name     | varchar(255) | false    |                   |
-|         | email    | varchar(255) | false    |                   |
-|         | password | varchar(255) | false    |                   |
-|         | coins    | int          | false    | 0                 |
-|         | admin    | tinyint      | false    | 0                 |
+| **key** | **name**    | **type**     | **null** | **default value** |
+|:-------:|-------------|--------------|----------|-------------------|
+| **PK**  | id          | int          | false    | auto_increment    |
+|         | name        | varchar(255) | false    |                   |
+|         | email       | varchar(255) | false    |                   |
+|         | password    | varchar(255) | false    |                   |
+|         | coins       | int          | false    | 0                 |
+|         | roles       | longtext     | false    | ['ROLE_USER']     |
+|         | is_verified | tinyint      | false    | 0                 |
 
 ### ItemType
 

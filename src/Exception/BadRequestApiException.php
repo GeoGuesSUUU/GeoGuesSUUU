@@ -5,10 +5,10 @@ namespace App\Exception;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
 
-class UserNotFoundApiException extends ApiException
+class BadRequestApiException extends ApiException
 {
     public function __construct(Exception $previous = null)
     {
-        parent::__construct("User not found", Response::HTTP_NOT_FOUND, $previous);
+        parent::__construct("Bad Request", Response::HTTP_BAD_REQUEST, $previous);
     }
 }

@@ -35,3 +35,4 @@ class ExceptionSubscriber implements EventSubscriberInterface
         ];
     }
 }
+

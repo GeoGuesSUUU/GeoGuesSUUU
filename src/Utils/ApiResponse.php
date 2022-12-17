@@ -2,47 +2,32 @@
 
 namespace App\Utils;
 
-use Exception;
-use Symfony\Component\HttpFoundation\Response;
+
+use App\Exception\BadRequestApiException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ApiResponse
 {
 
     /**
-     * @throws Exception
+     * @throws HttpException
      */
-    static function get(mixed $value, int $httpStatus = 400): array
+    public static function get(mixed $value, int $httpStatus = 200): array
     {
-        if (!isset($value)) {
-            return [
-                'response' => [
-                    'request' => $_SERVER["REQUEST_URI"],
-                    'method' => $_SERVER["REQUEST_METHOD"],
-                ],
-                'error' => self::getHttpError($httpStatus),
-            ];
+        if (!isset($value) && $httpStatus !== 204) {
+            throw new BadRequestApiException();
         }
         $response = [
             'response' => [
+                'status' => $httpStatus,
                 'request' => $_SERVER["REQUEST_URI"],
                 'method' => $_SERVER["REQUEST_METHOD"],
             ],
-            'items' => $value,
+            'items' => $value ?? "",
         ];
-        if (is_array($value)) $response['response']['total'] = count($value);
+        if (is_array($value)) {
+            $response['response']['total'] = count($value);
+        }
         return $response;
-    }
-
-    /**
-     * @throws Exception
-     */
-    static function getHttpError(int $httpStatus): array
-    {
-        $message = Response::$statusTexts[$httpStatus];
-        if (empty($message)) throw new Exception("Http Status ".$httpStatus." doesn't exist");
-        return [
-            'code' => $httpStatus,
-            'message' => $message,
-        ];
     }
 }

@@ -9,6 +9,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
@@ -20,10 +23,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "The name field is required")]
+    #[Assert\Length(
+        min: 1,
+        max: 255,
+        minMessage: "The name must be at least {{ limit }} characters long",
+        maxMessage: "The name cannot be longer than {{ limit }} characters"
+    )]
     private string $name;
 
     #[ORM\Column(length: 180, unique: true)]
-    private ?string $email = null;
+    #[Assert\NotBlank(message: "The email field is required")]
+    #[Assert\Email]
+    #[Assert\Length(
+        min: 1,
+        max: 180,
+        minMessage: "The email must be at least {{ limit }} characters long",
+        maxMessage: "The email cannot be longer than {{ limit }} characters"
+    )]
+    private string $email;
 
     #[ORM\Column]
     private int $coins = 0;
@@ -41,13 +59,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $countries;
 
     /**
-     * @var string|null The hashed password
+     * @var string The hashed password
      */
     #[ORM\Column]
-    private ?string $password = null;
+    #[Assert\NotBlank(message: "The password field is required")]
+    private string $password;
 
     #[ORM\Column(type: 'boolean')]
-    private $isVerified = false;
+    #[SerializedName('isVerified')]
+    private bool $isVerified = false;
 
     public function __construct()
     {
@@ -92,9 +112,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
         return $this->email;
     }
@@ -218,11 +238,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function removeScore(Score $score): self
     {
-        if ($this->scores->removeElement($score)) {
-            // set the owning side to null (unless already changed)
-            if ($score->getUser() === $this) {
-                $score->setUser(null);
-            }
+        if ($this->scores->removeElement($score) && $score->getUser() === $this) {
+            $score->setUser(null);
         }
 
         return $this;
@@ -256,11 +273,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function removeUserItem(UserItem $userItem): self
     {
-        if ($this->userItems->removeElement($userItem)) {
-            // set the owning side to null (unless already changed)
-            if ($userItem->getUser() === $this) {
-                $userItem->setUser(null);
-            }
+        if ($this->userItems->removeElement($userItem) && $userItem->getUser() === $this) {
+            $userItem->setUser(null);
         }
 
         return $this;
@@ -294,11 +308,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function removeCountry(Country $country): self
     {
-        if ($this->countries->removeElement($country)) {
-            // set the owning side to null (unless already changed)
-            if ($country->getUser() === $this) {
-                $country->setUser(null);
-            }
+        if ($this->countries->removeElement($country) && $country->getUser() === $this) {
+            $country->setUser(null);
         }
 
         return $this;
