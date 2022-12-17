@@ -54,13 +54,12 @@ header #logo img {
 /**  INFORMATIONS BLOC **/
 
 #swagger-ui.api-platform .information-container.wrapper {
-  margin:0;
   padding:10px 0 0;
   width:100%;
   max-width:100%;
   background-color:white;
   border-bottom:1px solid #ccc;
-  margin-bottom:30px;
+  margin: 0 0 30px;
 }
 
 #swagger-ui.api-platform .info .title {
