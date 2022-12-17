@@ -13,7 +13,7 @@ class ApiResponse
      */
     static function get(mixed $value, int $httpStatus = 400): array
     {
-        if (empty($value)) {
+        if (!isset($value)) {
             return [
                 'response' => [
                     'request' => $_SERVER["REQUEST_URI"],

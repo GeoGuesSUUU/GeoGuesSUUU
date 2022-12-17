@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Entity\UserEditDTO;
 use App\Entity\UserSaveDTO;
-use App\Form\UserType;
 use App\Repository\UserRepository;
 use App\Utils\ApiResponse;
 use Exception;
