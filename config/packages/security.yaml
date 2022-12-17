@@ -1,9 +1,12 @@
 security:
+    enable_authenticator_manager: true
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
             algorithm: 'auto'
             cost: 15
+        App\Entity\User:
+            algorithm: auto
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         # used to reload user from session & other features (e.g. switch_user)
@@ -16,6 +19,7 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
+            pattern: ^/admin
             lazy: true
             provider: app_user_provider
 
@@ -25,6 +29,18 @@ security:
                 path: app_logout
                 # where to redirect after logout
                 # target: app_any_route
+
+        login:
+            pattern: ^/api/token
+            stateless: true
+            json_login:
+                check_path: /api/token
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+        api:
+            pattern: ^/api
+            stateless: true
+            jwt: ~
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -37,7 +53,8 @@ security:
     access_control:
         - { path: '^/login', roles: PUBLIC_ACCESS }
         - { path: '^/logout', roles: PUBLIC_ACCESS }
-        - { path: '^/api', roles: PUBLIC_ACCESS }
+        - { path: '^/api/token', roles: PUBLIC_ACCESS }
+        - { path: '^/api', roles: IS_AUTHENTICATED_FULLY }
         - { path: '/', roles: ROLE_ADMIN }
         - { path: '^/admin', roles: ROLE_ADMIN }
         - { path: '^/register', roles: ROLE_ADMIN }
