@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
-use App\Entity\UserEditDTO;
-use App\Entity\UserSaveDTO;
+use App\Entity\User;
 use App\Exception\UserNotFoundApiException;
+use App\Exception\UserNotValidApiException;
 use App\Repository\UserRepository;
 use App\Utils\ApiResponse;
 use Exception;
@@ -14,6 +14,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+
+define('IGNORE_FILED', ['id', 'roles', 'isVerified', 'scores', 'userItems', 'countries']);
 
 #[Route('/api/user')]
 class UserApiController extends AbstractController
@@ -39,29 +42,35 @@ class UserApiController extends AbstractController
         if ($user === null) {
             throw new UserNotFoundApiException();
         }
-
-        if ($user) {
-            return $this->json(ApiResponse::get($user));
-        }
-        return $this->json(ApiResponse::get(null, Response::HTTP_NOT_FOUND));
+        return $this->json(ApiResponse::get($user));
     }
 
     /**
      * @throws Exception
      */
     #[Route('/', name: 'app_user_api_new', methods: ['POST'])]
-    public function new(Request $request, SerializerInterface $serializer, UserRepository $userRepository): Response
-    {
-        /** @var UserSaveDTO $body */
-        $body = $serializer->deserialize($request->getContent(), UserSaveDTO::class, 'json');
+    public function new(
+        Request $request,
+        SerializerInterface $serializer,
+        UserRepository $userRepository,
+        ValidatorInterface $validator
+    ): Response {
+        /** @var User $body */
+        $body = $serializer->deserialize(
+            $request->getContent(),
+            User::class,
+            'json',
+            [AbstractNormalizer::IGNORED_ATTRIBUTES => IGNORE_FILED]
+        );
 
+        $errors = $validator->validate($body);
         if (
-            !$body->verify()
+            $errors->count() > 0
         ) {
-            return $this->json(ApiResponse::get(null, Response::HTTP_BAD_REQUEST));
+           throw new UserNotValidApiException($errors->get(0)->getMessage());
         }
 
-        $userRepository->save($body->toUser(), true);
+        $userRepository->save($body, true);
         $userSaved = $userRepository->findOneBy([
             'email' => $body->getEmail()
         ]);
@@ -77,31 +86,36 @@ class UserApiController extends AbstractController
         Request $request,
         int $id,
         SerializerInterface $serializer,
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        ValidatorInterface $validator
     ): Response {
         $user = $userRepository->findOneBy(["id" => $id]);
         if ($user === null) {
             throw new UserNotFoundApiException();
         }
 
-        /** @var UserEditDTO $body */
+        /** @var User $body */
         $body = $serializer->deserialize(
             $request->getContent(),
-            UserEditDTO::class,
+            User::class,
             'json',
-            [AbstractNormalizer::OBJECT_TO_POPULATE => $user]
+            [
+                AbstractNormalizer::OBJECT_TO_POPULATE => $user,
+                AbstractNormalizer::IGNORED_ATTRIBUTES => IGNORE_FILED
+            ]
         );
+        // reset the ID if it has been changed on request
+        $body->setId($id);
 
+        $errors = $validator->validate($body);
         if (
-            !$body->verify()
+            $errors->count() > 0
         ) {
-            return $this->json(ApiResponse::get(null, Response::HTTP_BAD_REQUEST));
+            throw new UserNotValidApiException($errors->get(0)->getMessage());
         }
-
-        $userEdited = $body->edit($user);
-        $userRepository->save($userEdited, true);
+        $userRepository->save($user, true);
         $userUpdated = $userRepository->findOneBy([
-            'id' => $userEdited->getId()
+            'id' => $user->getId()
         ]);
 
         return $this->json(ApiResponse::get($userUpdated));
