@@ -28,8 +28,8 @@
                 <td>{{ user.coins }}</td>
             </tr>
             <tr>
-                <th>Admin</th>
-                <td>{{ user.admin ? 'Yes' : 'No' }}</td>
+                <th>Roles</th>
+                <td>{{ user.roles|json_encode() }}</td>
             </tr>
         </tbody>
     </table>
