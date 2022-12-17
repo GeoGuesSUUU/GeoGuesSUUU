@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
 use App\Entity\UserEditDTO;
 use App\Entity\UserSaveDTO;
 use App\Exception\UserNotFoundApiException;
@@ -34,10 +33,12 @@ class UserApiController extends AbstractController
      * @throws Exception
      */
     #[Route('/{id}', name: 'app_user_api_index', methods: ['GET'])]
-    public function one(int $id, UserRepository$userRepository ): Response
+    public function one(int $id, UserRepository $userRepository): Response
     {
-        $user = $userRepository->findOneBy([ "id" => $id ]);
-        if ($user === null) throw new UserNotFoundApiException();
+        $user = $userRepository->findOneBy(["id" => $id]);
+        if ($user === null) {
+            throw new UserNotFoundApiException();
+        }
 
         if ($user) {
             return $this->json(ApiResponse::get($user));
@@ -72,13 +73,24 @@ class UserApiController extends AbstractController
      * @throws Exception
      */
     #[Route('/{id}', name: 'app_user_api_edit', methods: ['PUT', 'PATCH'])]
-    public function edit(Request $request, int $id, SerializerInterface $serializer, UserRepository $userRepository): Response
-    {
-        $user = $userRepository->findOneBy([ "id" => $id ]);
-        if ($user === null) throw new UserNotFoundApiException();
+    public function edit(
+        Request $request,
+        int $id,
+        SerializerInterface $serializer,
+        UserRepository $userRepository
+    ): Response {
+        $user = $userRepository->findOneBy(["id" => $id]);
+        if ($user === null) {
+            throw new UserNotFoundApiException();
+        }
 
         /** @var UserEditDTO $body */
-        $body = $serializer->deserialize($request->getContent(), UserEditDTO::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $user]);
+        $body = $serializer->deserialize(
+            $request->getContent(),
+            UserEditDTO::class,
+            'json',
+            [AbstractNormalizer::OBJECT_TO_POPULATE => $user]
+        );
 
         if (
             !$body->verify()
@@ -101,8 +113,10 @@ class UserApiController extends AbstractController
     #[Route('/{id}', name: 'app_user_api_delete', methods: ['DELETE'])]
     public function delete(int $id, UserRepository $userRepository): Response
     {
-        $user = $userRepository->findOneBy([ "id" => $id ]);
-        if ($user === null) throw new UserNotFoundApiException();
+        $user = $userRepository->findOneBy(["id" => $id]);
+        if ($user === null) {
+            throw new UserNotFoundApiException();
+        }
 
         $userRepository->remove($user, true);
 
