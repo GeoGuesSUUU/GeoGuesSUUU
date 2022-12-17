@@ -2,12 +2,17 @@
 
 namespace App\Controller;
 
+use App\API\Controller\UserControllerApiDoc;
 use App\Entity\User;
 use App\Exception\UserNotFoundApiException;
 use App\Exception\UserNotValidApiException;
 use App\Repository\UserRepository;
 use App\Utils\ApiResponse;
-use Exception;
+use JsonException;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OAA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,11 +24,24 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 define('IGNORE_FILED', ['id', 'roles', 'isVerified', 'scores', 'userItems', 'countries']);
 
+#[OAA\Tag(name: 'User')]
+#[Security(name: 'Bearer')]
 #[Route('/api/user')]
 class UserApiController extends AbstractController
 {
+
     /**
-     * @throws Exception
+     * Get all Users
+     * @OA\Response(
+     *     response=200,
+     *     description="Return all users",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=User::class, groups={"api_response"}))
+     *     )
+     * )
+     * @param UserRepository $userRepository
+     * @return Response
      */
     #[Route('/', name: 'app_user_api_all', methods: ['GET'])]
     public function all(UserRepository $userRepository): Response
@@ -32,9 +50,20 @@ class UserApiController extends AbstractController
         return $this->json(ApiResponse::get($users));
     }
 
-
     /**
-     * @throws Exception
+     * Get user by ID
+     * @OA\Response(
+     *     response=200,
+     *     description="Return user by Id",
+     *     @Model(type=User::class, groups={"api_response"})
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="User not found"
+     * )
+     * @param int $id
+     * @param UserRepository $userRepository
+     * @return Response
      */
     #[Route('/{id}', name: 'app_user_api_index', methods: ['GET'])]
     public function one(int $id, UserRepository $userRepository): Response
@@ -47,7 +76,23 @@ class UserApiController extends AbstractController
     }
 
     /**
-     * @throws Exception
+     * Create new user
+     * @OA\RequestBody(@Model(type=User::class, groups={"api_new"}))
+     * @OA\Response(
+     *     response=200,
+     *     description="Return new user",
+     *     @Model(type=User::class, groups={"api_response"})
+     * )
+     * @OA\Response(
+     *     response=400,
+     *     description="Bad Request"
+     * )
+     * @param Request $request
+     * @param SerializerInterface $serializer
+     * @param UserRepository $userRepository
+     * @param ValidatorInterface $validator
+     * @param UserPasswordHasherInterface $passwordHasher
+     * @return Response
      */
     #[Route('/', name: 'app_user_api_new', methods: ['POST'])]
     public function new(
@@ -69,7 +114,7 @@ class UserApiController extends AbstractController
         if (
             $errors->count() > 0
         ) {
-           throw new UserNotValidApiException($errors->get(0)->getMessage());
+            throw new UserNotValidApiException($errors->get(0)->getMessage());
         }
 
         $body->encryptPassword($passwordHasher);
@@ -83,7 +128,25 @@ class UserApiController extends AbstractController
     }
 
     /**
-     * @throws Exception
+     * Edit user by ID
+     * @OA\RequestBody(@Model(type=User::class, groups={"api_edit"}))
+     * @OA\Response(
+     *     response=200,
+     *     description="Return edited user",
+     *     @Model(type=User::class, groups={"api_response"})
+     * )
+     * @OA\Response(
+     *     response=400,
+     *     description="Bad Request"
+     * )
+     * @param Request $request
+     * @param int $id
+     * @param SerializerInterface $serializer
+     * @param UserRepository $userRepository
+     * @param ValidatorInterface $validator
+     * @param UserPasswordHasherInterface $passwordHasher
+     * @return Response
+     * @throws JsonException
      */
     #[Route('/{id}', name: 'app_user_api_edit', methods: ['PUT', 'PATCH'])]
     public function edit(
@@ -132,7 +195,18 @@ class UserApiController extends AbstractController
     }
 
     /**
-     * @throws Exception
+     * Delete user by ID
+     * @OA\Response(
+     *     response=204,
+     *     description="No Content"
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="User not found"
+     * )
+     * @param int $id
+     * @param UserRepository $userRepository
+     * @return Response
      */
     #[Route('/{id}', name: 'app_user_api_delete', methods: ['DELETE'])]
     public function delete(int $id, UserRepository $userRepository): Response
