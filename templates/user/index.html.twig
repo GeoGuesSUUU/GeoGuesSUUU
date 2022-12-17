@@ -13,7 +13,7 @@
                 <th>Email</th>
                 <th>Password</th>
                 <th>Coins</th>
-                <th>Admin</th>
+                <th>Roles</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -25,7 +25,7 @@
                 <td>{{ user.email }}</td>
                 <td>{{ user.password }}</td>
                 <td>{{ user.coins }}</td>
-                <td>{{ user.admin ? 'Yes' : 'No' }}</td>
+                <td>{{ user.roles|json_encode() }}</td>
                 <td>
                     <a href="{{ path('app_user_show', {'id': user.id}) }}">show</a>
                     <a href="{{ path('app_user_edit', {'id': user.id}) }}">edit</a>
