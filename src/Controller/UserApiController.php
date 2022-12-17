@@ -11,6 +11,7 @@ use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -53,7 +54,8 @@ class UserApiController extends AbstractController
         Request $request,
         SerializerInterface $serializer,
         UserRepository $userRepository,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        UserPasswordHasherInterface $passwordHasher
     ): Response {
         /** @var User $body */
         $body = $serializer->deserialize(
@@ -70,6 +72,7 @@ class UserApiController extends AbstractController
            throw new UserNotValidApiException($errors->get(0)->getMessage());
         }
 
+        $body->encryptPassword($passwordHasher);
         $userRepository->save($body, true);
         $userSaved = $userRepository->findOneBy([
             'email' => $body->getEmail()
@@ -88,7 +91,8 @@ class UserApiController extends AbstractController
         int $id,
         SerializerInterface $serializer,
         UserRepository $userRepository,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        UserPasswordHasherInterface $passwordHasher
     ): Response {
         $user = $userRepository->findOneBy(["id" => $id]);
         if ($user === null) {
@@ -114,6 +118,10 @@ class UserApiController extends AbstractController
         ) {
             throw new UserNotValidApiException($errors->get(0)->getMessage());
         }
+        if (isset(json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR)['password'])) {
+            $body->encryptPassword($passwordHasher);
+        }
+
         $userRepository->save($user, true);
         $userUpdated = $userRepository->findOneBy([
             'id' => $user->getId()
