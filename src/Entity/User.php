@@ -202,6 +202,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
+     * @return $this
+     */
+    public function unsetPassword(): self
+    {
+        unset($this->password);
+        return $this;
+    }
+
+    /**
      * @see UserInterface
      */
     public function eraseCredentials()

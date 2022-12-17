@@ -74,6 +74,7 @@ class UserApiController extends AbstractController
         $userSaved = $userRepository->findOneBy([
             'email' => $body->getEmail()
         ]);
+        $userSaved?->unsetPassword();
 
         return $this->json(ApiResponse::get($userSaved));
     }
@@ -117,6 +118,7 @@ class UserApiController extends AbstractController
         $userUpdated = $userRepository->findOneBy([
             'id' => $user->getId()
         ]);
+        $userUpdated?->unsetPassword();
 
         return $this->json(ApiResponse::get($userUpdated));
     }
