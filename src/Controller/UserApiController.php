@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\API\Controller\UserControllerApiDoc;
 use App\Entity\User;
 use App\Exception\UserNotFoundApiException;
 use App\Exception\UserNotValidApiException;
@@ -37,7 +36,7 @@ class UserApiController extends AbstractController
      *     description="Return all users",
      *     @OA\JsonContent(
      *        type="array",
-     *        @OA\Items(ref=@Model(type=User::class, groups={"api_response"}))
+     *        @OA\Items(ref=@Model(type=User::class, groups={"country_anti_cr", "user_api_response"}))
      *     )
      * )
      * @param UserRepository $userRepository
@@ -47,7 +46,11 @@ class UserApiController extends AbstractController
     public function all(UserRepository $userRepository): Response
     {
         $users = $userRepository->findAll();
-        return $this->json(ApiResponse::get($users));
+        return $this->json(ApiResponse::get($users),
+            200,
+            [],
+            ['groups' => ['country_anti_cr', 'user_api_response']]
+        );
     }
 
     /**
@@ -55,7 +58,7 @@ class UserApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return user by Id",
-     *     @Model(type=User::class, groups={"api_response"})
+     *     @Model(type=User::class, groups={"country_anti_cr", "user_api_response", "user_details"})
      * )
      * @OA\Response(
      *     response=404,
@@ -72,7 +75,11 @@ class UserApiController extends AbstractController
         if ($user === null) {
             throw new UserNotFoundApiException();
         }
-        return $this->json(ApiResponse::get($user));
+        return $this->json(ApiResponse::get($user),
+            200,
+            [],
+            ['groups' => ['country_anti_cr', 'user_api_response', 'user_details']]
+        );
     }
 
     /**
@@ -81,7 +88,7 @@ class UserApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return new user",
-     *     @Model(type=User::class, groups={"api_response"})
+     *     @Model(type=User::class, groups={"country_anti_cr", "user_api_response", "user_details"})
      * )
      * @OA\Response(
      *     response=400,
@@ -124,7 +131,11 @@ class UserApiController extends AbstractController
         ]);
         $userSaved?->unsetPassword();
 
-        return $this->json(ApiResponse::get($userSaved));
+        return $this->json(ApiResponse::get($userSaved),
+            200,
+            [],
+            ['groups' => ['country_anti_cr', 'user_api_response', 'user_details']]
+        );
     }
 
     /**
@@ -133,7 +144,7 @@ class UserApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return edited user",
-     *     @Model(type=User::class, groups={"api_response"})
+     *     @Model(type=User::class, groups={"country_anti_cr", "user_api_response", "user_details"})
      * )
      * @OA\Response(
      *     response=400,
@@ -191,7 +202,11 @@ class UserApiController extends AbstractController
         ]);
         $userUpdated?->unsetPassword();
 
-        return $this->json(ApiResponse::get($userUpdated));
+        return $this->json(ApiResponse::get($userUpdated),
+            200,
+            [],
+            ['groups' => ['country_anti_cr', 'user_api_response', 'user_details']]
+        );
     }
 
     /**
