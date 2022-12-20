@@ -35,7 +35,7 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user->encryptPassword($passwordHasher, $user->getPassword());
+            $user->encryptPassword($passwordHasher);
             $userRepository->save($user, true);
 
             return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
@@ -72,7 +72,7 @@ class UserController extends AbstractController
             if ($user->getPassword() === '') {
                 $user->setPassword($oldPassword);
             } else {
-                $user->encryptPassword($passwordHasher, $user->getPassword());
+                $user->encryptPassword($passwordHasher);
             }
             $userRepository->save($user, true);
 

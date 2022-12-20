@@ -202,16 +202,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function encryptPassword(
-        UserPasswordHasherInterface $passwordHasher,
-        string $noHashedPassword
-    ): self
+    public function encryptPassword(UserPasswordHasherInterface $passwordHasher): self
     {
         $hashedPassword = $passwordHasher->hashPassword(
             $this,
             $this->getPassword()
         );
         $this->setPassword($hashedPassword);
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function unsetPassword(): self
+    {
+        unset($this->password);
         return $this;
     }
 
