@@ -3,7 +3,7 @@ controllers:
     type: attribute
 
 app_logout:
-    path: /logout
+    path: /admin/logout
     methods: GET
 
 api_login_check:

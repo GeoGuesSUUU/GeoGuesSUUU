@@ -51,14 +51,13 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: '^/login', roles: PUBLIC_ACCESS }
-        - { path: '^/logout', roles: PUBLIC_ACCESS }
+        - { path: '^/admin/login', roles: PUBLIC_ACCESS }
+        - { path: '^/admin/logout', roles: PUBLIC_ACCESS }
         - { path: '^/api/token', roles: PUBLIC_ACCESS }
         - { path: '^/api/doc', roles: PUBLIC_ACCESS }
         - { path: '^/api', roles: IS_AUTHENTICATED_FULLY }
         - { path: '/', roles: ROLE_ADMIN }
         - { path: '^/admin', roles: ROLE_ADMIN }
-        - { path: '^/register', roles: ROLE_ADMIN }
 
 when@test:
     security:
