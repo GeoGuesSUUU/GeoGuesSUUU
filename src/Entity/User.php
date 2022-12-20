@@ -52,6 +52,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(groups: ['user_api_response', 'api_edit', 'user_anti_cr'])]
     private int $coins = 0;
 
+    #[ORM\Column]
+    #[Groups(groups: ['user_api_response', 'api_edit', 'user_anti_cr'])]
+    private int $xp = 0;
+
     /**
      * @OA\Property(type="array", @OA\Items(type="string"))
      */
@@ -172,6 +176,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->coins = $coins;
 
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getXp(): int
+    {
+        return $this->xp;
+    }
+
+    /**
+     * @param int $xp
+     */
+    public function setXp(int $xp): void
+    {
+        $this->xp = $xp;
     }
 
     /**
