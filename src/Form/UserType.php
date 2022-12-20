@@ -18,6 +18,7 @@ class UserType extends AbstractType
             ->add('email')
             ->add('password')
             ->add('coins')
+            ->add('xp')
             ->add('roles', CollectionType::class, [
                 'entry_type' => TextType::class
             ])
