@@ -226,13 +226,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @param string $password
+     * @param ?string $password
      * @return $this
      */
-    public function setPassword(string $password): self
+    public function setPassword(?string $password): self
     {
-        $this->password = $password;
-
+        if (!is_null($password)) {
+            $this->password = $password;
+        }
         return $this;
     }
 

@@ -16,8 +16,9 @@ class UserEditType extends UserType
         $builder
             ->add('name', TextType::class)
             ->add('email', EmailType::class)
-            ->add('password', PasswordType::class, ['required' => false, 'empty_data' => ''])
+            ->add('password', PasswordType::class, [ 'required' => false ])
             ->add('coins', NumberType::class)
+            ->add('xp', NumberType::class)
             ->add('roles', CollectionType::class, [
                 'entry_type' => TextType::class
             ])

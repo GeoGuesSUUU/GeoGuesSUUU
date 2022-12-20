@@ -69,15 +69,16 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($user->getPassword() === '') {
-                $user->setPassword($oldPassword);
-            } else {
-                $user->encryptPassword($passwordHasher);
-            }
-            $userRepository->save($user, true);
+                if ($user->getPassword() === '') {
+                    $user->setPassword($oldPassword);
+                } else {
+                    $user->encryptPassword($passwordHasher);
+                }
+                $userRepository->save($user, true);
 
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
         }
+
 
         return $this->renderForm('user/edit.html.twig', [
             'user' => $user,
