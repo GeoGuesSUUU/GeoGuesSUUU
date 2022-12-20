@@ -6,6 +6,8 @@ use App\Repository\CountryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
 
 #[ORM\Entity(repositoryClass: CountryRepository::class)]
 class Country
@@ -13,18 +15,23 @@ class Country
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
     private int $id;
 
     #[ORM\Column(length: 255)]
+    #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
     private string $name;
 
     #[ORM\Column(length: 255)]
+    #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
     private string $flag;
 
     #[ORM\OneToMany(mappedBy: 'country', targetEntity: CountryItem::class)]
+    #[Groups(groups: ['country_api_response'])]
     private Collection $countryItems;
 
-    #[ORM\ManyToOne(inversedBy: 'countries')]
+    #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'countries')]
+    #[Groups(groups: ['country_api_response', 'api_edit'])]
     private ?User $user = null;
 
     public function __construct()
@@ -35,6 +42,14 @@ class Country
     public function getId(): int
     {
         return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId(int $id): void
+    {
+        $this->id = $id;
     }
 
     /**
@@ -95,11 +110,8 @@ class Country
 
     public function removeCountryItem(CountryItem $countryItem): self
     {
-        if ($this->countryItems->removeElement($countryItem)) {
-            // set the owning side to null (unless already changed)
-            if ($countryItem->getCountry() === $this) {
-                $countryItem->setCountry(null);
-            }
+        if ($this->countryItems->removeElement($countryItem) && $countryItem->getCountry() === $this) {
+            $countryItem->setCountry(null);
         }
 
         return $this;

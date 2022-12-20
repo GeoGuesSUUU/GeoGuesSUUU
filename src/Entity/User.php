@@ -6,6 +6,7 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use OpenApi\Annotations as OA;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -21,6 +22,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(groups: ['user_api_response', 'user_anti_cr'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -31,6 +33,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         minMessage: "The name must be at least {{ limit }} characters long",
         maxMessage: "The name cannot be longer than {{ limit }} characters"
     )]
+    #[Groups(groups: ['user_api_response', 'api_new', 'api_edit', 'user_anti_cr'])]
     private string $name;
 
     #[ORM\Column(length: 180, unique: true)]
@@ -42,21 +45,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         minMessage: "The email must be at least {{ limit }} characters long",
         maxMessage: "The email cannot be longer than {{ limit }} characters"
     )]
+    #[Groups(groups: ['user_api_response', 'api_new', 'api_edit', 'user_anti_cr'])]
     private string $email;
 
     #[ORM\Column]
+    #[Groups(groups: ['user_api_response', 'api_edit', 'user_anti_cr'])]
     private int $coins = 0;
 
+    /**
+     * @OA\Property(type="array", @OA\Items(type="string"))
+     */
     #[ORM\Column]
+    #[Groups(groups: ['user_api_response'])]
     private array $roles = ['ROLE_USER'];
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Score::class)]
+    #[Groups(groups: ['user_details'])]
     private Collection $scores;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserItem::class)]
+    #[Groups(groups: ['user_details'])]
     private Collection $userItems;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Country::class)]
+    #[Groups(groups: ['user_details'])]
     private Collection $countries;
 
     /**
@@ -64,10 +76,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     #[Assert\NotBlank(message: "The password field is required")]
+    #[Groups(groups: ['api_new', 'api_edit'])]
     private string $password;
 
     #[ORM\Column(type: 'boolean')]
     #[SerializedName('isVerified')]
+    #[Groups(groups: ['user_api_response', 'user_anti_cr'])]
     private bool $isVerified = false;
 
     public function __construct()
@@ -332,6 +346,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             $country->setUser(null);
         }
 
+        return $this;
+    }
+
+    public function unsetCountries(): self
+    {
+        unset($this->countries);
         return $this;
     }
 
