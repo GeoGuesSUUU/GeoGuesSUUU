@@ -12,6 +12,28 @@ Update database from migration files
 ```shell
 php .\bin\console doctrine:migration:migrate
 ```
+### Create migration
+
+#### First Time
+```shell
+php bin/console doctrine:migrations:generate
+```
+
+#### Next Time
+```shell
+php .\bin\console doctrine:migration:diff
+```
+
+_\*/!\\ Warning : if you using mariadb database don't forget to change in .env :_
+```
+serverVersion=<version>
+```
+into :
+```
+serverVersion=mariadb-<major_version>.<minor_version>.<patch_version>
+```
+ex: mysqli://<user>:@<ip>:<port>/<database_name>?serverVersion=mariadb-10.10.0&charset=utf8mb4
+
 
 ## Tables
 
@@ -24,6 +46,7 @@ php .\bin\console doctrine:migration:migrate
 |         | email       | varchar(255) | false    |                   |
 |         | password    | varchar(255) | false    |                   |
 |         | coins       | int          | false    | 0                 |
+|         | xp          | int          | false    | 0                 |
 |         | roles       | longtext     | false    | ['ROLE_USER']     |
 |         | is_verified | tinyint      | false    | 0                 |
 
