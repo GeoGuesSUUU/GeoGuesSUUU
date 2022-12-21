@@ -16,7 +16,7 @@ php .\bin\console doctrine:migration:migrate
 
 #### First Time
 ```shell
-php bin/console doctrine:migrations:generate
+php .\bin\console doctrine:migrations:generate
 ```
 
 #### Next Time
