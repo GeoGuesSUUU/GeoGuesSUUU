@@ -45,6 +45,14 @@ class Score
     }
 
     /**
+     * @param int $id
+     */
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    /**
      * @return int
      */
     public function getScore(): int
@@ -69,6 +77,15 @@ class Score
     public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
+    }
+
+    /**
+     * @return $this
+     */
+    public function initCreatedAt(): self
+    {
+        $this->createdAt = new \DateTimeImmutable();
+        return $this;
     }
 
     /**
