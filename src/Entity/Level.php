@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: LevelRepository::class)]
 class Level
@@ -18,10 +19,21 @@ class Level
     private int $id;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "The label field is required")]
+    #[Assert\Length(
+        min: 1,
+        max: 255,
+        minMessage: "The label must be at least {{ limit }} characters long",
+        maxMessage: "The label cannot be longer than {{ limit }} characters"
+    )]
     #[Groups(groups: ['level_api_response', 'api_new', 'api_edit', 'level_anti_cr'])]
     private string $label;
 
-    #[ORM\Column(length: 1024)]
+    #[ORM\Column(length: 1024, nullable: true)]
+    #[Assert\Length(
+        max: 1024,
+        maxMessage: "The description cannot be longer than {{ limit }} characters"
+    )]
     #[Groups(groups: ['level_api_response', 'api_new', 'api_edit', 'level_anti_cr'])]
     private string $description;
 
@@ -29,7 +41,7 @@ class Level
     #[Groups(groups: ['level_api_response', 'api_new', 'api_edit'])]
     private Game $game;
 
-    #[ORM\OneToMany(mappedBy: 'levels', targetEntity: Score::class)]
+    #[ORM\OneToMany(mappedBy: 'level', targetEntity: Score::class)]
     #[Groups(groups: ['level_api_response'])]
     private Collection $scores;
 
@@ -127,7 +139,7 @@ class Level
     {
         if (!$this->scores->contains($score)) {
             $this->scores->add($score);
-            $score->setLevels($this);
+            $score->setLevel($this);
         }
 
         return $this;
@@ -139,8 +151,8 @@ class Level
      */
     public function removeScore(Score $score): self
     {
-        if ($this->scores->removeElement($score) && $score->getLevels() === $this) {
-            $score->setLevels(null);
+        if ($this->scores->removeElement($score) && $score->getLevel() === $this) {
+            $score->setLevel(null);
         }
 
         return $this;
