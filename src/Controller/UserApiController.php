@@ -8,6 +8,7 @@ use App\Exception\UserNotValidApiException;
 use App\Repository\UserRepository;
 use App\Utils\ApiResponse;
 use JsonException;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
@@ -28,6 +29,13 @@ define('IGNORE_FILED', ['id', 'roles', 'isVerified', 'scores', 'userItems', 'cou
 #[Route('/api/user')]
 class UserApiController extends AbstractController
 {
+
+    private JWTTokenManagerInterface $jwtManager;
+
+    public function __construct(JWTTokenManagerInterface $jwtManager)
+    {
+        $this->jwtManager = $jwtManager;
+    }
 
     /**
      * Get all Users
@@ -83,11 +91,11 @@ class UserApiController extends AbstractController
     }
 
     /**
-     * Create new user
+     * Create new user (PUBLIC_ACCESS)
      * @OA\RequestBody(@Model(type=User::class, groups={"api_new"}))
      * @OA\Response(
      *     response=200,
-     *     description="Return new user",
+     *     description="Return new user + token",
      *     @Model(type=User::class, groups={"country_anti_cr", "user_api_response", "user_details"})
      * )
      * @OA\Response(
@@ -101,7 +109,7 @@ class UserApiController extends AbstractController
      * @param UserPasswordHasherInterface $passwordHasher
      * @return Response
      */
-    #[Route('/', name: 'app_user_api_new', methods: ['POST'])]
+    #[Route('/register', name: 'app_user_api_new', methods: ['POST'])]
     public function new(
         Request $request,
         SerializerInterface $serializer,
@@ -131,7 +139,15 @@ class UserApiController extends AbstractController
         ]);
         $userSaved?->unsetPassword();
 
-        return $this->json(ApiResponse::get($userSaved),
+        $token = null;
+        if (!is_null($userSaved)) {
+            $token = $this->jwtManager->create($userSaved);
+        }
+
+        return $this->json(ApiResponse::get([
+            'user' => $userSaved,
+            'token' => $token
+        ]),
             200,
             [],
             ['groups' => ['country_anti_cr', 'user_api_response', 'user_details']]

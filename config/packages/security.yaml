@@ -30,13 +30,17 @@ security:
                 # where to redirect after logout
                 # target: app_any_route
 
-        login:
+        api_login:
             pattern: ^/api/token
             stateless: true
             json_login:
                 check_path: /api/token
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
+        api_register:
+            pattern: ^/api/user/register
+            methods: POST
+            stateless: true
         api:
             pattern: ^/api
             stateless: true
@@ -54,6 +58,7 @@ security:
         - { path: '^/admin/login', roles: PUBLIC_ACCESS }
         - { path: '^/admin/logout', roles: PUBLIC_ACCESS }
         - { path: '^/api/token', roles: PUBLIC_ACCESS }
+        - { path: '^/api/user/register', roles: PUBLIC_ACCESS }
         - { path: '^/api/doc', roles: PUBLIC_ACCESS }
         - { path: '^/api', roles: IS_AUTHENTICATED_FULLY }
         - { path: '/', roles: ROLE_ADMIN }
