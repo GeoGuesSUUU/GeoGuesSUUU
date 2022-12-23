@@ -56,6 +56,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(groups: ['user_api_response', 'api_edit', 'user_anti_cr'])]
     private int $xp = 0;
 
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "The locale field is required")]
+    #[Assert\Length(
+        min: 1,
+        max: 5,
+        minMessage: "The locale must be at least {{ limit }} characters long",
+        maxMessage: "The locale cannot be longer than {{ limit }} characters"
+    )]
+    #[Groups(groups: ['user_api_response', 'api_new', 'api_edit', 'user_anti_cr'])]
+    private string $locale = "en-US";
+
     /**
      * @OA\Property(type="array", @OA\Items(type="string"))
      */

@@ -40,6 +40,17 @@ class Country
     #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
     private string $flag;
 
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "The continent field is required")]
+    #[Assert\Length(
+        min: 1,
+        max: 255,
+        minMessage: "The continent must be at least {{ limit }} characters long",
+        maxMessage: "The continent cannot be longer than {{ limit }} characters"
+    )]
+    #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
+    private string $continent;
+
     #[ORM\OneToMany(mappedBy: 'country', targetEntity: CountryItem::class)]
     #[Groups(groups: ['country_api_response'])]
     private Collection $countryItems;
@@ -102,6 +113,22 @@ class Country
         $this->flag = $flag;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getContinent(): string
+    {
+        return $this->continent;
+    }
+
+    /**
+     * @param string $continent
+     */
+    public function setContinent(string $continent): void
+    {
+        $this->continent = $continent;
     }
 
     /**
