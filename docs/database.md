@@ -49,6 +49,7 @@ ex: mysqli://<user_name>:@<_ip>:<_port>/<database_name>?serverVersion=mariadb-10
 |         | xp          | int          | false    | 0                 |
 |         | roles       | longtext     | false    | ['ROLE_USER']     |
 |         | is_verified | tinyint      | false    | 0                 |
+|         | locale      | varchar(5)   | false    | en-US             |
 
 ### ItemType
 
@@ -73,12 +74,13 @@ _\*fantastic replace unique term, because unique is already use by database syst
 
 ### Country
 
-|    **key**    | **name** | **type**     | **null** | **default value** |
-|:-------------:|----------|--------------|----------|-------------------|
-|    **PK**     | id       | int          | false    | auto_increment    |
-| [_FK_](#user) | user_id  | int          | false    |                   |
-|               | name     | varchar(255) | false    |                   |
-|               | flag     | varchar(255) | true     |                   |
+|    **key**    | **name**  | **type**     | **null** | **default value** |
+|:-------------:|-----------|--------------|----------|-------------------|
+|    **PK**     | id        | int          | false    | auto_increment    |
+| [_FK_](#user) | user_id   | int          | false    |                   |
+|               | name      | varchar(255) | false    |                   |
+|               | flag      | varchar(255) | false    |                   |
+|               | continent | varchar(255) | false    |                   |
 
 ### CountryItem
 
@@ -109,18 +111,20 @@ _\*fantastic replace unique term, because unique is already use by database syst
 | **key** | **name** | **type**      | **null** | **default value** |
 |:-------:|----------|---------------|----------|-------------------|
 | **PK**  | id       | int           | false    | auto_increment    |
-|         | name     | varchar(255)  | false    |                   |
+|         | title    | varchar(255)  | false    |                   |
 |         | desc     | varchar(1024) | true     |                   |
 |         | tags     | varchar(1024) | true     |                   |
+|         | img      | varchar(255)  | true     |                   |
 
 ### Level
 
-|    **key**    | **name** | **type**      | **null** | **default value** |
-|:-------------:|----------|---------------|----------|-------------------|
-|    **PK**     | id       | int           | false    | auto_increment    |
-| [_FK_](#game) | game_id  | int           | false    |                   |
-|               | label    | varchar(1024) | true     |                   |
-|               | desc     | varchar(1024) | true     |                   |
+|    **key**    | **name**   | **type**      | **null** | **default value** |
+|:-------------:|------------|---------------|----------|-------------------|
+|    **PK**     | id         | int           | false    | auto_increment    |
+| [_FK_](#game) | game_id    | int           | false    |                   |
+|               | difficulty | int           | false    | 0                 |
+|               | label      | varchar(1024) | true     |                   |
+|               | desc       | varchar(1024) | true     |                   |
 
 ### Score
 
