@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Country;
+use App\Entity\User;
 use App\Exception\CountryNotFoundApiException;
 use App\Exception\CountryNotValidApiException;
 use App\Repository\CountryRepository;
@@ -20,7 +21,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\Constraints\GroupSequence;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 define('COUNTRY_IGNORE_FILED', ['id', 'countryItems', 'user']);
@@ -44,7 +44,7 @@ class CountryApiController extends AbstractController
      * @param CountryRepository $countryRepository
      * @return Response
      */
-    #[Route('/', name: 'app_country_api_all', methods: ['GET'])]
+    #[Route('/', name: 'app_country_api_all', methods: ['GET'], format: 'application/json')]
     public function all(CountryRepository $countryRepository): Response
     {
         $countries = $countryRepository->findAll();
@@ -70,7 +70,7 @@ class CountryApiController extends AbstractController
      * @param CountryRepository $countryRepository
      * @return Response
      */
-    #[Route('/{id}', name: 'app_country_api_index', methods: ['GET'])]
+    #[Route('/{id}', name: 'app_country_api_index', methods: ['GET'], format: 'application/json')]
     public function one(int $id, CountryRepository $countryRepository): Response
     {
         $country = $countryRepository->findOneBy(["id" => $id]);
@@ -103,7 +103,7 @@ class CountryApiController extends AbstractController
      * @return Response
      */
     #[IsGranted('ROLE_ADMIN')]
-    #[Route('/', name: 'app_country_api_new', methods: ['POST'])]
+    #[Route('/', name: 'app_country_api_new', methods: ['POST'], format: 'application/json')]
     public function new(
         Request $request,
         SerializerInterface $serializer,
@@ -156,7 +156,7 @@ class CountryApiController extends AbstractController
      * @throws JsonException
      */
     #[IsGranted('ROLE_ADMIN')]
-    #[Route('/{id}', name: 'app_country_api_edit', methods: ['PUT', 'PATCH'])]
+    #[Route('/{id}', name: 'app_country_api_edit', methods: ['PUT', 'PATCH'], format: 'application/json')]
     public function edit(
         Request $request,
         int $id,
@@ -171,9 +171,6 @@ class CountryApiController extends AbstractController
         if ($country === null) {
             throw new CountryNotFoundApiException();
         }
-        if ($userId = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR)['user']) {
-            $user = $userRepository->findOneBy(["id" => $userId]);
-        }
 
         /** @var Country $body */
         $body = $serializer->deserialize(
@@ -187,7 +184,14 @@ class CountryApiController extends AbstractController
         );
         // reset the ID if it has been changed on request
         $body->setId($id);
-        $body->setUser($user);
+
+        // Get dependency Entity
+        if ($userId = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR)['user'] ?? null) {
+            /** @var User $user */
+            $user = $userRepository->findOneBy(["id" => $userId]);
+
+            if (!is_null($user)) $body->setUser($user);
+        }
 
         $errors = $validator->validate($body);
         if (
@@ -223,7 +227,7 @@ class CountryApiController extends AbstractController
      * @return Response
      */
     #[IsGranted('ROLE_ADMIN')]
-    #[Route('/{id}', name: 'app_country_api_delete', methods: ['DELETE'])]
+    #[Route('/{id}', name: 'app_country_api_delete', methods: ['DELETE'], format: 'application/json')]
     public function delete(int $id, CountryRepository $countryRepository): Response
     {
         $country = $countryRepository->findOneBy(["id" => $id]);

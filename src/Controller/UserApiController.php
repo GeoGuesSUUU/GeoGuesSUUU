@@ -42,7 +42,7 @@ class UserApiController extends AbstractController
      * @param UserRepository $userRepository
      * @return Response
      */
-    #[Route('/', name: 'app_user_api_all', methods: ['GET'])]
+    #[Route('/', name: 'app_user_api_all', methods: ['GET'], format: 'application/json')]
     public function all(UserRepository $userRepository): Response
     {
         $users = $userRepository->findAll();
@@ -68,7 +68,7 @@ class UserApiController extends AbstractController
      * @param UserRepository $userRepository
      * @return Response
      */
-    #[Route('/{id}', name: 'app_user_api_index', methods: ['GET'])]
+    #[Route('/{id}', name: 'app_user_api_index', methods: ['GET'], format: 'application/json')]
     public function one(int $id, UserRepository $userRepository): Response
     {
         $user = $userRepository->findOneBy(["id" => $id]);
@@ -101,7 +101,7 @@ class UserApiController extends AbstractController
      * @param UserPasswordHasherInterface $passwordHasher
      * @return Response
      */
-    #[Route('/', name: 'app_user_api_new', methods: ['POST'])]
+    #[Route('/', name: 'app_user_api_new', methods: ['POST'], format: 'application/json')]
     public function new(
         Request $request,
         SerializerInterface $serializer,
@@ -159,7 +159,7 @@ class UserApiController extends AbstractController
      * @return Response
      * @throws JsonException
      */
-    #[Route('/{id}', name: 'app_user_api_edit', methods: ['PUT', 'PATCH'])]
+    #[Route('/{id}', name: 'app_user_api_edit', methods: ['PUT', 'PATCH'], format: 'application/json')]
     public function edit(
         Request $request,
         int $id,
@@ -223,7 +223,7 @@ class UserApiController extends AbstractController
      * @param UserRepository $userRepository
      * @return Response
      */
-    #[Route('/{id}', name: 'app_user_api_delete', methods: ['DELETE'])]
+    #[Route('/{id}', name: 'app_user_api_delete', methods: ['DELETE'], format: 'application/json')]
     public function delete(int $id, UserRepository $userRepository): Response
     {
         $user = $userRepository->findOneBy(["id" => $id]);

@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Serializer\Annotation\MaxDepth;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CountryRepository::class)]
 class Country
@@ -19,10 +19,24 @@ class Country
     private int $id;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "The name field is required")]
+    #[Assert\Length(
+        min: 1,
+        max: 255,
+        minMessage: "The name must be at least {{ limit }} characters long",
+        maxMessage: "The name cannot be longer than {{ limit }} characters"
+    )]
     #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
     private string $name;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "The flag field is required")]
+    #[Assert\Length(
+        min: 1,
+        max: 255,
+        minMessage: "The flag must be at least {{ limit }} characters long",
+        maxMessage: "The flag cannot be longer than {{ limit }} characters"
+    )]
     #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
     private string $flag;
 
