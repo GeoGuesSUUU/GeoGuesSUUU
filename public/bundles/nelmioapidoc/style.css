@@ -47,19 +47,20 @@ header #logo img {
 /**  INCREASE WRAPPER BLOC PADDING **/
 
 #swagger-ui.api-platform .wrapper {
-  padding:0 60px;
+  padding:0px 60px;
 }
 
 
 /**  INFORMATIONS BLOC **/
 
 #swagger-ui.api-platform .information-container.wrapper {
+  margin:0;
   padding:10px 0 0;
   width:100%;
   max-width:100%;
   background-color:white;
   border-bottom:1px solid #ccc;
-  margin: 0 0 30px;
+  margin-bottom:30px;
 }
 
 #swagger-ui.api-platform .info .title {
@@ -69,8 +70,8 @@ header #logo img {
 #swagger-ui.api-platform .info {
   width: 100%;
   max-width: 1460px;
-  padding: 0 50px;
-  margin: 0 auto;
+  padding: 0px 50px;
+  margin: 0px auto;
 }
 
 /**  METHODS BLOCS **/
@@ -173,7 +174,7 @@ header #logo img {
   font-family: sans-serif;
   width: 100%;
   max-width: 1460px;
-  padding: 0 60px;
+  padding: 0px 60px;
   margin:0 auto;
 }
 
@@ -243,7 +244,7 @@ text-align:center;
 }
 
 #swagger-ui.api-platform .tab li {
-  padding:0 5px;
+  padding:0px 5px;
   border-right:1px solid rgba(0,0,0,.2);
 }
 
