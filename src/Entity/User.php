@@ -45,7 +45,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         minMessage: "The email must be at least {{ limit }} characters long",
         maxMessage: "The email cannot be longer than {{ limit }} characters"
     )]
-    #[Groups(groups: ['user_api_response', 'api_new', 'api_edit', 'user_anti_cr'])]
+    #[Groups(groups: ['user_api_response', 'api_new', 'api_edit', 'api_login', 'user_anti_cr'])]
     private string $email;
 
     #[ORM\Column]
@@ -64,7 +64,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         minMessage: "The locale must be at least {{ limit }} characters long",
         maxMessage: "The locale cannot be longer than {{ limit }} characters"
     )]
-    #[Groups(groups: ['user_api_response', 'api_new', 'api_edit', 'user_anti_cr'])]
+    #[Groups(groups: ['user_api_response', 'api_edit', 'user_anti_cr'])]
     private string $locale = "en-US";
 
     /**
@@ -91,7 +91,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     #[Assert\NotBlank(message: "The password field is required")]
-    #[Groups(groups: ['api_new', 'api_edit'])]
+    #[Groups(groups: ['api_new', 'api_edit', 'api_login'])]
     private string $password;
 
     #[ORM\Column(type: 'boolean')]
@@ -397,5 +397,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->isVerified = $isVerified;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocale(): string
+    {
+        return $this->locale;
+    }
+
+    /**
+     * @param string $locale
+     */
+    public function setLocale(string $locale): void
+    {
+        $this->locale = $locale;
     }
 }

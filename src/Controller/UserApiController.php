@@ -91,6 +91,66 @@ class UserApiController extends AbstractController
     }
 
     /**
+     * Login existing user (PUBLIC_ACCESS)
+     * @OA\RequestBody(@Model(type=User::class, groups={"api_login"}))
+     * @OA\Response(
+     *     response=200,
+     *     description="Return new user + token",
+     *     @Model(type=User::class, groups={"country_anti_cr", "user_api_response", "user_details"})
+     * )
+     * @OA\Response(
+     *     response=400,
+     *     description="Bad Request"
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="User not found !"
+     * )
+     * @param Request $request
+     * @param SerializerInterface $serializer
+     * @param UserRepository $userRepository
+     * @param UserPasswordHasherInterface $passwordHasher
+     * @return Response
+     */
+    #[Route('/login', name: 'app_user_api_login', methods: ['POST'], format: 'application/json')]
+    public function login(
+        Request $request,
+        SerializerInterface $serializer,
+        UserRepository $userRepository,
+        UserPasswordHasherInterface $passwordHasher
+    ): Response {
+        /** @var User $body */
+        $body = $serializer->deserialize(
+            $request->getContent(),
+            User::class,
+            'json',
+            [AbstractNormalizer::IGNORED_ATTRIBUTES => IGNORE_FILED]
+        );
+        if (
+            is_null($body->getEmail()) ||
+            is_null($body->getPassword())
+        ) throw new UserNotValidApiException();
+
+        /** @var User $user */
+        $user = $userRepository->findOneBy(['email' => $body->getEmail()]);
+        if (is_null($user)) throw new UserNotFoundApiException();
+
+        $isValid = $passwordHasher->isPasswordValid($user, $body->getPassword());
+        if (!$isValid) throw new UserNotValidApiException();
+
+        $token = $this->jwtManager->create($user);
+
+        return $this->json(ApiResponse::get([
+            'user' => $user,
+            'token' => $token
+        ]),
+            200,
+            [],
+            ['groups' => ['country_anti_cr', 'user_api_response', 'user_details']]
+        );
+    }
+
+    /**
      * Create new user (PUBLIC_ACCESS)
      * @OA\RequestBody(@Model(type=User::class, groups={"api_new"}))
      * @OA\Response(
