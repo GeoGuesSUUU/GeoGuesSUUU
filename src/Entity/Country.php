@@ -76,7 +76,7 @@ class Country
     #[Groups(groups: ['country_api_response', 'api_edit'])]
     private ?User $user = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
     private ?DateTimeImmutable $ownedAt;
 
