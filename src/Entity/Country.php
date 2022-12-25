@@ -32,7 +32,7 @@ class Country
 
     #[ORM\Column(length: 2)]
     #[Assert\NotBlank(message: "The name field is required")]
-    #[Assert\Regex(pattern: "^[A-Z]{2}$", message: "The code field is only ISO 3166-1 alpha-2", match: true)]
+    #[Assert\Regex(pattern: "/^[A-Z]{2}$/", message: "The code field is only ISO 3166-1 alpha-2", match: true)]
     #[Assert\Length(
         min: 1,
         max: 255,
