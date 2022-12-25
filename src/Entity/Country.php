@@ -252,7 +252,7 @@ class Country
      */
     public function initOwnedAt(): self
     {
-        $this->ownedAt = new DateTimeImmutable(0);
+        $this->ownedAt = new DateTimeImmutable("1970-01-01");
         return $this;
     }
 }
