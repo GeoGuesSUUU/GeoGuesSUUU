@@ -18,6 +18,7 @@ class Level
     #[Groups(groups: ['level_api_response', 'level_anti_cr'])]
     private int $id;
 
+    #[ORM\Column]
     #[Groups(groups: ['level_api_response', 'api_new', 'api_edit', 'level_anti_cr'])]
     private int $difficulty = 0;
 
