@@ -9,6 +9,7 @@ use App\Exception\CountryNotValidApiException;
 use App\Repository\CountryRepository;
 use App\Repository\UserRepository;
 use App\Utils\ApiResponse;
+use Exception;
 use JsonException;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
@@ -154,6 +155,7 @@ class CountryApiController extends AbstractController
      * @param ValidatorInterface $validator
      * @return Response
      * @throws JsonException
+     * @throws Exception
      */
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}', name: 'app_country_api_edit', methods: ['PUT', 'PATCH'], format: 'application/json')]
@@ -199,6 +201,9 @@ class CountryApiController extends AbstractController
         ) {
             throw new CountryNotValidApiException($errors->get(0)->getMessage());
         }
+
+        $body->initOwnedAt();
+
         $countryRepository->save($country, true);
         $countryUpdated = $countryRepository->findOneBy([
             'id' => $country->getId()

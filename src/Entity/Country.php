@@ -7,6 +7,7 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Exception;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -233,9 +234,25 @@ class Country
 
     /**
      * @param DateTimeImmutable|null $ownedAt
+     * @return Country
+     * @throws Exception
      */
-    public function setOwnedAt(?DateTimeImmutable $ownedAt): void
+    public function setOwnedAt(?DateTimeImmutable $ownedAt): self
     {
+        if (is_null($ownedAt)) {
+            return $this->initOwnedAt();
+        }
         $this->ownedAt = $ownedAt;
+        return $this;
+    }
+
+    /**
+     * @return Country
+     * @throws Exception
+     */
+    public function initOwnedAt(): self
+    {
+        $this->ownedAt = new DateTimeImmutable(0);
+        return $this;
     }
 }
