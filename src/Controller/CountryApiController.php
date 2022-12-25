@@ -102,6 +102,7 @@ class CountryApiController extends AbstractController
      * @param CountryRepository $countryRepository
      * @param ValidatorInterface $validator
      * @return Response
+     * @throws Exception
      */
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/', name: 'app_country_api_new', methods: ['POST'], format: 'application/json')]
@@ -126,6 +127,8 @@ class CountryApiController extends AbstractController
         ) {
             throw new CountryNotValidApiException($errors->get(0)->getMessage());
         }
+
+        $body->initOwnedAt();
 
         $countryRepository->save($body, true);
         return $this->json(ApiResponse::get($body),
@@ -155,7 +158,6 @@ class CountryApiController extends AbstractController
      * @param ValidatorInterface $validator
      * @return Response
      * @throws JsonException
-     * @throws Exception
      */
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}', name: 'app_country_api_edit', methods: ['PUT', 'PATCH'], format: 'application/json')]
@@ -201,8 +203,6 @@ class CountryApiController extends AbstractController
         ) {
             throw new CountryNotValidApiException($errors->get(0)->getMessage());
         }
-
-        $body->initOwnedAt();
 
         $countryRepository->save($country, true);
         $countryUpdated = $countryRepository->findOneBy([
