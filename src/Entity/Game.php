@@ -53,6 +53,17 @@ class Game
     #[Groups(groups: ['game_api_response', 'api_new', 'api_edit', 'game_anti_cr'])]
     private string $tags;
 
+    #[ORM\Column(length: 255)]
+    #[Assert\Blank(message: "The server field is required !")]
+    #[Assert\Length(
+        min: 1,
+        max: 1024,
+        minMessage: "The server must be at least {{ limit }} characters long",
+        maxMessage: "The server cannot be longer than {{ limit }} characters"
+    )]
+    #[Groups(groups: ['game_api_response', 'api_new', 'api_edit', 'game_anti_cr'])]
+    private string $server;
+
     #[Groups(groups: ['game_api_response'])]
     #[ORM\OneToMany(mappedBy: 'game', targetEntity: Level::class)]
     private Collection $levels;
@@ -149,6 +160,22 @@ class Game
         $this->tags = $tags;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getServer(): string
+    {
+        return $this->server;
+    }
+
+    /**
+     * @param string $server
+     */
+    public function setServer(string $server): void
+    {
+        $this->server = $server;
     }
 
     /**
