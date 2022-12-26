@@ -26,7 +26,6 @@ final class Version20221221094532 extends AbstractMigration
         $this->addSql('ALTER TABLE score CHANGE levels_id level_id INT DEFAULT NULL');
         $this->addSql('ALTER TABLE score ADD CONSTRAINT FK_329937515FB14BA7 FOREIGN KEY (level_id) REFERENCES level (id)');
         $this->addSql('CREATE INDEX IDX_329937515FB14BA7 ON score (level_id)');
-        $this->addSql('ALTER TABLE user CHANGE xp xp INT NOT NULL');
     }
 
     public function down(Schema $schema): void
@@ -38,6 +37,5 @@ final class Version20221221094532 extends AbstractMigration
         $this->addSql('ALTER TABLE score CHANGE level_id levels_id INT DEFAULT NULL');
         $this->addSql('ALTER TABLE score ADD CONSTRAINT FK_32993751AF9C3A25 FOREIGN KEY (levels_id) REFERENCES level (id)');
         $this->addSql('CREATE INDEX IDX_32993751AF9C3A25 ON score (levels_id)');
-        $this->addSql('ALTER TABLE user CHANGE xp xp BIGINT NOT NULL');
     }
 }

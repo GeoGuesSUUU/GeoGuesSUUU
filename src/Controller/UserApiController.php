@@ -55,6 +55,9 @@ class UserApiController extends AbstractController
     public function all(UserRepository $userRepository): Response
     {
         $users = $userRepository->findAll();
+        foreach ($users as $user) {
+            $user->setLevelData();
+        }
         return $this->json(ApiResponse::get($users),
             200,
             [],
@@ -84,6 +87,7 @@ class UserApiController extends AbstractController
         if ($user === null) {
             throw new UserNotFoundApiException();
         }
+        $user->setLevelData();
         return $this->json(ApiResponse::get($user),
             200,
             [],
@@ -120,7 +124,7 @@ class UserApiController extends AbstractController
         if ($tokenUser->getId() !== $user->getId() && !in_array("ROLE_ADMIN", $tokenUser->getRoles())) {
             throw new UserForbiddenAccessApiException();
         }
-
+        $user->setLevelData();
         return $this->json(ApiResponse::get($user),
             200,
             [],
@@ -177,7 +181,7 @@ class UserApiController extends AbstractController
         if (!$isValid) throw new UserNotValidApiException();
 
         $token = $this->jwtManager->create($user);
-
+        $user->setLevelData();
         return $this->json(ApiResponse::get([
             'user' => $user,
             'token' => $token
@@ -241,7 +245,7 @@ class UserApiController extends AbstractController
         if (!is_null($userSaved)) {
             $token = $this->jwtManager->create($userSaved);
         }
-
+        $userSaved->setLevelData();
         return $this->json(ApiResponse::get([
             'user' => $userSaved,
             'token' => $token
@@ -290,7 +294,7 @@ class UserApiController extends AbstractController
         // Security
         /** @var User $tokenUser */
         $tokenUser = $this->getUser();
-        if ($tokenUser->getId() !== $user->getId() || !in_array("ROLE_ADMIN", $tokenUser->getRoles())) {
+        if ($tokenUser->getId() !== $user->getId() && !in_array("ROLE_ADMIN", $tokenUser->getRoles())) {
             throw new UserForbiddenAccessApiException();
         }
 
@@ -322,7 +326,7 @@ class UserApiController extends AbstractController
             'id' => $user->getId()
         ]);
         $userUpdated?->unsetPassword();
-
+        $userUpdated?->setLevelData();
         return $this->json(ApiResponse::get($userUpdated),
             200,
             [],
@@ -355,7 +359,7 @@ class UserApiController extends AbstractController
         // Security
         /** @var User $tokenUser */
         $tokenUser = $this->getUser();
-        if ($tokenUser->getId() !== $user->getId() || !in_array("ROLE_ADMIN", $tokenUser->getRoles())) {
+        if ($tokenUser->getId() !== $user->getId() && !in_array("ROLE_ADMIN", $tokenUser->getRoles())) {
             throw new UserForbiddenAccessApiException();
         }
 
