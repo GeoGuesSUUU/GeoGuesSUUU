@@ -45,7 +45,7 @@ class UserItemApiController extends AbstractController
      * @param Request $request
      * @return Response
      */
-    #[Route('/{userId}/add/{itemId}', name: 'app_item_api_new', methods: ['POST'], format: 'application/json')]
+    #[Route('/{userId}/add/{itemId}', name: 'app_user_item_api_add', methods: ['POST'], format: 'application/json')]
     public function add(
         int $userId,
         int $itemId,
@@ -55,6 +55,14 @@ class UserItemApiController extends AbstractController
         Request $request
     ): Response
     {
+
+        $link = $userItemRepository->findOneBy(["user" => $userId, "itemType" => $itemId]);
+        if ($link) {
+            $link->setQuantity($link->getQuantity() + 1);
+            $userItemRepository->save($link, true);
+            return $this->json(ApiResponse::get(null, Response::HTTP_NO_CONTENT));
+        }
+
         $user = $userRepository->findOneBy(["id" => $userId]);
         if ($user === null) {
             throw new UserNotFoundApiException();
@@ -92,10 +100,10 @@ class UserItemApiController extends AbstractController
      * @param UserItemRepository $userItemRepository
      * @return Response
      */
-    #[Route('/{userId}/remove/{itemId}', name: 'app_item_api_delete', methods: ['DELETE'], format: 'application/json')]
+    #[Route('/{userId}/remove/{itemId}', name: 'app_user_item_api_delete', methods: ['DELETE'], format: 'application/json')]
     public function remove(int $userId, int $itemId, UserItemRepository $userItemRepository): Response
     {
-        $itemLink = $userItemRepository->findOneBy(["user_id" => $userId, "item_type_id" => $itemId]);
+        $itemLink = $userItemRepository->findOneBy(["user" => $userId, "itemType" => $itemId]);
         if ($itemLink === null) {
             throw new ItemTypeNotFoundApiException();
         }
@@ -129,7 +137,7 @@ class UserItemApiController extends AbstractController
     ]
     public function removeQuantity(int $userId, int $itemId, int $num, UserItemRepository $userItemRepository): Response
     {
-        $itemLink = $userItemRepository->findOneBy(["user_id" => $userId, "item_type_id" => $itemId]);
+        $itemLink = $userItemRepository->findOneBy(["user" => $userId, "itemType" => $itemId]);
         if ($itemLink === null) {
             throw new ItemTypeNotFoundApiException();
         }
