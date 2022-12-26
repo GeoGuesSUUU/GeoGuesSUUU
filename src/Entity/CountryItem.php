@@ -4,19 +4,23 @@ namespace App\Entity;
 
 use App\Repository\CountryItemRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CountryItemRepository::class)]
 class CountryItem
 {
 
     #[ORM\Column]
+    #[Groups(groups: ['country_item_api_response', 'country_item_anti_cr'])]
     private int $quantity = 0;
 
     #[ORM\Id]
+    #[Groups(groups: ['country_item_api_response'])]
     #[ORM\ManyToOne(inversedBy: 'countryItems')]
     private Country $country;
 
     #[ORM\Id]
+    #[Groups(groups: ['country_item_api_response', 'country_item_anti_cr'])]
     #[ORM\ManyToOne(inversedBy: 'countryItems')]
     private ItemType $itemType;
 

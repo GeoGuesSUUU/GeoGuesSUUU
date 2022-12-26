@@ -49,7 +49,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private string $email;
 
     #[ORM\Column]
-    #[Groups(groups: ['user_api_response', 'api_edit', 'user_anti_cr'])]
+    #[Groups(groups: ['user_private', 'api_edit', 'user_anti_cr'])]
     private int $coins = 0;
 
     #[ORM\Column]
@@ -79,7 +79,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $scores;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserItem::class)]
-    #[Groups(groups: ['user_details'])]
+    #[Groups(groups: ['user_private'])]
     private Collection $userItems;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Country::class)]

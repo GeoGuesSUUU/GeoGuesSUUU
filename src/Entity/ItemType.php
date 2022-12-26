@@ -15,7 +15,7 @@ class ItemType
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(groups: ['item_api_response', 'item__anti_cr'])]
+    #[Groups(groups: ['item_api_response', 'item_anti_cr'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -25,7 +25,7 @@ class ItemType
         minMessage: "The name must be at least {{ limit }} characters long",
         maxMessage: "The name cannot be longer than {{ limit }} characters"
     )]
-    #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item__anti_cr'])]
+    #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item_anti_cr'])]
     private string $name;
 
     #[ORM\Column(length: 1024, nullable: true)]
@@ -33,7 +33,7 @@ class ItemType
         max: 1024,
         maxMessage: "The description cannot be longer than {{ limit }} characters"
     )]
-    #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item__anti_cr'])]
+    #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item_anti_cr'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]
@@ -43,7 +43,7 @@ class ItemType
         minMessage: "The type must be at least {{ limit }} characters long",
         maxMessage: "The type cannot be longer than {{ limit }} characters"
     )]
-    #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item__anti_cr'])]
+    #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item_anti_cr'])]
     private string $type = "other";
 
     #[ORM\Column(length: 255)]
@@ -53,11 +53,11 @@ class ItemType
         minMessage: "The rarity must be at least {{ limit }} characters long",
         maxMessage: "The rarity cannot be longer than {{ limit }} characters"
     )]
-    #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item__anti_cr'])]
+    #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item_anti_cr'])]
     private string $rarity = "common";
 
     #[ORM\Column]
-    #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item__anti_cr'])]
+    #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item_anti_cr'])]
     private bool $fantastic = false;
 
     #[ORM\OneToMany(mappedBy: 'itemType', targetEntity: UserItem::class)]

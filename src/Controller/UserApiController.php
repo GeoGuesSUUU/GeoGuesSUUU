@@ -96,7 +96,7 @@ class UserApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return user by Id",
-     *     @Model(type=User::class, groups={"country_anti_cr", "score_anti_cr", "user_api_response", "user_private", "user_details"})
+     *     @Model(type=User::class, groups={"country_anti_cr", "score_anti_cr", "user_api_response", "inventory_anti_cr", "item_anti_cr", "user_private", "user_details"})
      * )
      * @OA\Response(
      *     response=404,
@@ -117,14 +117,14 @@ class UserApiController extends AbstractController
         // Security
         /** @var User $tokenUser */
         $tokenUser = $this->getUser();
-        if ($tokenUser->getId() !== $user->getId() || !in_array("ROLE_ADMIN", $tokenUser->getRoles())) {
+        if ($tokenUser->getId() !== $user->getId() && !in_array("ROLE_ADMIN", $tokenUser->getRoles())) {
             throw new UserForbiddenAccessApiException();
         }
 
         return $this->json(ApiResponse::get($user),
             200,
             [],
-            ['groups' => ['country_anti_cr', 'score_anti_cr', 'user_api_response', 'user_private', 'user_details']]
+            ['groups' => ['country_anti_cr', 'score_anti_cr', 'user_api_response', 'inventory_anti_cr', 'item_anti_cr', 'user_private', 'user_details']]
         );
     }
 
@@ -134,7 +134,7 @@ class UserApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return new user + token",
-     *     @Model(type=User::class, groups={"country_anti_cr", "score_anti_cr", "user_api_response", "user_private", "user_details"})
+     *     @Model(type=User::class, groups={"country_anti_cr", "score_anti_cr", "user_api_response", "inventory_anti_cr", "item_anti_cr", "user_private", "user_details"})
      * )
      * @OA\Response(
      *     response=400,
@@ -184,7 +184,7 @@ class UserApiController extends AbstractController
         ]),
             200,
             [],
-            ['groups' => ['country_anti_cr', 'score_anti_cr', 'user_api_response', 'user_private', 'user_details']]
+            ['groups' => ['country_anti_cr', 'score_anti_cr', 'user_api_response', 'inventory_anti_cr', 'item_anti_cr', 'user_private', 'user_details']]
         );
     }
 
@@ -194,7 +194,7 @@ class UserApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return new user + token",
-     *     @Model(type=User::class, groups={"country_anti_cr", "score_anti_cr", "user_api_response", "user_private", "user_details"})
+     *     @Model(type=User::class, groups={"country_anti_cr", "score_anti_cr", "user_api_response", "inventory_anti_cr", "item_anti_cr", "user_private", "user_details"})
      * )
      * @OA\Response(
      *     response=400,
@@ -248,7 +248,7 @@ class UserApiController extends AbstractController
         ]),
             200,
             [],
-            ['groups' => ['country_anti_cr', 'score_anti_cr', 'user_api_response', 'user_private', 'user_details']]
+            ['groups' => ['country_anti_cr', 'score_anti_cr', 'user_api_response', 'inventory_anti_cr', 'item_anti_cr', 'user_private', 'user_details']]
         );
     }
 
@@ -258,7 +258,7 @@ class UserApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return edited user",
-     *     @Model(type=User::class, groups={"country_anti_cr", "score_anti_cr", "user_api_response", "user_private", "user_details"})
+     *     @Model(type=User::class, groups={"country_anti_cr", "score_anti_cr", "user_api_response", "inventory_anti_cr", "item_anti_cr", "user_private", "user_details"})
      * )
      * @OA\Response(
      *     response=400,
@@ -326,7 +326,7 @@ class UserApiController extends AbstractController
         return $this->json(ApiResponse::get($userUpdated),
             200,
             [],
-            ['groups' => ['country_anti_cr', 'score_anti_cr', 'user_api_response', 'user_private', 'user_details']]
+            ['groups' => ['country_anti_cr', 'score_anti_cr', 'user_api_response', 'inventory_anti_cr', 'item_anti_cr', 'user_private', 'user_details']]
         );
     }
 
