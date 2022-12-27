@@ -3,15 +3,18 @@
 namespace App\Entity;
 
 use App\Repository\ItemTypeRepository;
+use App\Utils\ItemTypeType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use OpenApi\Annotations as OA;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ItemTypeRepository::class)]
 class ItemType
 {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -67,6 +70,13 @@ class ItemType
     )]
     #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item_anti_cr'])]
     private ?string $img;
+
+    /**
+     * @OA\Property(type="array", @OA\Items(type="mixed"))
+     */
+    #[ORM\Column]
+    #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item_anti_cr'])]
+    private ?array $effects = [];
 
     #[ORM\OneToMany(mappedBy: 'itemType', targetEntity: UserItem::class)]
     #[Groups(groups: ['item_api_response'])]
@@ -126,7 +136,9 @@ class ItemType
 
     public function setType(string $type): self
     {
-        $this->type = $type;
+        if (ItemTypeType::isItemType($type)) {
+            $this->type = $type;
+        }
 
         return $this;
     }
@@ -223,5 +235,21 @@ class ItemType
     public function setImg(string $img): void
     {
         $this->img = $img;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getEffects(): ?array
+    {
+        return $this->effects;
+    }
+
+    /**
+     * @param array|null $effects
+     */
+    public function setEffects(?array $effects): void
+    {
+        $this->effects = $effects;
     }
 }
