@@ -129,6 +129,7 @@ class CountryApiController extends AbstractController
         }
 
         $body->initOwnedAt();
+        $body->initClaimDate();
 
         $countryRepository->save($body, true);
         return $this->json(ApiResponse::get($body),

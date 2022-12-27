@@ -65,9 +65,28 @@ class Country
     #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
     private string $continent;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'bigint')]
     #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
     private int $initLife = 0;
+
+    #[ORM\Column]
+    #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
+    private int $initPrice = 0;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
+    private ?DateTimeImmutable $claimDate;
+
+    // ==============================//
+    #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
+    private int $life = 0;
+
+    #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
+    private int $shield = 0;
+
+    #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
+    private int $price = 0;
+    // ==============================//
 
     #[ORM\OneToMany(mappedBy: 'country', targetEntity: CountryItem::class)]
     #[Groups(groups: ['country_api_response'])]
@@ -252,7 +271,97 @@ class Country
      */
     public function initOwnedAt(): self
     {
-        $this->ownedAt = new DateTimeImmutable("1970-01-01");
+        $this->ownedAt = new DateTimeImmutable("3000-01-01");
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getInitPrice(): int
+    {
+        return $this->initPrice;
+    }
+
+    /**
+     * @param int $initPrice
+     */
+    public function setInitPrice(int $initPrice): void
+    {
+        $this->initPrice = $initPrice;
+    }
+
+    /**
+     * @return DateTimeImmutable|null
+     */
+    public function getClaimDate(): ?DateTimeImmutable
+    {
+        return $this->claimDate;
+    }
+
+    /**
+     * @param DateTimeImmutable|null $claimDate
+     */
+    public function setClaimDate(?DateTimeImmutable $claimDate): void
+    {
+        $this->claimDate = $claimDate;
+    }
+
+    /**
+     * @return Country
+     * @throws Exception
+     */
+    public function initClaimDate(): self
+    {
+        $this->claimDate = new DateTimeImmutable("3000-01-01");
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLife(): int
+    {
+        return $this->life;
+    }
+
+    /**
+     * @param int $life
+     */
+    public function setLife(int $life): void
+    {
+        $this->life = $life;
+    }
+
+    /**
+     * @return int
+     */
+    public function getShield(): int
+    {
+        return $this->shield;
+    }
+
+    /**
+     * @param int $shield
+     */
+    public function setShield(int $shield): void
+    {
+        $this->shield = $shield;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPrice(): int
+    {
+        return $this->price;
+    }
+
+    /**
+     * @param int $price
+     */
+    public function setPrice(int $price): void
+    {
+        $this->price = $price;
     }
 }

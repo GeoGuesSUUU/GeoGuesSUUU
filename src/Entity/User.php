@@ -53,7 +53,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(groups: ['user_private', 'api_edit', 'user_anti_cr'])]
     private int $coins = 0;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'bigint')]
     #[Groups(groups: ['user_api_response', 'api_edit', 'user_anti_cr'])]
     private int $xp = 0;
 

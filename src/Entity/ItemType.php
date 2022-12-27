@@ -60,6 +60,14 @@ class ItemType
     #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item_anti_cr'])]
     private bool $fantastic = false;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "The img cannot be longer than {{ limit }} characters"
+    )]
+    #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item_anti_cr'])]
+    private ?string $img;
+
     #[ORM\OneToMany(mappedBy: 'itemType', targetEntity: UserItem::class)]
     #[Groups(groups: ['item_api_response'])]
     private Collection $userItems;
@@ -199,5 +207,21 @@ class ItemType
         }
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getImg(): string
+    {
+        return $this->img;
+    }
+
+    /**
+     * @param string $img
+     */
+    public function setImg(string $img): void
+    {
+        $this->img = $img;
     }
 }

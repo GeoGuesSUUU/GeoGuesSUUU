@@ -14,6 +14,10 @@ class CountryItem
     #[Groups(groups: ['country_item_api_response', 'country_item_anti_cr'])]
     private int $quantity = 0;
 
+    #[ORM\Column]
+    #[Groups(groups: ['country_item_api_response', 'country_item_anti_cr'])]
+    private array $effects = [];
+
     #[ORM\Id]
     #[Groups(groups: ['country_item_api_response'])]
     #[ORM\ManyToOne(inversedBy: 'countryItems')]
@@ -59,5 +63,21 @@ class CountryItem
         $this->itemType = $itemType;
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getEffects(): array
+    {
+        return $this->effects;
+    }
+
+    /**
+     * @param array $effects
+     */
+    public function setEffects(array $effects): void
+    {
+        $this->effects = $effects;
     }
 }
