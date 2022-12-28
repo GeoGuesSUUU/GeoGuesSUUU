@@ -4,11 +4,11 @@ namespace App\Utils;
 
 enum EffectType: string
 {
-    // MINUS
-    case MINUS_LIFE = 'life-';
-    case MINUS_SHIELD = 'shield-';
-    case MINUS_PRICE = 'price-';
-    case MINUS_CLAIM = 'claim-';
+    // MALUS
+    case MALUS_LIFE = 'life-';
+    case MALUS_SHIELD = 'shield-';
+    case MALUS_PRICE = 'price-';
+    case MALUS_CLAIM = 'claim-';
 
     // BONUS
     case BONUS_LIFE = 'life+';

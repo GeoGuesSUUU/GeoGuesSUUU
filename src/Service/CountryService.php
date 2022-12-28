@@ -185,6 +185,7 @@ class CountryService
         $entity->setUser($user);
         $entity->setOwnedAt(new \DateTimeImmutable());
         $entity->setClaimDate(new \DateTimeImmutable());
+        $entity->setEffects([]);
         $this->save($entity);
         $this->userRepository->save($user, true);
         return $entity;
@@ -192,21 +193,23 @@ class CountryService
 
     /**
      * @param Country $entity
+     * @param bool $flush
      * @return Country
      * @throws Exception
      */
-    public function removeOwner(Country $entity): Country
+    public function removeOwner(Country $entity, bool $flush =  false): Country
     {
         $entity->setUser(null);
 
-        $this->removeItemByType($entity, ItemTypeType::TYPE_SUPPORT->value);
-
         $entity->initOwnedAt();
         $entity->initClaimDate();
-        $this->save($entity, true);
+        $this->save($entity, $flush);
         return $entity;
     }
 
+    /**
+     * @throws Exception
+     */
     public function attack(Country $country, User $user, ItemType $item): Country
     {
         // if item is in user inventory
@@ -219,15 +222,43 @@ class CountryService
             throw new ItemTypeNotValidApiException("Only attack type is valid");
         }
 
-        // TODO: finish function
-//        $attack = $item->getEffects()
-//
-//        $shield = $country->getShield();
-//        if ($shield === 0) {
-//
-//        }
-//
-//        $this->userService->removeItemById($user, $item->getId(), true);
+        $damageLife = 0;
+        $damageShield = 0;
+        // TODO: damage price
+
+        foreach ($item->getEffects() as $effect) {
+            if (isset($effect['type']) && isset($effect['value'])) {
+                if ($effect['type'] === EffectType::MALUS_SHIELD->value) {
+                    $damageShield += $effect['value'];
+                }
+                elseif ($effect['type'] === EffectType::MALUS_LIFE->value) {
+                    $damageLife += $effect['value'];
+                }
+            }
+        }
+
+        $shield = $country->getShield();
+        $life = $country->getLife();
+
+        if ($shield < $damageShield) {
+            $life = $life + $shield - $damageShield;
+            $shield = 0;
+        } else {
+            $shield -= $damageShield;
+        }
+
+        $life -= $damageLife;
+
+        $country->setLife($life);
+        $country->setShield($shield);
+
+        if ($life <= 0) {
+            $country->setLife(0);
+            $this->removeOwner($country);
+        }
+
+        $this->userService->removeItemById($user, $item->getId());
+        $this->save($country, true);
         return $country;
     }
     //TODO: restore shield by percentage
