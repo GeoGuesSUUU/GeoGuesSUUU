@@ -12,7 +12,9 @@ enum EffectType: string
 
     // BONUS
     case BONUS_LIFE = 'life+';
+    case BONUS_LIFE_MAX = 'life_max+';
     case BONUS_SHIELD = 'shield+';
+    case BONUS_SHIELD_MAX = 'shield_max+';
     case BONUS_PRICE = 'price+';
     case BONUS_CLAIM = 'claim+';
 

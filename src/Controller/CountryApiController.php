@@ -390,8 +390,8 @@ class CountryApiController extends AbstractController
      * Attack Country By ID
      * @OA\Response(
      *     response=200,
-     *     description="Return reward",
-     *     @Model(type=Country::class, groups={"response", "item_anti_cr"})
+     *     description="Return country",
+     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr"})
      * )
      * @OA\Response(
      *     response=400,
@@ -404,7 +404,7 @@ class CountryApiController extends AbstractController
      * @return Response
      * @throws Exception
      */
-    #[Route('/{id}/attack/{itemId}', name: 'app_country_api_attck', methods: ['POST'], format: 'application/json')]
+    #[Route('/{id}/attack/{itemId}', name: 'app_country_api_attack', methods: ['POST'], format: 'application/json')]
     public function attack(
         int $id,
         int $itemId,
@@ -428,6 +428,55 @@ class CountryApiController extends AbstractController
 
         $country = $countryService->attack($country, $user, $item);
 
+
+        return $this->json(ApiResponse::get($country),
+            200,
+            [],
+            ['groups' => ['user_anti_cr', 'country_api_response', 'country_item_anti_cr', 'item_anti_cr']]
+        );
+    }
+
+    /**
+     * Add Support Item to Country By ID
+     * @OA\Response(
+     *     response=200,
+     *     description="Return country",
+     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr"})
+     * )
+     * @OA\Response(
+     *     response=400,
+     *     description="Bad Request"
+     * )
+     * @param int $id
+     * @param int $itemId
+     * @param ItemTypeRepository $itemTypeRepository
+     * @param CountryService $countryService
+     * @return Response
+     * @throws Exception
+     */
+    #[Route('/{id}/support/{itemId}', name: 'app_country_api_support', methods: ['POST'], format: 'application/json')]
+    public function support(
+        int $id,
+        int $itemId,
+        ItemTypeRepository $itemTypeRepository,
+        CountryService $countryService,
+    ): Response
+    {
+
+        $item = $itemTypeRepository->findOneBy([ 'id' => $itemId ]);
+        if ($item === null) {
+            throw new ItemTypeNotFoundApiException();
+        }
+
+        $country = $countryService->getById($id);
+        if ($country === null) {
+            throw new CountryNotFoundApiException();
+        }
+
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $country = $countryService->useSupportItem($country, $user, $item);
 
         return $this->json(ApiResponse::get($country),
             200,

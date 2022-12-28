@@ -349,7 +349,11 @@ class Country
      */
     public function setLife(int $life): self
     {
-        $this->life = $life;
+        if ($life > $this->lifeMax) {
+            $this->life = $this->lifeMax;
+        } else {
+            $this->life = $life;
+        }
         return $this;
     }
 
@@ -367,7 +371,11 @@ class Country
      */
     public function setShield(int $shield): self
     {
-        $this->shield = $shield;
+        if ($shield > $this->shieldMax) {
+            $this->shield = $this->shieldMax;
+        } else {
+            $this->shield = $shield;
+        }
         return $this;
     }
 

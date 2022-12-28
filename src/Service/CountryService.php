@@ -261,9 +261,59 @@ class CountryService
         $this->save($country, true);
         return $country;
     }
-    //TODO: restore shield by percentage
-    //TODO: add shield
-    //TODO: heal
+
+    public function restoreShield(Country $country, int $percentage, bool $flush = false): Country
+    {
+        $country->setShield($country->getShieldMax() * ($percentage / 100));
+
+        $this->save($country, $flush);
+        return $country;
+    }
+
+    public function useSupportItem(Country $country, User $user, ItemType $item): Country
+    {
+        // if item is in user inventory
+        $itemInventory = $this->userService->findItemById($user, $item->getId());
+        if (is_null($itemInventory)) {
+            throw new ItemTypeNotFoundApiException();
+        }
+
+        if (
+            $itemInventory->getType() !== ItemTypeType::TYPE_SUPPORT->value) {
+            throw new ItemTypeNotValidApiException("Only support type is valid");
+        }
+
+        $extraLife = $country->getLife();
+        $extraLifeMax = $country->getLifeMax();
+        $extraShield = $country->getShield();
+        $extraShieldMax = $country->getShieldMax();
+
+        foreach ($item->getEffects() as $effect) {
+            if (isset($effect['type']) && isset($effect['value'])) {
+                if ($effect['type'] === EffectType::BONUS_SHIELD->value) {
+                    $extraShieldMax += $effect['value'];
+                }
+                elseif ($effect['type'] === EffectType::BONUS_SHIELD_MAX->value) {
+                    $extraShieldMax += $effect['value'];
+                }
+                elseif ($effect['type'] === EffectType::BONUS_LIFE->value) {
+                    $extraLife += $effect['value'];
+                }
+                elseif ($effect['type'] === EffectType::BONUS_LIFE_MAX->value) {
+                    $extraLifeMax += $effect['value'];
+                }
+            }
+        }
+
+        $country->setLife($extraLife);
+        $country->setLifeMax($extraLifeMax);
+        $country->setShield($extraShield);
+        $country->setShieldMax($extraShieldMax);
+
+        $this->userService->removeItemById($user, $item->getId());
+        $this->save($country, true);
+        return $country;
+    }
 
     /**
      * @param Country $country
