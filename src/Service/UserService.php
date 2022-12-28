@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\ItemType;
 use App\Entity\User;
+use App\Entity\UserItem;
 use App\Repository\UserItemRepository;
 use App\Repository\UserRepository;
 
@@ -14,6 +15,11 @@ class UserService
         private readonly UserItemRepository $userItemRepository,
     )
     {
+    }
+
+    public function flush(): void
+    {
+        $this->userRepository->flush();
     }
 
     /**
@@ -27,6 +33,27 @@ class UserService
             'user' => $user->getId(),
             'itemType' => $itemId
         ])?->getItemType();
+    }
+
+    public function addItemInInventory(User $user, ItemType $item, int $quantity = 1, bool $flush = false): User
+    {
+        $link = $this->userItemRepository->findOneBy([
+            'user' => $user->getId(),
+            'itemType' => $item->getId()
+        ]);
+
+        if (is_null($link)) {
+            $link = new UserItem();
+            $link->setItemType($item);
+            $link->setQuantity($quantity);
+            $link->setUser($user);
+        } else {
+            $link->setQuantity($link->getQuantity() + $quantity);
+        }
+
+        $this->userItemRepository->save($link, $flush);
+
+        return $user;
     }
 
     /**

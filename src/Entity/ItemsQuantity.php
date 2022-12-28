@@ -2,10 +2,14 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Serializer\Annotation\Groups;
+
 class ItemsQuantity
 {
+    #[Groups(groups: ['response'])]
     private ItemType $item;
 
+    #[Groups(groups: ['response'])]
     private int $quantity;
 
     /**

@@ -2,13 +2,17 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Serializer\Annotation\Groups;
+
 class ClaimRewards
 {
+    #[Groups(groups: ['response'])]
     private int $coins = 0;
 
     /**
      * @var ItemsQuantity[] $items
      */
+    #[Groups(groups: ['response'])]
     private array $items = [];
 
     /**

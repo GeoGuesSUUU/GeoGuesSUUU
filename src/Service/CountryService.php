@@ -6,6 +6,7 @@ use App\Entity\ClaimRewards;
 use App\Entity\Country;
 use App\Entity\CountryItem;
 use App\Entity\Effect;
+use App\Entity\ItemsQuantity;
 use App\Entity\ItemType;
 use App\Entity\User;
 use App\Exception\CountryNotFoundApiException;
@@ -302,12 +303,13 @@ class CountryService
         return $entity->setPrice((int) $price);
     }
 
-    public function claim(Country $entity): ClaimRewards | null {
+    public function claim(Country $entity, bool $flush = false): ClaimRewards | null {
 
         $lastClaim = $entity->getClaimDate()->getTimestamp();
         $now = time();
+        $days = ($now - $lastClaim) / 3600 / 24;
 
-        if ((($now - $lastClaim) / 3600 % 24) < 24 ) {
+        if ($days < 1) {
             return null;
         }
 
@@ -317,12 +319,14 @@ class CountryService
         $coins = round($country->getPrice() / 100);
 
         // TODO : Rewards item
-//        $rewardItems = [];
+        /** @var ItemsQuantity[] $rewardItems */
+        $rewardItems = [];
 
-        $rewards->setCoins($coins);
+        $rewards->setCoins($coins * $days);
+        $rewards->setItems($rewardItems);
 
         $country->setClaimDate(new \DateTimeImmutable());
-        $this->save($country);
+        $this->save($country, $flush);
         return $rewards;
     }
 

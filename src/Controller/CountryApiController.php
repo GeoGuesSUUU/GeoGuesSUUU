@@ -9,6 +9,7 @@ use App\Exception\CountryNotValidApiException;
 use App\Repository\CountryRepository;
 use App\Repository\UserRepository;
 use App\Service\CountryService;
+use App\Service\UserService;
 use App\Utils\ApiResponse;
 use Exception;
 use JsonException;
@@ -250,7 +251,7 @@ class CountryApiController extends AbstractController
      * Buy country by ID
      * @OA\Response(
      *     response=200,
-     *     description="Return new country",
+     *     description="Return country",
      *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr"})
      * )
      * @OA\Response(
@@ -281,6 +282,105 @@ class CountryApiController extends AbstractController
             200,
             [],
             ['groups' => ['user_anti_cr', 'country_api_response', 'country_item_anti_cr', 'item_anti_cr']]
+        );
+    }
+
+    /**
+     * Claim country by ID
+     * @OA\Response(
+     *     response=200,
+     *     description="Return reward",
+     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr"})
+     * )
+     * @OA\Response(
+     *     response=400,
+     *     description="Bad Request"
+     * )
+     * @param int $id
+     * @param UserRepository $userRepository
+     * @param CountryService $countryService
+     * @param UserService $userService
+     * @return Response
+     */
+    #[Route('/claim/{id}', name: 'app_country_api_claim', methods: ['POST'], format: 'application/json')]
+    public function claimById(
+        int $id,
+        UserRepository $userRepository,
+        CountryService $countryService,
+        UserService $userService,
+    ): Response
+    {
+        $country = $countryService->getById($id);
+        if ($country === null) {
+            throw new CountryNotFoundApiException();
+        }
+
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if (is_null($country->getUser()) || $country->getUser()->getId() !== $user->getId()) {
+            throw new CountryNotValidApiException();
+        }
+
+        $reward = $countryService->claim($country);
+        if (is_null($reward)) {
+            throw new CountryNotValidApiException("You must wait 24 hours before claiming");
+        }
+
+        $user->setCoins($user->getCoins() + $reward->getCoins());
+        foreach ($reward->getItems() as $item) {
+            $userService->addItemInInventory($user, $item->getItem(), $item->getQuantity());
+        }
+
+        $userRepository->save($user, true);
+
+        return $this->json(ApiResponse::get($reward),
+            200,
+            [],
+            ['groups' => ['response', 'item_anti_cr']]
+        );
+    }
+
+    /**
+     * Claim All your countries
+     * @OA\Response(
+     *     response=200,
+     *     description="Return reward",
+     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr"})
+     * )
+     * @OA\Response(
+     *     response=400,
+     *     description="Bad Request"
+     * )
+     * @param UserRepository $userRepository
+     * @param CountryService $countryService
+     * @param UserService $userService
+     * @return Response
+     */
+    #[Route('/claim', name: 'app_country_api_claim_all', methods: ['POST'], format: 'application/json')]
+    public function claimAll(
+        UserRepository $userRepository,
+        CountryService $countryService,
+        UserService $userService,
+    ): Response
+    {
+
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $reward = $countryService->claimAllByUser($user);
+
+        $user->setCoins($user->getCoins() + $reward->getCoins());
+        foreach ($reward->getItems() as $item) {
+            $userService->addItemInInventory($user, $item->getItem(), $item->getQuantity());
+        }
+
+        $userRepository->save($user, true);
+
+        return $this->json(ApiResponse::get($reward),
+            200,
+            [],
+            ['groups' => ['response', 'item_anti_cr']]
         );
     }
 }
