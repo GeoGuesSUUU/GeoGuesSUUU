@@ -72,7 +72,7 @@ class ItemType
     private ?string $img;
 
     /**
-     * @OA\Property(type="array", @OA\Items(type="mixed"))
+     * @OA\Property(type="array", @OA\Items(ref="Effect::class"))
      */
     #[ORM\Column]
     #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item_anti_cr'])]

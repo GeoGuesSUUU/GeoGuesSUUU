@@ -39,6 +39,11 @@ class CountryRepository extends ServiceEntityRepository
         }
     }
 
+    public function flush(): void
+    {
+        $this->getEntityManager()->flush();
+    }
+
 //    /**
 //     * @return Country[] Returns an array of Country objects
 //     */

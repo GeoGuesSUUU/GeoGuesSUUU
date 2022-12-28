@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
+use OpenApi\Annotations as OA;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -69,6 +70,22 @@ class Country
     #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
     private int $initLife = 0;
 
+    #[ORM\Column(type: 'bigint')]
+    #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
+    private int $life = 0;
+
+    #[ORM\Column(type: 'bigint')]
+    #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
+    private int $lifeMax = 0;
+
+    #[ORM\Column(type: 'bigint')]
+    #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
+    private int $shield = 0;
+
+    #[ORM\Column(type: 'bigint')]
+    #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
+    private int $shieldMax = 0;
+
     #[ORM\Column]
     #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
     private int $initPrice = 0;
@@ -77,13 +94,14 @@ class Country
     #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
     private ?DateTimeImmutable $claimDate;
 
+    /**
+     * @OA\Property(type="array", @OA\Items(ref="Effect::class"))
+     */
+    #[ORM\Column]
+    #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
+    private ?array $effects = [];
+
     // ==============================//
-    #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
-    private int $life = 0;
-
-    #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
-    private int $shield = 0;
-
     #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
     private int $price = 0;
     // ==============================//
@@ -327,10 +345,12 @@ class Country
 
     /**
      * @param int $life
+     * @return Country
      */
-    public function setLife(int $life): void
+    public function setLife(int $life): self
     {
         $this->life = $life;
+        return $this;
     }
 
     /**
@@ -343,10 +363,12 @@ class Country
 
     /**
      * @param int $shield
+     * @return Country
      */
-    public function setShield(int $shield): void
+    public function setShield(int $shield): self
     {
         $this->shield = $shield;
+        return $this;
     }
 
     /**
@@ -359,9 +381,71 @@ class Country
 
     /**
      * @param int $price
+     * @return Country
      */
-    public function setPrice(int $price): void
+    public function setPrice(int $price): self
     {
         $this->price = $price;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLifeMax(): int
+    {
+        return $this->lifeMax;
+    }
+
+    /**
+     * @param int $lifeMax
+     * @return Country
+     */
+    public function setLifeMax(int $lifeMax): self
+    {
+        $this->lifeMax = $lifeMax;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getShieldMax(): int
+    {
+        return $this->shieldMax;
+    }
+
+    /**
+     * @param int $shieldMax
+     * @return Country
+     */
+    public function setShieldMax(int $shieldMax): self
+    {
+        $this->shieldMax = $shieldMax;
+        return $this;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getEffects(): ?array
+    {
+        return $this->effects;
+    }
+
+    /**
+     * @param array|null $effects
+     * @return Country
+     */
+    public function setEffects(?array $effects): Country
+    {
+        $this->effects = $effects;
+        return $this;
+    }
+
+    public function addEffect(mixed $effect): Country
+    {
+        $this->effects[] = $effect;
+        return $this;
     }
 }

@@ -2,16 +2,17 @@
 
 namespace App\Service;
 
+use App\Entity\ClaimRewards;
 use App\Entity\Country;
 use App\Entity\CountryItem;
+use App\Entity\Effect;
 use App\Entity\ItemType;
 use App\Entity\User;
-use App\Entity\UserItem;
 use App\Exception\ItemTypeNotFoundApiException;
 use App\Repository\CountryItemRepository;
 use App\Repository\CountryRepository;
-use App\Repository\UserItemRepository;
 use App\Repository\UserRepository;
+use App\Utils\EffectType;
 use App\Utils\ItemTypeType;
 use Exception;
 
@@ -71,6 +72,68 @@ class CountryService
         }
     }
 
+    public function foundEffectByType(Country $country, string $type): array | null
+    {
+        foreach ($country->getEffects() as $effect) {
+            if (isset($effect['type']) && $effect['type'] === $type) {
+                return $effect;
+            }
+        }
+        return null;
+    }
+
+    public function foundEffectKey(Country $country, array $effect): int
+    {
+        foreach ($country->getEffects() as $key => $e) {
+            if (isset($e['type']) && isset($effect['type']) && $e['type'] === $effect['type']) {
+                return $key;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Add or Overwrite Effect value
+     * @param Country $country
+     * @param array $effect
+     * @return Country
+     */
+    public function addEffect(Country $country, array $effect): Country
+    {
+        $e = $this->foundEffectByType($country, $effect['type']);
+
+        if (is_null($e)) {
+            return $country->addEffect($effect);
+        }
+
+        $key = $this->foundEffectKey($country, $effect);
+        $es = $country->getEffects();
+        if ($key !== -1) {
+            $es[$key]['value'] = $effect['value'];
+        }
+        return $country->setEffects($es);
+    }
+
+    public function removeAllEffect(Country $country): Country
+    {
+        return $country->setEffects([]);
+    }
+
+    public function removeItemByType(Country $country, string $type): void
+    {
+        $links = $this->countryItemRepository->findBy([ 'country' => $country->getId() ]);
+
+        $linksByType = array_filter($links, function ($link) use ($type) {
+            return $link->getItemType()->getType() === $type;
+        });
+
+        foreach ($linksByType as $linkType) {
+            $this->countryItemRepository->remove($linkType);
+        }
+
+        $this->countryItemRepository->flush();
+    }
+
     /**
      * @param Country $entity
      * @param User $user
@@ -102,13 +165,18 @@ class CountryService
     {
         $entity->setUser(null);
 
-        $this->countryItemRepository->removeByItemType(ItemTypeType::TYPE_SUPPORT->value);
+        $this->removeItemByType($entity, ItemTypeType::TYPE_SUPPORT->value);
 
         $entity->initOwnedAt();
         $entity->initClaimDate();
-        $this->save($entity);
+        $this->save($entity, true);
         return $entity;
     }
+
+
+    //attack
+    //add shield
+    //heal
 
     /**
      * @param Country $country
@@ -116,18 +184,21 @@ class CountryService
      * @param ItemType $item
      * @return Country
      */
-    public function addEquipment(Country $country, User $user, ItemType $item): Country
+    public function addItemFromInventory(Country $country, User $user, ItemType $item): Country
     {
+        // if item is in user inventory
         $itemInventory = $this->userService->findItemById($user, $item->getId());
         if (is_null($itemInventory)) {
             throw new ItemTypeNotFoundApiException();
         }
 
+        // if link already exist
         $link = $this->countryItemRepository->findOneBy([
             'country' => $country->getId(),
             'itemType' => $item->getId()
         ]);
 
+        // if not exist
         if (is_null($link)) {
             $link = new CountryItem();
             $link->setCountry($country);
@@ -137,22 +208,75 @@ class CountryService
         $link->setQuantity($link->getQuantity() + 1);
 
         $this->countryItemRepository->save($link);
-        $this->userService->removeItemById($user, $item->getId());
+        $this->userService->removeItemById($user, $item->getId(), true);
 
         return $country;
     }
 
-    public function calculateExtraData(Country $entity): Country
+    public function calculatePrice(Country $entity): Country
     {
 
+        $links = $this->countryItemRepository->findBy(['country' => $entity]);
 
-        return $entity;
+        $pricePercentage = 0.0;
+
+        foreach($links as $link) {
+            $item = $link->getItemType();
+            if ($item->getType() === ItemTypeType::TYPE_EQUIPMENT->value) {
+                foreach ($item->getEffects() as $effect) {
+                    if (
+                        isset($effect['type']) &&
+                        isset($effect['value']) &&
+                        $effect['type'] === EffectType::BONUS_PRICE
+                    ) {
+                        $pricePercentage += (float) ($effect['value'] * $link->getQuantity());
+                    }
+                }
+            }
+        }
+
+        return $entity->setPrice($entity->getInitPrice() * ($pricePercentage / 100));
     }
 
-//    public function attack(Country $entity, User $user, ItemType $item): Country
-//    {
-//        $link = new CountryItem();
-//        $link->
-//        $this->countryItemRepository
-//    }
+    public function claim(Country $entity): ClaimRewards | null {
+
+        $lastClaim = $entity->getClaimDate()->getTimestamp();
+        $now = time();
+
+        if ((($now - $lastClaim) / 3600 % 24) < 24 ) {
+            return null;
+        }
+
+        $country = $this->calculatePrice($entity);
+        $rewards = new ClaimRewards();
+
+        $coins = round($country->getPrice() / 100);
+
+        // TODO : Rewards item
+//        $rewardItems = [];
+
+        $rewards->setCoins($coins);
+
+        $country->setClaimDate(new \DateTimeImmutable());
+        $this->save($country);
+        return $rewards;
+    }
+
+    public function claimAllByUser(User $user): ClaimRewards {
+        $rewards = new ClaimRewards();
+
+        $coins = 0;
+        $rewardItems = [];
+
+        foreach ($user->getCountries()->toArray() as $country) {
+            $reward = $this->claim($country);
+            $coins += $reward->getCoins();
+            array_push($rewardItems, ...$reward->getItems());
+        }
+
+        $this->countryRepository->flush();
+
+        return $rewards->setCoins($coins)->setItems($rewardItems);
+    }
+
 }

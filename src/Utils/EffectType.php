@@ -4,9 +4,17 @@ namespace App\Utils;
 
 enum EffectType: string
 {
-    case TYPE_LIFE = 'life';
-    case TYPE_SHIELD = 'shield';
-    case TYPE_PRICE = 'price';
+    // MINUS
+    case MINUS_LIFE = 'life-';
+    case MINUS_SHIELD = 'shield-';
+    case MINUS_PRICE = 'price-';
+    case MINUS_CLAIM = 'claim-';
+
+    // BONUS
+    case BONUS_LIFE = 'life+';
+    case BONUS_SHIELD = 'shield+';
+    case BONUS_PRICE = 'price+';
+    case BONUS_CLAIM = 'claim+';
 
     public static function values() : array {
         return array_map(fn ($i) => $i->value, EffectType::cases());

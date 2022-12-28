@@ -32,9 +32,10 @@ class UserService
     /**
      * @param User $user
      * @param int $itemId
+     * @param bool $flush
      * @return void
      */
-    public function removeItemById(User $user, int $itemId): void
+    public function removeItemById(User $user, int $itemId, bool $flush = false): void
     {
         $link = $this->userItemRepository->findOneBy([
             'user' => $user->getId(),
@@ -42,7 +43,15 @@ class UserService
         ]);
 
         if (!is_null($link)) {
-            $this->userItemRepository->remove($link);
+
+            if ($link->getQuantity() === 1) {
+                $this->userItemRepository->remove($link, $flush);
+            }
+            else {
+                $link->setQuantity($link->getQuantity() - 1);
+                $this->userItemRepository->save($link, $flush);
+            }
+
         }
     }
 }
