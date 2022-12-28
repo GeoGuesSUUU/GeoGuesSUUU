@@ -222,17 +222,17 @@ class ItemType
     }
 
     /**
-     * @return string
+     * @return string | null
      */
-    public function getImg(): string
+    public function getImg(): ?string
     {
         return $this->img;
     }
 
     /**
-     * @param string $img
+     * @param string | null $img
      */
-    public function setImg(string $img): void
+    public function setImg(?string $img): void
     {
         $this->img = $img;
     }

@@ -8,7 +8,11 @@ use App\Entity\CountryItem;
 use App\Entity\Effect;
 use App\Entity\ItemType;
 use App\Entity\User;
+use App\Exception\CountryNotFoundApiException;
+use App\Exception\CountryNotValidApiException;
 use App\Exception\ItemTypeNotFoundApiException;
+use App\Exception\ItemTypeNotValidApiException;
+use App\Exception\UserNotValidApiException;
 use App\Repository\CountryItemRepository;
 use App\Repository\CountryRepository;
 use App\Repository\UserRepository;
@@ -37,6 +41,8 @@ class CountryService
     {
         $entity->initOwnedAt();
         $entity->initClaimDate();
+        $entity->setLife($entity->getInitLife());
+        $entity->setLifeMax($entity->getInitLife());
         $this->countryRepository->save($entity, true);
         return $entity;
     }
@@ -58,20 +64,37 @@ class CountryService
         return $this->countryRepository->findOneBy([ 'id' => $id ]);
     }
 
+    /**
+     * @param Country $entity
+     * @param bool $flush
+     * @return Country
+     */
     public function save(Country $entity, bool $flush = false): Country
     {
         $this->countryRepository->save($entity, $flush);
         return $entity;
     }
 
+    /**
+     * @param int $id
+     * @return void
+     */
     public function deleteById(int $id): void
     {
         $entity = $this->getById($id);
         if (!is_null($entity)) {
             $this->countryRepository->remove($entity);
         }
+        else {
+            throw new CountryNotFoundApiException();
+        }
     }
 
+    /**
+     * @param Country $country
+     * @param string $type
+     * @return array|null
+     */
     public function foundEffectByType(Country $country, string $type): array | null
     {
         foreach ($country->getEffects() as $effect) {
@@ -82,6 +105,11 @@ class CountryService
         return null;
     }
 
+    /**
+     * @param Country $country
+     * @param array $effect
+     * @return int
+     */
     public function foundEffectKey(Country $country, array $effect): int
     {
         foreach ($country->getEffects() as $key => $e) {
@@ -137,13 +165,17 @@ class CountryService
     /**
      * @param Country $entity
      * @param User $user
-     * @return Country | null
+     * @return Country
      * @throws Exception
      */
-    public function buy(Country $entity, User $user): Country | null
+    public function buy(Country $entity, User $user): Country
     {
+        if ($entity->getUser() !== null) {
+            throw new CountryNotValidApiException("This country is already owned by someone");
+        }
+        $entity = $this->calculatePrice($entity);
         if ($user->getCoins() < $entity->getPrice()) {
-            return null;
+            throw new UserNotValidApiException("Invalid User coins");
         }
         $user->setCoins($user->getCoins() - $entity->getPrice());
 
@@ -152,7 +184,8 @@ class CountryService
         $entity->setUser($user);
         $entity->setOwnedAt(new \DateTimeImmutable());
         $entity->setClaimDate(new \DateTimeImmutable());
-        $this->save($entity, true);
+        $this->save($entity);
+        $this->userRepository->save($user, true);
         return $entity;
     }
 
@@ -173,10 +206,32 @@ class CountryService
         return $entity;
     }
 
+    public function attack(Country $country, User $user, ItemType $item): Country
+    {
+        // if item is in user inventory
+        $itemInventory = $this->userService->findItemById($user, $item->getId());
+        if (is_null($itemInventory)) {
+            throw new ItemTypeNotFoundApiException();
+        }
 
-    //attack
-    //add shield
-    //heal
+        if ($itemInventory->getType() !== ItemTypeType::TYPE_ATTACK->value) {
+            throw new ItemTypeNotValidApiException("Only attack type is valid");
+        }
+
+        // TODO: finish function
+//        $attack = $item->getEffects()
+//
+//        $shield = $country->getShield();
+//        if ($shield === 0) {
+//
+//        }
+//
+//        $this->userService->removeItemById($user, $item->getId(), true);
+        return $country;
+    }
+    //TODO: restore shield by percentage
+    //TODO: add shield
+    //TODO: heal
 
     /**
      * @param Country $country
@@ -190,6 +245,16 @@ class CountryService
         $itemInventory = $this->userService->findItemById($user, $item->getId());
         if (is_null($itemInventory)) {
             throw new ItemTypeNotFoundApiException();
+        }
+
+        // if user isn't owner
+        if (is_null($country->getUser()) || $country->getUser()->getId() !== $user->getId()) {
+            throw new CountryNotValidApiException();
+        }
+
+        // if item is not equipment
+        if ($itemInventory->getType() !== ItemTypeType::TYPE_EQUIPMENT->value) {
+            throw new ItemTypeNotValidApiException("Only equipment type is valid");
         }
 
         // if link already exist
@@ -215,19 +280,16 @@ class CountryService
 
     public function calculatePrice(Country $entity): Country
     {
-
-        $links = $this->countryItemRepository->findBy(['country' => $entity]);
-
         $pricePercentage = 0.0;
 
-        foreach($links as $link) {
+        foreach($entity->getCountryItems()->getValues() as $link) {
             $item = $link->getItemType();
             if ($item->getType() === ItemTypeType::TYPE_EQUIPMENT->value) {
                 foreach ($item->getEffects() as $effect) {
                     if (
                         isset($effect['type']) &&
                         isset($effect['value']) &&
-                        $effect['type'] === EffectType::BONUS_PRICE
+                        $effect['type'] === EffectType::BONUS_PRICE->value
                     ) {
                         $pricePercentage += (float) ($effect['value'] * $link->getQuantity());
                     }
@@ -235,7 +297,9 @@ class CountryService
             }
         }
 
-        return $entity->setPrice($entity->getInitPrice() * ($pricePercentage / 100));
+        $price = $entity->getInitPrice() + $entity->getInitPrice() * ($pricePercentage / 100);
+
+        return $entity->setPrice((int) $price);
     }
 
     public function claim(Country $entity): ClaimRewards | null {
