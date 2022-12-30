@@ -419,8 +419,10 @@ class CountryService
 
         foreach ($user->getCountries()->toArray() as $country) {
             $reward = $this->claim($country);
-            $coins += $reward->getCoins();
-            array_push($rewardItems, ...$reward->getItems());
+            if (!is_null($reward)) {
+                $coins += $reward->getCoins();
+                array_push($rewardItems, ...$reward->getItems());
+            }
         }
 
         $this->countryRepository->flush();
