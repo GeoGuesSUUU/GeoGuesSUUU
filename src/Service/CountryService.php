@@ -5,7 +5,6 @@ namespace App\Service;
 use App\Entity\ClaimRewards;
 use App\Entity\Country;
 use App\Entity\CountryItem;
-use App\Entity\Effect;
 use App\Entity\ItemsQuantity;
 use App\Entity\ItemType;
 use App\Entity\User;
@@ -186,6 +185,10 @@ class CountryService
         $entity->setOwnedAt(new \DateTimeImmutable());
         $entity->setClaimDate(new \DateTimeImmutable());
         $entity->setEffects([]);
+        $entity->setLife($entity->getInitLife());
+        $entity->setLifeMax($entity->getInitLife());
+        $entity->setShield(0);
+        $entity->setShieldMax(10000);
         $this->save($entity);
         $this->userRepository->save($user, true);
         return $entity;
