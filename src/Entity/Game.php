@@ -31,9 +31,7 @@ class Game
 
     #[ORM\Column(length: 1024, nullable: true)]
     #[Assert\Length(
-        min: 1,
         max: 1024,
-        minMessage: "The description must be at least {{ limit }} characters long",
         maxMessage: "The description cannot be longer than {{ limit }} characters"
     )]
     #[Groups(groups: ['game_api_response', 'api_new', 'api_edit', 'game_anti_cr'])]
@@ -41,9 +39,7 @@ class Game
 
     #[ORM\Column(length: 1024, nullable: true)]
     #[Assert\Length(
-        min: 1,
         max: 1024,
-        minMessage: "The tags must be at least {{ limit }} characters long",
         maxMessage: "The tags cannot be longer than {{ limit }} characters"
     )]
     #[Groups(groups: ['game_api_response', 'api_new', 'api_edit', 'game_anti_cr'])]
