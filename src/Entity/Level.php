@@ -6,6 +6,7 @@ use App\Repository\LevelRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: LevelRepository::class)]
 class Level
@@ -13,18 +14,23 @@ class Level
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(groups: ['level_api_response', 'level_anti_cr'])]
     private int $id;
 
     #[ORM\Column(length: 255)]
+    #[Groups(groups: ['level_api_response', 'api_new', 'api_edit', 'level_anti_cr'])]
     private string $label;
 
     #[ORM\Column(length: 1024)]
+    #[Groups(groups: ['level_api_response', 'api_new', 'api_edit', 'level_anti_cr'])]
     private string $description;
 
     #[ORM\ManyToOne(inversedBy: 'levels')]
+    #[Groups(groups: ['level_api_response', 'api_new', 'api_edit'])]
     private Game $game;
 
     #[ORM\OneToMany(mappedBy: 'levels', targetEntity: Score::class)]
+    #[Groups(groups: ['level_api_response'])]
     private Collection $scores;
 
     public function __construct()
@@ -38,6 +44,14 @@ class Level
     public function getId(): int
     {
         return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId(int $id): void
+    {
+        $this->id = $id;
     }
 
     /**
@@ -125,11 +139,8 @@ class Level
      */
     public function removeScore(Score $score): self
     {
-        if ($this->scores->removeElement($score)) {
-            // set the owning side to null (unless already changed)
-            if ($score->getLevels() === $this) {
-                $score->setLevels(null);
-            }
+        if ($this->scores->removeElement($score) && $score->getLevels() === $this) {
+            $score->setLevels(null);
         }
 
         return $this;
