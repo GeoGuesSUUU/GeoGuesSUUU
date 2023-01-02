@@ -16,7 +16,7 @@ php .\bin\console doctrine:migration:migrate
 
 #### First Time
 ```shell
-php bin/console doctrine:migrations:generate
+php .\bin\console doctrine:migrations:generate
 ```
 
 #### Next Time
@@ -32,7 +32,7 @@ into :
 ```
 serverVersion=mariadb-<major_version>.<minor_version>.<patch_version>
 ```
-ex: mysqli://<user>:@<ip>:<port>/<database_name>?serverVersion=mariadb-10.10.0&charset=utf8mb4
+ex: mysqli://<user_name>:@<_ip>:<_port>/<database_name>?serverVersion=mariadb-10.10.0&charset=utf8mb4
 
 
 ## Tables

@@ -6,6 +6,8 @@ use App\Repository\GameRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: GameRepository::class)]
 class Game
@@ -13,18 +15,38 @@ class Game
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(groups: ['game_api_response', 'game_anti_cr'])]
     private int $id;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "The name field is required")]
+    #[Assert\Length(
+        min: 1,
+        max: 255,
+        minMessage: "The name must be at least {{ limit }} characters long",
+        maxMessage: "The name cannot be longer than {{ limit }} characters"
+    )]
+    #[Groups(groups: ['game_api_response', 'api_new', 'api_edit', 'game_anti_cr'])]
     private string $name;
 
-    #[ORM\Column(length: 1024)]
+    #[ORM\Column(length: 1024, nullable: true)]
+    #[Assert\Length(
+        max: 1024,
+        maxMessage: "The description cannot be longer than {{ limit }} characters"
+    )]
+    #[Groups(groups: ['game_api_response', 'api_new', 'api_edit', 'game_anti_cr'])]
     private string $description;
 
-    #[ORM\Column(length: 1024)]
+    #[ORM\Column(length: 1024, nullable: true)]
+    #[Assert\Length(
+        max: 1024,
+        maxMessage: "The tags cannot be longer than {{ limit }} characters"
+    )]
+    #[Groups(groups: ['game_api_response', 'api_new', 'api_edit', 'game_anti_cr'])]
     private string $tags;
 
-    #[ORM\OneToMany(mappedBy: 'games', targetEntity: Level::class)]
+    #[Groups(groups: ['game_api_response'])]
+    #[ORM\OneToMany(mappedBy: 'game', targetEntity: Level::class)]
     private Collection $levels;
 
     public function __construct()
@@ -38,6 +60,14 @@ class Game
     public function getId(): int
     {
         return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId(int $id): void
+    {
+        $this->id = $id;
     }
 
     /**
@@ -113,7 +143,7 @@ class Game
     {
         if (!$this->levels->contains($level)) {
             $this->levels->add($level);
-            $level->addGame($this);
+            $level->setGame($this);
         }
 
         return $this;
@@ -126,7 +156,7 @@ class Game
     public function removeLevel(Level $level): self
     {
         if ($this->levels->removeElement($level)) {
-            $level->removeGame($this);
+            $level->setGame(null);
         }
 
         return $this;

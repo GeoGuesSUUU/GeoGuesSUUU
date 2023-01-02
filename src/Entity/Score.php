@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ScoreRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ScoreRepository::class)]
 class Score
@@ -12,21 +13,27 @@ class Score
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(groups: ['score_api_response', 'score_anti_cr'])]
     private int $id;
 
     #[ORM\Column]
+    #[Groups(groups: ['score_api_response', 'api_new', 'api_edit', 'score_anti_cr'])]
     private int $score;
 
     #[ORM\Column]
+    #[Groups(groups: ['score_api_response', 'score_anti_cr'])]
     private \DateTimeImmutable $createdAt;
 
     #[ORM\Column]
+    #[Groups(groups: ['score_api_response', 'api_new', 'api_edit', 'score_anti_cr'])]
     private int $time;
 
     #[ORM\ManyToOne(inversedBy: 'scores')]
-    private Level $levels;
+    #[Groups(groups: ['score_api_response', 'api_new', 'api_edit'])]
+    private Level $level;
 
     #[ORM\ManyToOne(inversedBy: 'scores')]
+    #[Groups(groups: ['score_api_response', 'api_new', 'api_edit'])]
     private User $user;
 
     /**
@@ -35,6 +42,14 @@ class Score
     public function getId(): int
     {
         return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId(int $id): void
+    {
+        $this->id = $id;
     }
 
     /**
@@ -62,6 +77,15 @@ class Score
     public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
+    }
+
+    /**
+     * @return $this
+     */
+    public function initCreatedAt(): self
+    {
+        $this->createdAt = new \DateTimeImmutable();
+        return $this;
     }
 
     /**
@@ -97,20 +121,17 @@ class Score
     /**
      * @return Level
      */
-    public function getLevels(): Level
+    public function getLevel(): Level
     {
-        return $this->levels;
+        return $this->level;
     }
 
     /**
-     * @param Level $levels
-     * @return $this
+     * @param Level $level
      */
-    public function setLevels(Level $levels): self
+    public function setLevel(Level $level): void
     {
-        $this->levels = $levels;
-
-        return $this;
+        $this->level = $level;
     }
 
     /**
