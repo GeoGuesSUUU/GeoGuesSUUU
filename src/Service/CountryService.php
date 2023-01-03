@@ -32,6 +32,11 @@ class CountryService
     {
     }
 
+    public function flush(): void
+    {
+        $this->countryRepository->flush();
+    }
+
     /**
      * @param Country $entity
      * @return Country
@@ -267,7 +272,8 @@ class CountryService
 
     public function restoreShield(Country $country, int $percentage, bool $flush = false): Country
     {
-        $country->setShield($country->getShieldMax() * ($percentage / 100));
+        $shield = $country->getShield() + $country->getShieldMax() * ($percentage / 100);
+        $country->setShield($shield);
 
         $this->save($country, $flush);
         return $country;
