@@ -19,15 +19,15 @@ class Game
     private int $id;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: "The name field is required")]
+    #[Assert\NotBlank(message: "The title field is required")]
     #[Assert\Length(
         min: 1,
         max: 255,
-        minMessage: "The name must be at least {{ limit }} characters long",
-        maxMessage: "The name cannot be longer than {{ limit }} characters"
+        minMessage: "The title must be at least {{ limit }} characters long",
+        maxMessage: "The title cannot be longer than {{ limit }} characters"
     )]
     #[Groups(groups: ['game_api_response', 'api_new', 'api_edit', 'game_anti_cr'])]
-    private string $name;
+    private string $title;
 
     #[ORM\Column(length: 1024, nullable: true)]
     #[Assert\Length(
@@ -37,6 +37,14 @@ class Game
     #[Groups(groups: ['game_api_response', 'api_new', 'api_edit', 'game_anti_cr'])]
     private string $description;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "The img cannot be longer than {{ limit }} characters"
+    )]
+    #[Groups(groups: ['game_api_response', 'api_new', 'api_edit', 'game_anti_cr'])]
+    private string $img;
+
     #[ORM\Column(length: 1024, nullable: true)]
     #[Assert\Length(
         max: 1024,
@@ -44,6 +52,17 @@ class Game
     )]
     #[Groups(groups: ['game_api_response', 'api_new', 'api_edit', 'game_anti_cr'])]
     private string $tags;
+
+    #[ORM\Column(length: 255)]
+    #[Assert\Blank(message: "The server field is required !")]
+    #[Assert\Length(
+        min: 1,
+        max: 1024,
+        minMessage: "The server must be at least {{ limit }} characters long",
+        maxMessage: "The server cannot be longer than {{ limit }} characters"
+    )]
+    #[Groups(groups: ['game_api_response', 'api_new', 'api_edit', 'game_anti_cr'])]
+    private string $server;
 
     #[Groups(groups: ['game_api_response'])]
     #[ORM\OneToMany(mappedBy: 'game', targetEntity: Level::class)]
@@ -73,18 +92,18 @@ class Game
     /**
      * @return string
      */
-    public function getName(): string
+    public function getTitle(): string
     {
-        return $this->name;
+        return $this->title;
     }
 
     /**
-     * @param string $name
+     * @param string $title
      * @return $this
      */
-    public function setName(string $name): self
+    public function setTitle(string $title): self
     {
-        $this->name = $name;
+        $this->title = $title;
 
         return $this;
     }
@@ -111,6 +130,22 @@ class Game
     /**
      * @return string
      */
+    public function getImg(): string
+    {
+        return $this->img;
+    }
+
+    /**
+     * @param string $img
+     */
+    public function setImg(string $img): void
+    {
+        $this->img = $img;
+    }
+
+    /**
+     * @return string
+     */
     public function getTags(): string
     {
         return $this->tags;
@@ -125,6 +160,22 @@ class Game
         $this->tags = $tags;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getServer(): string
+    {
+        return $this->server;
+    }
+
+    /**
+     * @param string $server
+     */
+    public function setServer(string $server): void
+    {
+        $this->server = $server;
     }
 
     /**

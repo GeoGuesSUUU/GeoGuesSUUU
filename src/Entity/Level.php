@@ -18,6 +18,10 @@ class Level
     #[Groups(groups: ['level_api_response', 'level_anti_cr'])]
     private int $id;
 
+    #[ORM\Column]
+    #[Groups(groups: ['level_api_response', 'api_new', 'api_edit', 'level_anti_cr'])]
+    private int $difficulty = 0;
+
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: "The label field is required")]
     #[Assert\Length(
@@ -64,6 +68,22 @@ class Level
     public function setId(int $id): void
     {
         $this->id = $id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDifficulty(): int
+    {
+        return $this->difficulty;
+    }
+
+    /**
+     * @param int $difficulty
+     */
+    public function setDifficulty(int $difficulty): void
+    {
+        $this->difficulty = $difficulty;
     }
 
     /**
