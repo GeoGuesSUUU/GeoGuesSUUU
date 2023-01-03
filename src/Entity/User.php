@@ -53,7 +53,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(groups: ['user_private', 'api_edit', 'user_anti_cr'])]
     private int $coins = 0;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'bigint')]
     #[Groups(groups: ['user_api_response', 'api_edit', 'user_anti_cr'])]
     private int $xp = 0;
 
@@ -332,14 +332,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @param UserItem $userItem
+     * @param ItemType $itemType
      * @return $this
      */
-    public function addUserItem(UserItem $userItem): self
+    public function addUserItem(ItemType $itemType, int $quantity = 1): self
     {
-        if (!$this->userItems->contains($userItem)) {
-            $this->userItems->add($userItem);
-            $userItem->setUser($this);
+        $found = false;
+        foreach ($this->getUserItems()->getValues() as $link) {
+            $item = $link->getItemType();
+            if ($item->getId() === $itemType->getId()) {
+                $link->setQuantity($link->getQuantity() + $quantity);
+                $found = true;
+            }
+        }
+
+        if ($found === false) {
+            $l = new UserItem();
+            $l->setItemType($itemType);
+            $l->setQuantity($quantity);
+            $l->setUser($this);
+            $this->userItems[] = $l;
         }
 
         return $this;

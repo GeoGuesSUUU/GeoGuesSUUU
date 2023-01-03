@@ -2,8 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\Country;
 use App\Entity\CountryItem;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -38,6 +40,35 @@ class CountryItemRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    public function removeBy(array $criteria, bool $flush = false): void
+    {
+        $entities = $this->findBy($criteria);
+
+        foreach ($entities as $ent) {
+            $this->getEntityManager()->remove($ent);
+        }
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function flush(): void
+    {
+        $this->getEntityManager()->flush();
+    }
+
+//    public function removeByItemType(Country $country, string $type, bool $flush = false): void
+//    {
+//        $qb = new QueryBuilder($this->getEntityManager());
+//
+//        $qb->delete()->from('country_item', 'ci')
+//            ->innerJoin('item_type', 'it', 'ci.item_type_id = it.id')
+//            ->where('it.type = ' . $type . 'AND ci.country_id == ' . $country->getId());
+//
+//        $qb->getQuery()->getResult();
+//    }
 
 //    /**
 //     * @return CountryItem[] Returns an array of CountryItem objects

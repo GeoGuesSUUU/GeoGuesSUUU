@@ -6,8 +6,12 @@ use App\Entity\Country;
 use App\Entity\User;
 use App\Exception\CountryNotFoundApiException;
 use App\Exception\CountryNotValidApiException;
+use App\Exception\ItemTypeNotFoundApiException;
 use App\Repository\CountryRepository;
+use App\Repository\ItemTypeRepository;
 use App\Repository\UserRepository;
+use App\Service\CountryService;
+use App\Service\UserService;
 use App\Utils\ApiResponse;
 use Exception;
 use JsonException;
@@ -39,20 +43,23 @@ class CountryApiController extends AbstractController
      *     description="Return all countries",
      *     @OA\JsonContent(
      *        type="array",
-     *        @OA\Items(ref=@Model(type=Country::class, groups={"user_anti_cr", "country_api_response"}))
+     *        @OA\Items(ref=@Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr"}))
      *     )
      * )
      * @param CountryRepository $countryRepository
      * @return Response
      */
     #[Route('/', name: 'app_country_api_all', methods: ['GET'], format: 'application/json')]
-    public function all(CountryRepository $countryRepository): Response
+    public function all(CountryRepository $countryRepository, CountryService $countryService): Response
     {
         $countries = $countryRepository->findAll();
+        foreach ($countries as &$country) {
+            $country = $countryService->calculatePrice($country);
+        }
         return $this->json(ApiResponse::get($countries),
             200,
             [],
-            ['groups' => ['user_anti_cr', 'country_api_response']]
+            ['groups' => ['user_anti_cr', 'country_api_response', 'country_item_anti_cr', 'item_anti_cr']]
         );
     }
 
@@ -61,7 +68,7 @@ class CountryApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return country by Id",
-     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response"})
+     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr"})
      * )
      * @OA\Response(
      *     response=404,
@@ -69,19 +76,21 @@ class CountryApiController extends AbstractController
      * )
      * @param int $id
      * @param CountryRepository $countryRepository
+     * @param CountryService $countryService
      * @return Response
      */
     #[Route('/{id}', name: 'app_country_api_index', methods: ['GET'], format: 'application/json')]
-    public function one(int $id, CountryRepository $countryRepository): Response
+    public function one(int $id, CountryRepository $countryRepository, CountryService $countryService): Response
     {
         $country = $countryRepository->findOneBy(["id" => $id]);
         if ($country === null) {
             throw new CountryNotFoundApiException();
         }
+        $country = $countryService->calculatePrice($country);
         return $this->json(ApiResponse::get($country),
             200,
             [],
-            ['groups' => ['user_anti_cr', 'country_api_response']]
+            ['groups' => ['user_anti_cr', 'country_api_response', 'country_item_anti_cr', 'item_anti_cr']]
         );
     }
 
@@ -91,7 +100,7 @@ class CountryApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return new country",
-     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response"})
+     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr"})
      * )
      * @OA\Response(
      *     response=400,
@@ -110,6 +119,7 @@ class CountryApiController extends AbstractController
         Request $request,
         SerializerInterface $serializer,
         CountryRepository $countryRepository,
+        CountryService $countryService,
         ValidatorInterface $validator
     ): Response
     {
@@ -128,13 +138,13 @@ class CountryApiController extends AbstractController
             throw new CountryNotValidApiException($errors->get(0)->getMessage());
         }
 
-        $body->initOwnedAt();
+        $country = $countryService->create($body);
+        $country = $countryService->calculatePrice($country);
 
-        $countryRepository->save($body, true);
-        return $this->json(ApiResponse::get($body),
+        return $this->json(ApiResponse::get($country),
             200,
             [],
-            ['groups' => ['user_anti_cr', 'country_api_response']]
+            ['groups' => ['user_anti_cr', 'country_api_response', 'country_item_anti_cr', 'item_anti_cr']]
         );
     }
 
@@ -144,7 +154,7 @@ class CountryApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return edited country",
-     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response"})
+     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr"})
      * )
      * @OA\Response(
      *     response=400,
@@ -166,6 +176,7 @@ class CountryApiController extends AbstractController
         int $id,
         SerializerInterface $serializer,
         CountryRepository $countryRepository,
+        CountryService $countryService,
         UserRepository $userRepository,
         ValidatorInterface $validator
     ): Response
@@ -204,16 +215,14 @@ class CountryApiController extends AbstractController
             throw new CountryNotValidApiException($errors->get(0)->getMessage());
         }
 
-        $countryRepository->save($country, true);
-        $countryUpdated = $countryRepository->findOneBy([
-            'id' => $country->getId()
-        ]);
+        $country = $countryService->save($body, true);
+        $country = $countryService->calculatePrice($country);
 
         return $this->json(
-            ApiResponse::get($countryUpdated),
+            ApiResponse::get($country),
             200,
             [],
-            ['groups' => ['user_anti_cr', 'country_api_response']]
+            ['groups' => ['user_anti_cr', 'country_api_response', 'country_item_anti_cr', 'item_anti_cr']]
         );
     }
 
@@ -228,20 +237,251 @@ class CountryApiController extends AbstractController
      *     description="Country not found"
      * )
      * @param int $id
-     * @param CountryRepository $countryRepository
+     * @param CountryService $countryService
      * @return Response
      */
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}', name: 'app_country_api_delete', methods: ['DELETE'], format: 'application/json')]
-    public function delete(int $id, CountryRepository $countryRepository): Response
+    public function delete(int $id, CountryService $countryService): Response
+    {
+        $countryService->deleteById($id);
+
+        return $this->json(ApiResponse::get(null, Response::HTTP_NO_CONTENT));
+    }
+
+    /**
+     * Buy country by ID
+     * @OA\Response(
+     *     response=200,
+     *     description="Return country",
+     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr"})
+     * )
+     * @OA\Response(
+     *     response=400,
+     *     description="Bad Request"
+     * )
+     * @param int $id
+     * @param CountryRepository $countryRepository
+     * @param CountryService $countryService
+     * @return Response
+     * @throws Exception
+     */
+    #[Route('/{id}/buy', name: 'app_country_api_buy', methods: ['POST'], format: 'application/json')]
+    public function buy(int $id, CountryRepository $countryRepository, CountryService $countryService): Response
     {
         $country = $countryRepository->findOneBy(["id" => $id]);
         if ($country === null) {
             throw new CountryNotFoundApiException();
         }
 
-        $countryRepository->remove($country, true);
+        /** @var User $user */
+        $user = $this->getUser();
 
-        return $this->json(ApiResponse::get(null, Response::HTTP_NO_CONTENT));
+        $country = $countryService->buy($country, $user);
+        $country = $countryService->calculatePrice($country);
+
+        return $this->json(ApiResponse::get($country),
+            200,
+            [],
+            ['groups' => ['user_anti_cr', 'country_api_response', 'country_item_anti_cr', 'item_anti_cr']]
+        );
+    }
+
+    /**
+     * Claim country by ID
+     * @OA\Response(
+     *     response=200,
+     *     description="Return reward",
+     *     @Model(type=Country::class, groups={"response", "item_anti_cr"})
+     * )
+     * @OA\Response(
+     *     response=400,
+     *     description="Bad Request"
+     * )
+     * @param int $id
+     * @param UserRepository $userRepository
+     * @param CountryService $countryService
+     * @param UserService $userService
+     * @return Response
+     */
+    #[Route('/{id}/claim', name: 'app_country_api_claim', methods: ['POST'], format: 'application/json')]
+    public function claimById(
+        int $id,
+        UserRepository $userRepository,
+        CountryService $countryService,
+        UserService $userService,
+    ): Response
+    {
+        $country = $countryService->getById($id);
+        if ($country === null) {
+            throw new CountryNotFoundApiException();
+        }
+
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if (is_null($country->getUser()) || $country->getUser()->getId() !== $user->getId()) {
+            throw new CountryNotValidApiException();
+        }
+
+        $reward = $countryService->claim($country);
+        if (is_null($reward)) {
+            throw new CountryNotValidApiException("You must wait 24 hours before claiming");
+        }
+
+        $user->setCoins($user->getCoins() + $reward->getCoins());
+        foreach ($reward->getItems() as $item) {
+            $userService->addItemInInventory($user, $item->getItem(), $item->getQuantity());
+        }
+
+        $userRepository->save($user, true);
+
+        return $this->json(ApiResponse::get($reward),
+            200,
+            [],
+            ['groups' => ['response', 'item_anti_cr']]
+        );
+    }
+
+    /**
+     * Claim All your countries
+     * @OA\Response(
+     *     response=200,
+     *     description="Return reward",
+     *     @Model(type=Country::class, groups={"response", "item_anti_cr"})
+     * )
+     * @OA\Response(
+     *     response=400,
+     *     description="Bad Request"
+     * )
+     * @param UserRepository $userRepository
+     * @param CountryService $countryService
+     * @param UserService $userService
+     * @return Response
+     */
+    #[Route('/claim', name: 'app_country_api_claim_all', methods: ['POST'], format: 'application/json')]
+    public function claimAll(
+        UserRepository $userRepository,
+        CountryService $countryService,
+        UserService $userService,
+    ): Response
+    {
+
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $reward = $countryService->claimAllByUser($user);
+
+        $user->setCoins($user->getCoins() + $reward->getCoins());
+        foreach ($reward->getItems() as $item) {
+            $userService->addItemInInventory($user, $item->getItem(), $item->getQuantity());
+        }
+
+        $userRepository->save($user, true);
+
+        return $this->json(ApiResponse::get($reward),
+            200,
+            [],
+            ['groups' => ['response', 'item_anti_cr']]
+        );
+    }
+
+    /**
+     * Attack Country By ID
+     * @OA\Response(
+     *     response=200,
+     *     description="Return country",
+     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr"})
+     * )
+     * @OA\Response(
+     *     response=400,
+     *     description="Bad Request"
+     * )
+     * @param int $id
+     * @param int $itemId
+     * @param ItemTypeRepository $itemTypeRepository
+     * @param CountryService $countryService
+     * @return Response
+     * @throws Exception
+     */
+    #[Route('/{id}/attack/{itemId}', name: 'app_country_api_attack', methods: ['POST'], format: 'application/json')]
+    public function attack(
+        int $id,
+        int $itemId,
+        ItemTypeRepository $itemTypeRepository,
+        CountryService $countryService,
+    ): Response
+    {
+
+        $item = $itemTypeRepository->findOneBy([ 'id' => $itemId ]);
+        if ($item === null) {
+            throw new ItemTypeNotFoundApiException();
+        }
+
+        $country = $countryService->getById($id);
+        if ($country === null) {
+            throw new CountryNotFoundApiException();
+        }
+
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $country = $countryService->attack($country, $user, $item);
+
+
+        return $this->json(ApiResponse::get($country),
+            200,
+            [],
+            ['groups' => ['user_anti_cr', 'country_api_response', 'country_item_anti_cr', 'item_anti_cr']]
+        );
+    }
+
+    /**
+     * Add Support Item to Country By ID
+     * @OA\Response(
+     *     response=200,
+     *     description="Return country",
+     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr"})
+     * )
+     * @OA\Response(
+     *     response=400,
+     *     description="Bad Request"
+     * )
+     * @param int $id
+     * @param int $itemId
+     * @param ItemTypeRepository $itemTypeRepository
+     * @param CountryService $countryService
+     * @return Response
+     * @throws Exception
+     */
+    #[Route('/{id}/support/{itemId}', name: 'app_country_api_support', methods: ['POST'], format: 'application/json')]
+    public function support(
+        int $id,
+        int $itemId,
+        ItemTypeRepository $itemTypeRepository,
+        CountryService $countryService,
+    ): Response
+    {
+
+        $item = $itemTypeRepository->findOneBy([ 'id' => $itemId ]);
+        if ($item === null) {
+            throw new ItemTypeNotFoundApiException();
+        }
+
+        $country = $countryService->getById($id);
+        if ($country === null) {
+            throw new CountryNotFoundApiException();
+        }
+
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $country = $countryService->useSupportItem($country, $user, $item);
+
+        return $this->json(ApiResponse::get($country),
+            200,
+            [],
+            ['groups' => ['user_anti_cr', 'country_api_response', 'country_item_anti_cr', 'item_anti_cr']]
+        );
     }
 }

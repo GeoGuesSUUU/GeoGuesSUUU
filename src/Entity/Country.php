@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
+use OpenApi\Annotations as OA;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -65,9 +66,45 @@ class Country
     #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
     private string $continent;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'bigint')]
     #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
     private int $initLife = 0;
+
+    #[ORM\Column(type: 'bigint')]
+    #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
+    private int $life = 0;
+
+    #[ORM\Column(type: 'bigint')]
+    #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
+    private int $lifeMax = 0;
+
+    #[ORM\Column(type: 'bigint')]
+    #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
+    private int $shield = 0;
+
+    #[ORM\Column(type: 'bigint')]
+    #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
+    private int $shieldMax = 0;
+
+    #[ORM\Column]
+    #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
+    private int $initPrice = 0;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
+    private ?DateTimeImmutable $claimDate;
+
+    /**
+     * @OA\Property(type="array", @OA\Items(ref="Effect::class"))
+     */
+    #[ORM\Column]
+    #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
+    private ?array $effects = [];
+
+    // ==============================//
+    #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
+    private int $price = 0;
+    // ==============================//
 
     #[ORM\OneToMany(mappedBy: 'country', targetEntity: CountryItem::class)]
     #[Groups(groups: ['country_api_response'])]
@@ -252,7 +289,171 @@ class Country
      */
     public function initOwnedAt(): self
     {
-        $this->ownedAt = new DateTimeImmutable("1970-01-01");
+        $this->ownedAt = new DateTimeImmutable("3000-01-01");
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getInitPrice(): int
+    {
+        return $this->initPrice;
+    }
+
+    /**
+     * @param int $initPrice
+     */
+    public function setInitPrice(int $initPrice): void
+    {
+        $this->initPrice = $initPrice;
+    }
+
+    /**
+     * @return DateTimeImmutable|null
+     */
+    public function getClaimDate(): ?DateTimeImmutable
+    {
+        return $this->claimDate;
+    }
+
+    /**
+     * @param DateTimeImmutable|null $claimDate
+     */
+    public function setClaimDate(?DateTimeImmutable $claimDate): void
+    {
+        $this->claimDate = $claimDate;
+    }
+
+    /**
+     * @return Country
+     * @throws Exception
+     */
+    public function initClaimDate(): self
+    {
+        $this->claimDate = new DateTimeImmutable("3000-01-01");
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLife(): int
+    {
+        return $this->life;
+    }
+
+    /**
+     * @param int $life
+     * @return Country
+     */
+    public function setLife(int $life): self
+    {
+        if ($life > $this->lifeMax) {
+            $this->life = $this->lifeMax;
+        } else {
+            $this->life = $life;
+        }
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getShield(): int
+    {
+        return $this->shield;
+    }
+
+    /**
+     * @param int $shield
+     * @return Country
+     */
+    public function setShield(int $shield): self
+    {
+        if ($shield > $this->shieldMax) {
+            $this->shield = $this->shieldMax;
+        } else {
+            $this->shield = $shield;
+        }
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPrice(): int
+    {
+        return $this->price;
+    }
+
+    /**
+     * @param int $price
+     * @return Country
+     */
+    public function setPrice(int $price): self
+    {
+        $this->price = $price;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLifeMax(): int
+    {
+        return $this->lifeMax;
+    }
+
+    /**
+     * @param int $lifeMax
+     * @return Country
+     */
+    public function setLifeMax(int $lifeMax): self
+    {
+        $this->lifeMax = $lifeMax;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getShieldMax(): int
+    {
+        return $this->shieldMax;
+    }
+
+    /**
+     * @param int $shieldMax
+     * @return Country
+     */
+    public function setShieldMax(int $shieldMax): self
+    {
+        $this->shieldMax = $shieldMax;
+        return $this;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getEffects(): ?array
+    {
+        return $this->effects;
+    }
+
+    /**
+     * @param array|null $effects
+     * @return Country
+     */
+    public function setEffects(?array $effects): Country
+    {
+        $this->effects = $effects;
+        return $this;
+    }
+
+    public function addEffect(mixed $effect): Country
+    {
+        $this->effects[] = $effect;
         return $this;
     }
 }
