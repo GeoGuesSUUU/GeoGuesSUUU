@@ -6,6 +6,8 @@ use App\Repository\ItemTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ItemTypeRepository::class)]
 class ItemType
@@ -13,27 +15,57 @@ class ItemType
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(groups: ['item_api_response', 'item_anti_cr'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    #[Assert\Length(
+        min: 1,
+        max: 255,
+        minMessage: "The name must be at least {{ limit }} characters long",
+        maxMessage: "The name cannot be longer than {{ limit }} characters"
+    )]
+    #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item_anti_cr'])]
+    private string $name;
 
     #[ORM\Column(length: 1024, nullable: true)]
+    #[Assert\Length(
+        max: 1024,
+        maxMessage: "The description cannot be longer than {{ limit }} characters"
+    )]
+    #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item_anti_cr'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $type = null;
+    #[Assert\Length(
+        min: 1,
+        max: 255,
+        minMessage: "The type must be at least {{ limit }} characters long",
+        maxMessage: "The type cannot be longer than {{ limit }} characters"
+    )]
+    #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item_anti_cr'])]
+    private string $type = "other";
 
     #[ORM\Column(length: 255)]
-    private ?string $rarity = null;
+    #[Assert\Length(
+        min: 1,
+        max: 255,
+        minMessage: "The rarity must be at least {{ limit }} characters long",
+        maxMessage: "The rarity cannot be longer than {{ limit }} characters"
+    )]
+    #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item_anti_cr'])]
+    private string $rarity = "common";
 
     #[ORM\Column]
+    #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item_anti_cr'])]
     private bool $fantastic = false;
 
     #[ORM\OneToMany(mappedBy: 'itemType', targetEntity: UserItem::class)]
+    #[Groups(groups: ['item_api_response'])]
     private Collection $userItems;
 
     #[ORM\OneToMany(mappedBy: 'itemType', targetEntity: CountryItem::class)]
+    #[Groups(groups: ['item_api_response'])]
     private Collection $countryItems;
 
     public function __construct()
@@ -45,6 +77,14 @@ class ItemType
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /**
+     * @param int|null $id
+     */
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
     }
 
     public function getName(): ?string
@@ -127,11 +167,8 @@ class ItemType
 
     public function removeUserItem(UserItem $userItem): self
     {
-        if ($this->userItems->removeElement($userItem)) {
-            // set the owning side to null (unless already changed)
-            if ($userItem->getItemType() === $this) {
-                $userItem->setItemType(null);
-            }
+        if ($this->userItems->removeElement($userItem) && $userItem->getItemType() === $this) {
+            $userItem->setItemType(null);
         }
 
         return $this;
@@ -157,11 +194,8 @@ class ItemType
 
     public function removeCountryItem(CountryItem $countryItem): self
     {
-        if ($this->countryItems->removeElement($countryItem)) {
-            // set the owning side to null (unless already changed)
-            if ($countryItem->getItemType() === $this) {
-                $countryItem->setItemType(null);
-            }
+        if ($this->countryItems->removeElement($countryItem) && $countryItem->getItemType() === $this) {
+            $countryItem->setItemType(null);
         }
 
         return $this;

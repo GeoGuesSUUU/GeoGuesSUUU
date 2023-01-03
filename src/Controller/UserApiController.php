@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Exception\UserForbiddenAccessApiException;
 use App\Exception\UserNotFoundApiException;
 use App\Exception\UserNotValidApiException;
 use App\Repository\UserRepository;
@@ -54,6 +55,9 @@ class UserApiController extends AbstractController
     public function all(UserRepository $userRepository): Response
     {
         $users = $userRepository->findAll();
+        foreach ($users as $user) {
+            $user->setLevelData();
+        }
         return $this->json(ApiResponse::get($users),
             200,
             [],
@@ -83,10 +87,48 @@ class UserApiController extends AbstractController
         if ($user === null) {
             throw new UserNotFoundApiException();
         }
+        $user->setLevelData();
         return $this->json(ApiResponse::get($user),
             200,
             [],
             ['groups' => ['country_anti_cr', 'score_anti_cr', 'user_api_response', 'user_details']]
+        );
+    }
+
+    /**
+     * Get user personal data by ID
+     * @OA\Response(
+     *     response=200,
+     *     description="Return user by Id",
+     *     @Model(type=User::class, groups={"country_anti_cr", "score_anti_cr", "user_api_response", "inventory_anti_cr", "item_anti_cr", "user_private", "user_details"})
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="User not found"
+     * )
+     * @param int $id
+     * @param UserRepository $userRepository
+     * @return Response
+     */
+    #[Route('/{id}/private', name: 'app_user_private_api_index', methods: ['GET'], format: 'application/json')]
+    public function personalData(int $id, UserRepository $userRepository): Response
+    {
+        $user = $userRepository->findOneBy(["id" => $id]);
+        if ($user === null) {
+            throw new UserNotFoundApiException();
+        }
+
+        // Security
+        /** @var User $tokenUser */
+        $tokenUser = $this->getUser();
+        if ($tokenUser->getId() !== $user->getId() && !in_array("ROLE_ADMIN", $tokenUser->getRoles())) {
+            throw new UserForbiddenAccessApiException();
+        }
+        $user->setLevelData();
+        return $this->json(ApiResponse::get($user),
+            200,
+            [],
+            ['groups' => ['country_anti_cr', 'score_anti_cr', 'user_api_response', 'inventory_anti_cr', 'item_anti_cr', 'user_private', 'user_details']]
         );
     }
 
@@ -96,7 +138,7 @@ class UserApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return new user + token",
-     *     @Model(type=User::class, groups={"country_anti_cr", "score_anti_cr", "user_api_response", "user_details"})
+     *     @Model(type=User::class, groups={"country_anti_cr", "score_anti_cr", "user_api_response", "inventory_anti_cr", "item_anti_cr", "user_private", "user_details"})
      * )
      * @OA\Response(
      *     response=400,
@@ -139,14 +181,14 @@ class UserApiController extends AbstractController
         if (!$isValid) throw new UserNotValidApiException();
 
         $token = $this->jwtManager->create($user);
-
+        $user->setLevelData();
         return $this->json(ApiResponse::get([
             'user' => $user,
             'token' => $token
         ]),
             200,
             [],
-            ['groups' => ['country_anti_cr', 'score_anti_cr', 'user_api_response', 'user_details']]
+            ['groups' => ['country_anti_cr', 'score_anti_cr', 'user_api_response', 'inventory_anti_cr', 'item_anti_cr', 'user_private', 'user_details']]
         );
     }
 
@@ -156,7 +198,7 @@ class UserApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return new user + token",
-     *     @Model(type=User::class, groups={"country_anti_cr", "score_anti_cr", "user_api_response", "user_details"})
+     *     @Model(type=User::class, groups={"country_anti_cr", "score_anti_cr", "user_api_response", "inventory_anti_cr", "item_anti_cr", "user_private", "user_details"})
      * )
      * @OA\Response(
      *     response=400,
@@ -203,14 +245,14 @@ class UserApiController extends AbstractController
         if (!is_null($userSaved)) {
             $token = $this->jwtManager->create($userSaved);
         }
-
+        $userSaved->setLevelData();
         return $this->json(ApiResponse::get([
             'user' => $userSaved,
             'token' => $token
         ]),
             200,
             [],
-            ['groups' => ['country_anti_cr', 'score_anti_cr', 'user_api_response', 'user_details']]
+            ['groups' => ['country_anti_cr', 'score_anti_cr', 'user_api_response', 'inventory_anti_cr', 'item_anti_cr', 'user_private', 'user_details']]
         );
     }
 
@@ -220,7 +262,7 @@ class UserApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return edited user",
-     *     @Model(type=User::class, groups={"country_anti_cr", "score_anti_cr", "user_api_response", "user_details"})
+     *     @Model(type=User::class, groups={"country_anti_cr", "score_anti_cr", "user_api_response", "inventory_anti_cr", "item_anti_cr", "user_private", "user_details"})
      * )
      * @OA\Response(
      *     response=400,
@@ -247,6 +289,13 @@ class UserApiController extends AbstractController
         $user = $userRepository->findOneBy(["id" => $id]);
         if ($user === null) {
             throw new UserNotFoundApiException();
+        }
+
+        // Security
+        /** @var User $tokenUser */
+        $tokenUser = $this->getUser();
+        if ($tokenUser->getId() !== $user->getId() && !in_array("ROLE_ADMIN", $tokenUser->getRoles())) {
+            throw new UserForbiddenAccessApiException();
         }
 
         /** @var User $body */
@@ -277,11 +326,11 @@ class UserApiController extends AbstractController
             'id' => $user->getId()
         ]);
         $userUpdated?->unsetPassword();
-
+        $userUpdated?->setLevelData();
         return $this->json(ApiResponse::get($userUpdated),
             200,
             [],
-            ['groups' => ['country_anti_cr', 'score_anti_cr', 'user_api_response', 'user_details']]
+            ['groups' => ['country_anti_cr', 'score_anti_cr', 'user_api_response', 'inventory_anti_cr', 'item_anti_cr', 'user_private', 'user_details']]
         );
     }
 
@@ -305,6 +354,13 @@ class UserApiController extends AbstractController
         $user = $userRepository->findOneBy(["id" => $id]);
         if ($user === null) {
             throw new UserNotFoundApiException();
+        }
+
+        // Security
+        /** @var User $tokenUser */
+        $tokenUser = $this->getUser();
+        if ($tokenUser->getId() !== $user->getId() && !in_array("ROLE_ADMIN", $tokenUser->getRoles())) {
+            throw new UserForbiddenAccessApiException();
         }
 
         $userRepository->remove($user, true);

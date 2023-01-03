@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use App\Utils\LevelManager;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -49,12 +50,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private string $email;
 
     #[ORM\Column]
-    #[Groups(groups: ['user_api_response', 'api_edit', 'user_anti_cr'])]
+    #[Groups(groups: ['user_private', 'api_edit', 'user_anti_cr'])]
     private int $coins = 0;
 
     #[ORM\Column]
     #[Groups(groups: ['user_api_response', 'api_edit', 'user_anti_cr'])]
     private int $xp = 0;
+
+    // ==============================//
+    #[Groups(groups: ['user_api_response', 'user_anti_cr'])]
+    private int $level = 0;
+
+    #[Groups(groups: ['user_api_response', 'user_anti_cr'])]
+    private int $levelXpMax = 0;
+
+    #[Groups(groups: ['user_api_response', 'user_anti_cr'])]
+    private int $levelXpMin = 0;
+    // ==============================//
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: "The locale field is required")]
@@ -79,7 +91,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $scores;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserItem::class)]
-    #[Groups(groups: ['user_details'])]
+    #[Groups(groups: ['user_private'])]
     private Collection $userItems;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Country::class)]
@@ -413,5 +425,67 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLocale(string $locale): void
     {
         $this->locale = $locale;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLevel(): int
+    {
+        return $this->level;
+    }
+
+    /**
+     * @param int $level
+     */
+    public function setLevel(int $level): void
+    {
+        $this->level = $level;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLevelXpMax(): int
+    {
+        return $this->levelXpMax;
+    }
+
+    /**
+     * @param int $levelXpMax
+     */
+    public function setLevelXpMax(int $levelXpMax): void
+    {
+        $this->levelXpMax = $levelXpMax;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLevelXpMin(): int
+    {
+        return $this->levelXpMin;
+    }
+
+    /**
+     * @param int $levelXpMin
+     */
+    public function setLevelXpMin(int $levelXpMin): void
+    {
+        $this->levelXpMin = $levelXpMin;
+    }
+
+    public function setLevelData(): self
+    {
+        $xp = $this->getXp();
+        $level = LevelManager::getLevelByXp($xp);
+        $levelXpMax = LevelManager::getXpLevel($level + 1);
+        $levelXpMin = LevelManager::getXpLevel($level);
+
+        $this->setLevel($level);
+        $this->setLevelXpMax($levelXpMax);
+        $this->setLevelXpMin($levelXpMin);
+
+        return $this;
     }
 }
