@@ -45,6 +45,12 @@ class CountryService
      */
     public function create(Country $entity, bool $flush = false): Country
     {
+
+        $flag = $entity->getFlag();
+        if (is_null($flag)) {
+            $entity->setFlag("https://countryflagsapi.com/svg/" . strtolower($entity->getCode()));
+        }
+
         $entity->initOwnedAt();
         $entity->initClaimDate();
         $entity->setLife($entity->getInitLife());
