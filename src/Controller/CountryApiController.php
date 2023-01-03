@@ -39,7 +39,7 @@ class CountryApiController extends AbstractController
      *     description="Return all countries",
      *     @OA\JsonContent(
      *        type="array",
-     *        @OA\Items(ref=@Model(type=Country::class, groups={"api_response"}))
+     *        @OA\Items(ref=@Model(type=Country::class, groups={"user_anti_cr", "country_api_response"}))
      *     )
      * )
      * @param CountryRepository $countryRepository
@@ -61,7 +61,7 @@ class CountryApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return country by Id",
-     *     @Model(type=Country::class, groups={"api_response"})
+     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response"})
      * )
      * @OA\Response(
      *     response=404,
@@ -91,7 +91,7 @@ class CountryApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return new country",
-     *     @Model(type=Country::class, groups={"api_response"})
+     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response"})
      * )
      * @OA\Response(
      *     response=400,
@@ -144,7 +144,7 @@ class CountryApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return edited country",
-     *     @Model(type=Country::class, groups={"api_response"})
+     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response"})
      * )
      * @OA\Response(
      *     response=400,
