@@ -53,7 +53,7 @@ class CountryService
 
         $entity->initOwnedAt();
         $entity->initClaimDate();
-        $entity->setLife($entity->getInitLife());
+        $entity->initLife($entity->getInitLife());
         $entity->setLifeMax($entity->getInitLife());
         $this->countryRepository->save($entity, $flush);
         return $entity;

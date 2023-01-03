@@ -11,3 +11,13 @@ Or...
 php bin/console app:shield:restore
 ```
 
+## Initialize Countries
+
+execute the following command:
+```shell
+symfony console app:country:init [(number)?]
+```
+Or...
+```shell
+php bin/console app:country:init [(number)?]
+```
