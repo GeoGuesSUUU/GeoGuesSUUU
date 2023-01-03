@@ -47,7 +47,6 @@ class Country
     private string $code;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: "The flag field is required")]
     #[Assert\Length(
         min: 1,
         max: 255,
@@ -174,11 +173,11 @@ class Country
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getFlag(): string
+    public function getFlag(): ?string
     {
-        return $this->flag;
+        return $this->flag ?? null;
     }
 
     /**
