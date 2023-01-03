@@ -32,7 +32,7 @@ class Country
     #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
     private string $name;
 
-    #[ORM\Column(length: 2)]
+    #[ORM\Column(length: 2, unique: true)]
     #[Assert\NotBlank(message: "The name field is required")]
     #[Assert\Regex(pattern: "/^[A-Z]{2}$/", message: "The code field is only ISO 3166-1 alpha-2", match: true)]
     #[Assert\Length(
