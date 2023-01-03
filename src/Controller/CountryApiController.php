@@ -138,7 +138,7 @@ class CountryApiController extends AbstractController
             throw new CountryNotValidApiException($errors->get(0)->getMessage());
         }
 
-        $country = $countryService->create($body);
+        $country = $countryService->create($body, true);
         $country = $countryService->calculatePrice($country);
 
         return $this->json(ApiResponse::get($country),
