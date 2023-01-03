@@ -220,6 +220,10 @@ class CountryService
      */
     public function attack(Country $country, User $user, ItemType $item): Country
     {
+        if (is_null($country->getUser())) {
+            throw new CountryNotValidApiException("This country not has owner");
+        }
+
         // if item is in user inventory
         $itemInventory = $this->userService->findItemById($user, $item->getId());
         if (is_null($itemInventory)) {
