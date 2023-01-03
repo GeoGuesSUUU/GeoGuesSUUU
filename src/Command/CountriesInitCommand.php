@@ -46,11 +46,15 @@ class CountriesInitCommand extends Command
             return Command::FAILURE;
         }
 
-        $err = 0;
+        $success = 0;
+        $isoArray = [];
 
         for ($i = 0; $i < $number; $i++) {
             $rand = random_int(0, $limit - 1);
             $iso = CountriesISO::countriesCases()[$rand];
+
+            if (in_array($iso->name, $isoArray)) continue;
+            $isoArray[] = $iso->name;
 
             $country = new Country();
             $country->setName($iso->value);
@@ -69,15 +73,16 @@ class CountriesInitCommand extends Command
                     $country->getCode(),
                     $country->getName()
                 ));
-                $err++;
+                continue;
             }
 
             $this->countryService->create($country);
+            $success++;
         }
 
         $this->countryService->flush();
 
-        $io->success(sprintf('"%d" countries have been initialize.', $number - $err));
+        $io->success(sprintf('"%d" countries have been initialize.', $success));
 
         return Command::SUCCESS;
     }
