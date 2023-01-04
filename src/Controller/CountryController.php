@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/country')]
+#[Route('/admin/country')]
 class CountryController extends AbstractController
 {
     #[Route('/', name: 'app_country_index', methods: ['GET'])]
