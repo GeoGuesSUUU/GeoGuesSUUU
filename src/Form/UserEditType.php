@@ -2,6 +2,8 @@
 
 namespace App\Form;
 
+use Symfony\Component\Form\CallbackTransformer;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -19,10 +21,27 @@ class UserEditType extends UserType
             ->add('password', PasswordType::class, [ 'required' => false ])
             ->add('coins', NumberType::class)
             ->add('xp', NumberType::class)
-            ->add('roles', CollectionType::class, [
-                'entry_type' => TextType::class
+            ->add('roles', ChoiceType::class, [
+                'required' => true,
+                'multiple' => false,
+                'expanded' => false,
+                'choices' => [
+                    'User' => 'ROLE_USER',
+                    'Admin' => 'ROLE_ADMIN',
+                ],
             ])
-            ->add('isVerified')
-        ;
+            ->add('isVerified');
+
+        $builder->get('roles')
+            ->addModelTransformer(new CallbackTransformer(
+                function ($rolesArray) {
+                    // transform the array to a string
+                    return count($rolesArray) ? $rolesArray[0] : null;
+                },
+                function ($rolesString) {
+                    // transform the string back to an array
+                    return [$rolesString];
+                }
+            ));
     }
 }
