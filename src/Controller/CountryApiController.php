@@ -47,6 +47,7 @@ class CountryApiController extends AbstractController
      *     )
      * )
      * @param CountryRepository $countryRepository
+     * @param CountryService $countryService
      * @return Response
      */
     #[Route('/', name: 'app_country_api_all', methods: ['GET'], format: 'application/json')]
@@ -109,6 +110,7 @@ class CountryApiController extends AbstractController
      * @param Request $request
      * @param SerializerInterface $serializer
      * @param CountryRepository $countryRepository
+     * @param CountryService $countryService
      * @param ValidatorInterface $validator
      * @return Response
      * @throws Exception
@@ -164,6 +166,7 @@ class CountryApiController extends AbstractController
      * @param int $id
      * @param SerializerInterface $serializer
      * @param CountryRepository $countryRepository
+     * @param CountryService $countryService
      * @param UserRepository $userRepository
      * @param ValidatorInterface $validator
      * @return Response

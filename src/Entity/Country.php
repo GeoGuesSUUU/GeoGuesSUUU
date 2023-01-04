@@ -9,10 +9,12 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
 use OpenApi\Annotations as OA;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CountryRepository::class)]
+#[UniqueEntity(fields: ['code'], message: 'There is already a country with this ISO 3166-1 alpha-2 Code')]
 class Country
 {
     #[ORM\Id]
@@ -32,7 +34,7 @@ class Country
     #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
     private string $name;
 
-    #[ORM\Column(length: 2)]
+    #[ORM\Column(length: 2, unique: true)]
     #[Assert\NotBlank(message: "The name field is required")]
     #[Assert\Regex(pattern: "/^[A-Z]{2}$/", message: "The code field is only ISO 3166-1 alpha-2", match: true)]
     #[Assert\Length(
@@ -45,7 +47,6 @@ class Country
     private string $code;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: "The flag field is required")]
     #[Assert\Length(
         min: 1,
         max: 255,
@@ -172,11 +173,11 @@ class Country
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getFlag(): string
+    public function getFlag(): ?string
     {
-        return $this->flag;
+        return $this->flag ?? null;
     }
 
     /**
