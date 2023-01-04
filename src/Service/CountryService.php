@@ -39,10 +39,11 @@ class CountryService
 
     /**
      * @param Country $entity
+     * @param bool $flush
      * @return Country
      * @throws Exception
      */
-    public function create(Country $entity): Country
+    public function create(Country $entity, bool $flush = false): Country
     {
 
         $flag = $entity->getFlag();
@@ -52,9 +53,9 @@ class CountryService
 
         $entity->initOwnedAt();
         $entity->initClaimDate();
-        $entity->setLife($entity->getInitLife());
+        $entity->initLife($entity->getInitLife());
         $entity->setLifeMax($entity->getInitLife());
-        $this->countryRepository->save($entity, true);
+        $this->countryRepository->save($entity, $flush);
         return $entity;
     }
 

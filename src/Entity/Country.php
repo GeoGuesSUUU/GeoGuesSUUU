@@ -348,6 +348,16 @@ class Country
      * @param int $life
      * @return Country
      */
+    public function initLife(int $life): self
+    {
+        $this->life = $life;
+        return $this;
+    }
+
+    /**
+     * @param int $life
+     * @return Country
+     */
     public function setLife(int $life): self
     {
         if ($life > $this->lifeMax) {
