@@ -3,37 +3,39 @@
 {% block title %}Level index{% endblock %}
 
 {% block body %}
-    <h1>Level index</h1>
+    <div class="d-flex flex-column align-items-center w-75 mx-auto">
+        <h1>List of Levels</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Difficulty</th>
-                <th>Label</th>
-                <th>Description</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for level in levels %}
-            <tr>
-                <td>{{ level.id }}</td>
-                <td>{{ level.difficulty }}</td>
-                <td>{{ level.label }}</td>
-                <td>{{ level.description }}</td>
-                <td>
-                    <a href="{{ path('app_level_show', {'id': level.id}) }}">show</a>
-                    <a href="{{ path('app_level_edit', {'id': level.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="5">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+        <table class="table table-striped border">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Difficulty</th>
+                    <th>Label</th>
+                    <th>Description</th>
+                    <th>actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for level in levels %}
+                <tr>
+                    <td>{{ level.id }}</td>
+                    <td>{{ level.difficulty }}</td>
+                    <td>{{ level.label }}</td>
+                    <td>{{ level.description }}</td>
+                    <td>
+                        <a class="btn btn-primary me-2" href="{{ path('app_level_show', {'id': level.id}) }}">show</a>
+                        <a class="btn btn-success" href="{{ path('app_level_edit', {'id': level.id}) }}">edit</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">no records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
 
-    <a href="{{ path('app_level_new') }}">Create new</a>
+        <a class="btn btn-primary" href="{{ path('app_level_new') }}">Create new</a>
+    </div>
 {% endblock %}

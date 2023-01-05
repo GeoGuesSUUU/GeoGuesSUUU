@@ -3,28 +3,31 @@
 {% block title %}Region{% endblock %}
 
 {% block body %}
-    <h1>Region</h1>
+    <div class="d-flex flex-column align-items-center w-75 mx-auto">
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ region.id }}</td>
-            </tr>
-            <tr>
-                <th>Name</th>
-                <td>{{ region.name }}</td>
-            </tr>
-            <tr>
-                <th>Flag</th>
-                <td>{{ region.flag }}</td>
-            </tr>
-        </tbody>
-    </table>
+        <h1>Region</h1>
 
-    <a href="{{ path('app_region_index') }}">back to list</a>
+        <table class="table table-striped border">
+            <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ region.id }}</td>
+                </tr>
+                <tr>
+                    <th>Name</th>
+                    <td>{{ region.name }}</td>
+                </tr>
+                <tr>
+                    <th>Flag</th>
+                    <td>{{ region.flag }}</td>
+                </tr>
+            </tbody>
+        </table>
 
-    <a href="{{ path('app_region_edit', {'id': region.id}) }}">edit</a>
-
-    {{ include('region/_delete_form.html.twig') }}
+        <div class="d-flex">
+            <a class="btn btn-primary" href="{{ path('app_region_index') }}">Back to list of regions</a>
+            <a class="btn btn-success mx-1" href="{{ path('app_region_edit', {'id': region.id}) }}">Edit</a>
+            {{ include('region/_delete_form.html.twig') }}
+        </div>
+    </div>
 {% endblock %}

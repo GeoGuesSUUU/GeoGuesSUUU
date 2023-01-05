@@ -3,11 +3,14 @@
 {% block title %}Edit Level{% endblock %}
 
 {% block body %}
-    <h1>Edit Level</h1>
+    <div class="d-flex flex-column align-items-center w-75 mx-auto">
 
-    {{ include('level/_form.html.twig', {'button_label': 'Update'}) }}
+        <h1>Edit Level</h1>
 
-    <a href="{{ path('app_level_index') }}">back to list</a>
+        {{ include('level/_form.html.twig', {'button_label': 'Update'}) }}
+        {{ include('level/_delete_form.html.twig') }}
 
-    {{ include('level/_delete_form.html.twig') }}
+        <a class="btn btn-primary mt-3" href="{{ path('app_level_index') }}">Back to list of levels</a>
+
+    </div>
 {% endblock %}

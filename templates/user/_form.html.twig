@@ -1,4 +1,70 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }}
+<div class="form-container">
+    {{ form_start(form, {
+        'attr': {
+            'class': 'd-flex flex-column align-items-center'
+        }
+    }) }}
+    <div class="form-floating mb-3 w-100">
+        {{ form_widget(form.email, {
+            'attr': {
+                'class': 'form-control',
+                'placeholder': 'name@example.com'
+            }
+        }) }}
+        {{ form_label(form.email) }}
+    </div>
+
+    <div class="form-floating mb-3 w-100">
+        {{ form_widget(form.name, {
+            'attr': {
+                'class': 'form-control',
+                'placeholder': 'name'
+            }
+        }) }}
+        {{ form_label(form.name) }}
+    </div>
+
+    <div class="form-floating mb-3 w-100">
+        {{ form_widget(form.password, {
+            'attr': {
+                'class': 'form-control',
+                'placeholder': 'password'
+            }
+        }) }}
+        {{ form_label(form.password) }}
+    </div>
+    <div class="form-outline w-100">
+        {{ form_label(form.coins) }}
+        {{ form_widget(form.coins, {
+            'attr': {
+                'class': 'form-control'
+            }
+        }) }}
+    </div>
+    <div class="form-outline w-100">
+        {{ form_label(form.xp) }}
+        {{ form_widget(form.xp, {
+            'attr': {
+                'class': 'form-control'
+            }
+        }) }}
+    </div>
+    <div class="w-100">
+        {{ form_label(form.roles) }}
+        {{ form_widget(form.roles, {
+            'attr': {
+                'class': 'form-select'
+            }
+        }) }}
+    </div>
+    <div class="form-check">
+        {{ form_widget(form.isVerified, {
+            'attr': {
+                'class': 'form-check-input'
+            }
+        }) }}
+        {{ form_label(form.isVerified) }}
+    </div>
+    <button class="btn btn-success my-3">{{ button_label|default('Save') }}</button>
+    {{ form_end(form) }}
+</div>

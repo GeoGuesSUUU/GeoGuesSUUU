@@ -3,32 +3,34 @@
 {% block title %}Score{% endblock %}
 
 {% block body %}
-    <h1>Score</h1>
+<div class="d-flex flex-column align-items-center w-75 mx-auto">
+        <h1>Score</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ score.id }}</td>
-            </tr>
-            <tr>
-                <th>Score</th>
-                <td>{{ score.score }}</td>
-            </tr>
-            <tr>
-                <th>CreatedAt</th>
-                <td>{{ score.createdAt ? score.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Time</th>
-                <td>{{ score.time }}</td>
-            </tr>
-        </tbody>
-    </table>
+        <table class="table table-striped border">
+            <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ score.id }}</td>
+                </tr>
+                <tr>
+                    <th>Score</th>
+                    <td>{{ score.score }}</td>
+                </tr>
+                <tr>
+                    <th>CreatedAt</th>
+                    <td>{{ score.createdAt ? score.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                </tr>
+                <tr>
+                    <th>Time</th>
+                    <td>{{ score.time }}</td>
+                </tr>
+            </tbody>
+        </table>
 
-    <a href="{{ path('app_score_index') }}">back to list</a>
-
-    <a href="{{ path('app_score_edit', {'id': score.id}) }}">edit</a>
-
-    {{ include('score/_delete_form.html.twig') }}
+        <div class="d-flex">
+            <a class="btn btn-primary" href="{{ path('app_score_index') }}">Back to list of scores</a>
+            <a class="btn btn-success mx-1" href="{{ path('app_score_edit', {'id': score.id}) }}">Edit</a>
+            {{ include('score/_delete_form.html.twig') }}
+        </div>
+    </div>
 {% endblock %}

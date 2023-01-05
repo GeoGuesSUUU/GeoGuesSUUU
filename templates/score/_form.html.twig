@@ -1,4 +1,37 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+<div class="form-container">
+    {{ form_start(form, {
+        'attr': {
+            'class': 'd-flex flex-column align-items-center'
+        }
+    }) }}
+    <div class="form-outline w-100">
+        {{ form_label(form.score) }}
+        {{ form_widget(form.score, {
+            'attr': {
+                'class': 'form-control'
+            }
+        }) }}
+    </div>
+    <div>
+        {{ form_label(form.createdAt) }}
+        {{ form_widget(form.createdAt) }}
+    </div>
+    <div class="form-outline w-100">
+        {{ form_label(form.time) }}
+        {{ form_widget(form.time, {
+            'attr': {
+                'class': 'form-control'
+            }
+        }) }}
+    </div>
+    <div class="w-100">
+        {{ form_label(form.level) }}
+        {{ form_widget(form.level, {
+            'attr': {
+                'class': 'form-select'
+            }
+        }) }}
+    </div>
+    <button class="btn btn-success my-3">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}
+</div>

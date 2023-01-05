@@ -13,8 +13,17 @@ class CountryType extends AbstractType
     {
         $builder
             ->add('name')
+            ->add('code')
             ->add('flag')
-            ->add('user')
+            ->add('continent')
+            ->add('initLife')
+            ->add('life')
+            ->add('lifeMax')
+            ->add('shield')
+            ->add('shieldMax')
+            ->add('initPrice')
+            ->add('claimDate')
+            ->add('ownedAt')
         ;
     }
 

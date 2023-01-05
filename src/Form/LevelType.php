@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Level;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -13,9 +14,17 @@ class LevelType extends AbstractType
     {
         $builder
             ->add('difficulty')
-            ->add('label')
+            ->add('label', ChoiceType::class, [
+                'required' => true,
+                'multiple' => false,
+                'expanded' => false,
+                'choices' => [
+                    'Facile' => 'EASY',
+                    'Normal' => 'NORMAL',
+                    'Difficile' => 'HARD'
+                ],
+            ])
             ->add('description')
-            ->add('game')
         ;
     }
 

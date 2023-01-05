@@ -3,9 +3,12 @@
 {% block title %}New Level{% endblock %}
 
 {% block body %}
-    <h1>Create new Level</h1>
+    <div class="d-flex flex-column align-items-center w-75 mx-auto">
 
-    {{ include('level/_form.html.twig') }}
+        <h1>Create new Level</h1>
 
-    <a href="{{ path('app_level_index') }}">back to list</a>
+        {{ include('level/_form.html.twig') }}
+
+        <a class="btn btn-primary" href="{{ path('app_level_index') }}">Back to list of levels</a>
+    </div>
 {% endblock %}
