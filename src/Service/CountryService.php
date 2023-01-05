@@ -311,7 +311,7 @@ class CountryService
         foreach ($item->getEffects() as $effect) {
             if (isset($effect['type']) && isset($effect['value'])) {
                 if ($effect['type'] === EffectType::BONUS_SHIELD->value) {
-                    $extraShieldMax += $effect['value'];
+                    $extraShield += $effect['value'];
                 }
                 elseif ($effect['type'] === EffectType::BONUS_SHIELD_MAX->value) {
                     $extraShieldMax += $effect['value'];
