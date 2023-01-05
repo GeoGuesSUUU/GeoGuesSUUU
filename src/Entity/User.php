@@ -102,7 +102,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
-    #[Assert\NotBlank(message: "The password field is required")]
     #[Groups(groups: ['api_new', 'api_edit', 'api_login'])]
     private string $password;
 
