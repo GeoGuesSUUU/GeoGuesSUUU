@@ -1,13 +1,38 @@
-html, body {
-    height: 100%;
+main {
+    padding-top: 100px;
 }
 
-body {
+header img {
+    width: 40px;
+    margin: 0 10px 0 10px;
+}
+
+.admin-page img {
+    margin-bottom: 40px;
+    width: 200px;
+}
+
+.admin-page {
     display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
+    text-align: center;
 }
 
 .form-signin {
     max-width: 330px;
     padding: 15px;
+}
+
+@keyframes rotating {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+.rotating {
+    animation: rotating 10s linear infinite;
 }
