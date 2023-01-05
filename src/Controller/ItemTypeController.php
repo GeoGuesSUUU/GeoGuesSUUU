@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/item/type')]
+#[Route('/admin/item/type')]
 class ItemTypeController extends AbstractController
 {
     #[Route('/', name: 'app_item_type_index', methods: ['GET'])]
