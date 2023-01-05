@@ -3,9 +3,12 @@
 {% block title %}New City{% endblock %}
 
 {% block body %}
-    <h1>Create new City</h1>
+    <div class="d-flex flex-column align-items-center w-75 mx-auto">
 
-    {{ include('city/_form.html.twig') }}
+        <h1>Create new City</h1>
 
-    <a href="{{ path('app_city_index') }}">back to list</a>
+        {{ include('city/_form.html.twig') }}
+
+        <a class="btn btn-primary" href="{{ path('app_city_index') }}">Back to list of cities</a>
+    </div>
 {% endblock %}

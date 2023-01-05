@@ -1,4 +1,101 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }}
+<div class="form-container">
+    {{ form_start(form, {
+        'attr': {
+            'class': 'd-flex flex-column align-items-center'
+        }
+    }) }}
+    <div class="form-floating mb-3 w-100">
+        {{ form_widget(form.name, {
+            'attr': {
+                'class': 'form-control',
+                'placeholder': 'name'
+            }
+        }) }}
+        {{ form_label(form.name) }}
+    </div>
+    <div class="form-floating mb-3 w-100">
+        {{ form_widget(form.code, {
+            'attr': {
+                'class': 'form-control',
+                'placeholder': 'code'
+            }
+        }) }}
+        {{ form_label(form.code) }}
+    </div>
+    <div class="form-floating mb-3 w-100">
+        {{ form_widget(form.flag, {
+            'attr': {
+                'class': 'form-control',
+                'placeholder': 'flag'
+            }
+        }) }}
+        {{ form_label(form.flag) }}
+    </div>
+    <div class="form-floating mb-3 w-100">
+        {{ form_widget(form.continent, {
+            'attr': {
+                'class': 'form-control',
+                'placeholder': 'continent'
+            }
+        }) }}
+        {{ form_label(form.continent) }}
+    </div>
+    <div class="form-outline w-100">
+        {{ form_label(form.initLife) }}
+        {{ form_widget(form.initLife, {
+            'attr': {
+                'class': 'form-control'
+            }
+        }) }}
+    </div>
+    <div class="form-outline w-100">
+        {{ form_label(form.life) }}
+        {{ form_widget(form.life, {
+            'attr': {
+                'class': 'form-control'
+            }
+        }) }}
+    </div>
+    <div class="form-outline w-100">
+        {{ form_label(form.lifeMax) }}
+        {{ form_widget(form.lifeMax, {
+            'attr': {
+                'class': 'form-control'
+            }
+        }) }}
+    </div>
+    <div class="form-outline w-100">
+        {{ form_label(form.shield) }}
+        {{ form_widget(form.shield, {
+            'attr': {
+                'class': 'form-control'
+            }
+        }) }}
+    </div>
+    <div class="form-outline w-100">
+        {{ form_label(form.shieldMax) }}
+        {{ form_widget(form.shieldMax, {
+            'attr': {
+                'class': 'form-control'
+            }
+        }) }}
+    </div>
+    <div class="form-outline w-100">
+        {{ form_label(form.initPrice) }}
+        {{ form_widget(form.initPrice, {
+            'attr': {
+                'class': 'form-control'
+            }
+        }) }}
+    </div>
+    <div>
+        {{ form_label(form.claimDate) }}
+        {{ form_widget(form.claimDate) }}
+    </div>
+    <div>
+        {{ form_label(form.ownedAt) }}
+        {{ form_widget(form.ownedAt) }}
+    </div>
+    <button class="btn btn-success my-3">{{ button_label|default('Save') }}</button>
+    {{ form_end(form) }}
+</div>

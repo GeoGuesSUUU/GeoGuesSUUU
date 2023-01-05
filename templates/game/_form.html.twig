@@ -1,4 +1,54 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }}
+<div class="form-container">
+    {{ form_start(form, {
+        'attr': {
+            'class': 'd-flex flex-column align-items-center'
+        }
+    }) }}
+    <div class="form-floating mb-3 w-100">
+        {{ form_widget(form.title, {
+            'attr': {
+                'class': 'form-control',
+                'placeholder': 'title'
+            }
+        }) }}
+        {{ form_label(form.title) }}
+    </div>
+    <div class="form-floating mb-3 w-100">
+        {{ form_widget(form.description, {
+            'attr': {
+                'class': 'form-control',
+                'placeholder': 'description'
+            }
+        }) }}
+        {{ form_label(form.description) }}
+    </div>
+    <div class="form-floating mb-3 w-100">
+        {{ form_widget(form.img, {
+            'attr': {
+                'class': 'form-control',
+                'placeholder': 'img'
+            }
+        }) }}
+        {{ form_label(form.img) }}
+    </div>
+    <div class="form-floating mb-3 w-100">
+        {{ form_widget(form.tags, {
+            'attr': {
+                'class': 'form-control',
+                'placeholder': 'tags'
+            }
+        }) }}
+        {{ form_label(form.tags) }}
+    </div>
+    <div class="form-floating mb-3 w-100">
+        {{ form_widget(form.server, {
+            'attr': {
+                'class': 'form-control',
+                'placeholder': 'server'
+            }
+        }) }}
+        {{ form_label(form.server) }}
+    </div>
+    <button class="btn btn-success my-3">{{ button_label|default('Save') }}</button>
+    {{ form_end(form) }}
+</div>

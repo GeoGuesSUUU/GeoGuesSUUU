@@ -1,4 +1,52 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }}
+<div class="form-container">
+    {{ form_start(form, {
+        'attr': {
+            'class': 'd-flex flex-column align-items-center'
+        }
+    }) }}
+
+    <div class="form-floating mb-3 w-100">
+        {{ form_widget(form.name, {
+            'attr': {
+                'class': 'form-control',
+                'placeholder': 'name'
+            }
+        }) }}
+        {{ form_label(form.name) }}
+    </div>
+    <div class="form-floating mb-3 w-100">
+        {{ form_widget(form.description, {
+            'attr': {
+                'class': 'form-control',
+                'placeholder': 'description'
+            }
+        }) }}
+        {{ form_label(form.description) }}
+    </div>
+    <div class="w-100">
+        {{ form_label(form.type) }}
+        {{ form_widget(form.type, {
+            'attr': {
+                'class': 'form-select'
+            }
+        }) }}
+    </div>
+    <div class="w-100">
+        {{ form_label(form.rarity) }}
+        {{ form_widget(form.rarity, {
+            'attr': {
+                'class': 'form-select'
+            }
+        }) }}
+    </div>
+    <div class="form-check">
+        {{ form_widget(form.fantastic, {
+            'attr': {
+                'class': 'form-check-input'
+            }
+        }) }}
+        {{ form_label(form.fantastic) }}
+    </div>
+    <button class="btn btn-success my-3">{{ button_label|default('Save') }}</button>
+    {{ form_end(form) }}
+</div>

@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Score;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -15,7 +16,16 @@ class ScoreType extends AbstractType
             ->add('score')
             ->add('createdAt')
             ->add('time')
-            ->add('level')
+            ->add('level', ChoiceType::class, [
+                'required' => true,
+                'multiple' => false,
+                'expanded' => false,
+                'choices' => [
+                    'Facile' => 'EASY',
+                    'Normal' => 'NORMAL',
+                    'Difficile' => 'HARD'
+                ],
+            ])
         ;
     }
 
