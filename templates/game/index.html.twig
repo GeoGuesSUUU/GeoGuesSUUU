@@ -3,41 +3,43 @@
 {% block title %}Game index{% endblock %}
 
 {% block body %}
-    <h1>Game index</h1>
+    <div class="d-flex flex-column align-items-center w-75 mx-auto">
+        <h1>List of Games</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Img</th>
-                <th>Tags</th>
-                <th>Server</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for game in games %}
-            <tr>
-                <td>{{ game.id }}</td>
-                <td>{{ game.title }}</td>
-                <td>{{ game.description }}</td>
-                <td>{{ game.img }}</td>
-                <td>{{ game.tags }}</td>
-                <td>{{ game.server }}</td>
-                <td>
-                    <a href="{{ path('app_game_show', {'id': game.id}) }}">show</a>
-                    <a href="{{ path('app_game_edit', {'id': game.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="7">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+        <table class="table table-striped border">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Img</th>
+                    <th>Tags</th>
+                    <th>Server</th>
+                    <th>actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for game in games %}
+                <tr>
+                    <td>{{ game.id }}</td>
+                    <td>{{ game.title }}</td>
+                    <td>{{ game.description }}</td>
+                    <td>{{ game.img }}</td>
+                    <td>{{ game.tags }}</td>
+                    <td>{{ game.server }}</td>
+                    <td>
+                        <a class="btn btn-primary me-2" href="{{ path('app_game_show', {'id': game.id}) }}">show</a>
+                        <a class="btn btn-success" href="{{ path('app_game_edit', {'id': game.id}) }}">edit</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="7">no records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
 
-    <a href="{{ path('app_game_new') }}">Create new</a>
+        <a class="btn btn-primary" href="{{ path('app_game_new') }}">Create new</a>
+    </div>
 {% endblock %}
