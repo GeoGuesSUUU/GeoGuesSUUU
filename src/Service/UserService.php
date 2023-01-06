@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\ItemType;
 use App\Entity\User;
 use App\Entity\UserItem;
+use App\Exception\ItemFantasticAlreadyExistApiException;
 use App\Repository\UserItemRepository;
 use App\Repository\UserRepository;
 
@@ -48,6 +49,9 @@ class UserService
             $link->setQuantity($quantity);
             $link->setUser($user);
         } else {
+            if ($link->getItemType()->isFantastic()) {
+                throw new ItemFantasticAlreadyExistApiException();
+            }
             $link->setQuantity($link->getQuantity() + $quantity);
         }
 
@@ -59,10 +63,11 @@ class UserService
     /**
      * @param User $user
      * @param int $itemId
+     * @param int $quantity
      * @param bool $flush
      * @return void
      */
-    public function removeItemById(User $user, int $itemId, bool $flush = false): void
+    public function removeItemById(User $user, int $itemId, int $quantity = 1, bool $flush = false): void
     {
         $link = $this->userItemRepository->findOneBy([
             'user' => $user->getId(),
@@ -75,7 +80,7 @@ class UserService
                 $this->userItemRepository->remove($link, $flush);
             }
             else {
-                $link->setQuantity($link->getQuantity() - 1);
+                $link->setQuantity($link->getQuantity() - $quantity);
                 $this->userItemRepository->save($link, $flush);
             }
 

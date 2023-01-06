@@ -334,7 +334,11 @@ class CountryApiController extends AbstractController
 
         $user->setCoins($user->getCoins() + $reward->getCoins());
         foreach ($reward->getItems() as $item) {
-            $userService->addItemInInventory($user, $item->getItem(), $item->getQuantity());
+            try {
+                $userService->addItemInInventory($user, $item->getItem(), $item->getQuantity());
+            } catch (Exception $ex) {
+                continue;
+            }
         }
 
         $userRepository->save($user, true);
@@ -377,7 +381,11 @@ class CountryApiController extends AbstractController
 
         $user->setCoins($user->getCoins() + $reward->getCoins());
         foreach ($reward->getItems() as $item) {
-            $userService->addItemInInventory($user, $item->getItem(), $item->getQuantity());
+            try {
+                $userService->addItemInInventory($user, $item->getItem(), $item->getQuantity());
+            } catch (Exception $ex) {
+                continue;
+            }
         }
 
         $userRepository->save($user, true);

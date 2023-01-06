@@ -3,12 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\ItemType;
-use App\Entity\UserItem;
+use App\Entity\User;
 use App\Exception\ItemTypeNotFoundApiException;
-use App\Exception\UserNotFoundApiException;
 use App\Repository\ItemTypeRepository;
 use App\Repository\UserItemRepository;
 use App\Repository\UserRepository;
+use App\Service\UserService;
 use App\Utils\ApiResponse;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
@@ -37,36 +37,22 @@ class UserItemApiController extends AbstractController
      *     response=400,
      *     description="Bad Request"
      * )
-     * @param int $userId
      * @param int $itemId
-     * @param UserItemRepository $userItemRepository
-     * @param UserRepository $userRepository
+     * @param UserService $userService
      * @param ItemTypeRepository $itemTypeRepository
      * @param Request $request
      * @return Response
      */
-    #[Route('/{userId}/add/{itemId}', name: 'app_user_item_api_add', methods: ['POST'], format: 'application/json')]
+    #[Route('/add/{itemId}', name: 'app_user_item_api_add', methods: ['POST'], format: 'application/json')]
     public function add(
-        int $userId,
         int $itemId,
-        UserItemRepository $userItemRepository,
-        UserRepository $userRepository,
+        UserService $userService,
         ItemTypeRepository $itemTypeRepository,
         Request $request
     ): Response
     {
-
-        $link = $userItemRepository->findOneBy(["user" => $userId, "itemType" => $itemId]);
-        if ($link) {
-            $link->setQuantity($link->getQuantity() + 1);
-            $userItemRepository->save($link, true);
-            return $this->json(ApiResponse::get(null, Response::HTTP_NO_CONTENT));
-        }
-
-        $user = $userRepository->findOneBy(["id" => $userId]);
-        if ($user === null) {
-            throw new UserNotFoundApiException();
-        }
+        /** @var User $user */
+        $user = $this->getUser();
         $item = $itemTypeRepository->findOneBy(["id" => $itemId]);
         if ($item === null) {
             throw new ItemTypeNotFoundApiException();
@@ -75,18 +61,14 @@ class UserItemApiController extends AbstractController
         /** @var int $quantity */
         $quantity = $request->get('quantity', 1);
 
-        $itemLink = new UserItem();
-        $itemLink->setQuantity($quantity);
-        $itemLink->setUser($user);
-        $itemLink->setItemType($item);
-
-        $userItemRepository->save($itemLink, true);
+        $userService->addItemInInventory($user, $item, $quantity, true);
 
         return $this->json(ApiResponse::get(null, Response::HTTP_NO_CONTENT));
     }
 
     /**
-     * Delete user item inventory (all stack)
+     * Delete user item inventory (default deleted all stack)
+     * @OA\Parameter(name="quantity", in="query")
      * @OA\Response(
      *     response=204,
      *     description="No Content"
@@ -95,62 +77,37 @@ class UserItemApiController extends AbstractController
      *     response=404,
      *     description="ItemType not found"
      * )
-     * @param int $userId
      * @param int $itemId
      * @param UserItemRepository $userItemRepository
+     * @param UserService $userService
+     * @param Request $request
      * @return Response
      */
-    #[Route('/{userId}/remove/{itemId}', name: 'app_user_item_api_delete', methods: ['DELETE'], format: 'application/json')]
-    public function remove(int $userId, int $itemId, UserItemRepository $userItemRepository): Response
+    #[Route('/remove/{itemId}', name: 'app_user_item_api_delete', methods: ['DELETE'], format: 'application/json')]
+    public function remove(
+        int $itemId,
+        UserItemRepository $userItemRepository,
+        UserService $userService,
+        Request $request
+    ): Response
     {
-        $itemLink = $userItemRepository->findOneBy(["user" => $userId, "itemType" => $itemId]);
-        if ($itemLink === null) {
-            throw new ItemTypeNotFoundApiException();
-        }
 
-        $userItemRepository->remove($itemLink, true);
+        /** @var User $user */
+        $user = $this->getUser();
 
-        return $this->json(ApiResponse::get(null, Response::HTTP_NO_CONTENT));
-    }
+        /** @var int | null $quantity */
+        $quantity = $request->get('quantity');
 
-    /**
-     * Subtract user item inventory by ID
-     * @OA\Response(
-     *     response=204,
-     *     description="No Content"
-     * )
-     * @OA\Response(
-     *     response=404,
-     *     description="ItemType not found"
-     * )
-     * @param int $userId
-     * @param int $itemId
-     * @param int $num
-     * @param UserItemRepository $userItemRepository
-     * @return Response
-     */
-    #[Route(
-        '/{userId}/remove/{itemId}/quantity/{num}',
-        name: 'app_item_api_remove',
-        methods: ['DELETE'],
-        format: 'application/json')
-    ]
-    public function removeQuantity(int $userId, int $itemId, int $num, UserItemRepository $userItemRepository): Response
-    {
-        $itemLink = $userItemRepository->findOneBy(["user" => $userId, "itemType" => $itemId]);
-        if ($itemLink === null) {
-            throw new ItemTypeNotFoundApiException();
-        }
+        if (is_null($quantity)) {
+            $itemLink = $userItemRepository->findOneBy(["user" => $user->getId(), "itemType" => $itemId]);
+            if ($itemLink === null) {
+                throw new ItemTypeNotFoundApiException();
+            }
 
-        $itemLink->setQuantity($itemLink->getQuantity() - $num);
-
-        if ($itemLink->getQuantity() < 1) {
             $userItemRepository->remove($itemLink, true);
+        } else {
+            $userService->removeItemById($user, $itemId, $quantity, true);
         }
-        else {
-            $userItemRepository->save($itemLink, true);
-        }
-
 
         return $this->json(ApiResponse::get(null, Response::HTTP_NO_CONTENT));
     }
