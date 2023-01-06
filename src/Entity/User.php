@@ -69,7 +69,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     // ==============================//
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: "The locale field is required")]
     #[Assert\Length(
         min: 1,
         max: 5,
@@ -78,6 +77,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     #[Groups(groups: ['user_api_response', 'api_edit', 'user_anti_cr'])]
     private string $locale = "en-US";
+
+    #[ORM\Column(length: 512, nullable: true)]
+    #[Assert\Length(
+        min: 1,
+        max: 512,
+        minMessage: "The img must be at least {{ limit }} characters long",
+        maxMessage: "The img cannot be longer than {{ limit }} characters"
+    )]
+    #[Groups(groups: ['user_api_response', 'api_new', 'api_edit', 'user_anti_cr'])]
+    private ?string $img;
 
     /**
      * @OA\Property(type="array", @OA\Items(type="string"))
@@ -497,6 +506,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->setLevelXpMax($levelXpMax);
         $this->setLevelXpMin($levelXpMin);
 
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getImg(): ?string
+    {
+        return $this->img;
+    }
+
+    /**
+     * @param string|null $img
+     * @return User
+     */
+    public function setImg(?string $img): User
+    {
+        $this->img = $img;
         return $this;
     }
 }
