@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\API;
 
 use App\Entity\Game;
 use App\Entity\Level;
@@ -12,9 +12,9 @@ use App\Repository\LevelRepository;
 use App\Utils\ApiResponse;
 use JsonException;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
 use OpenApi\Attributes as OAA;
-use Nelmio\ApiDocBundle\Annotation\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -108,11 +108,11 @@ class LevelApiController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/', name: 'app_level_api_new', methods: ['POST'], format: 'application/json')]
     public function new(
-        Request $request,
+        Request             $request,
         SerializerInterface $serializer,
-        LevelRepository $levelRepository,
-        GameRepository $gameRepository,
-        ValidatorInterface $validator
+        LevelRepository     $levelRepository,
+        GameRepository      $gameRepository,
+        ValidatorInterface  $validator
     ): Response
     {
         /** @var Level $body */
@@ -128,8 +128,7 @@ class LevelApiController extends AbstractController
 
             if (!is_null($game)) $body->setGame($game);
             else throw new GameNotFoundApiException();
-        }
-        else throw new LevelNotValidApiException("The game field is required");
+        } else throw new LevelNotValidApiException("The game field is required");
 
         $errors = $validator->validate($body);
         if (
@@ -170,12 +169,12 @@ class LevelApiController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}', name: 'app_level_api_edit', methods: ['PUT', 'PATCH'], format: 'application/json')]
     public function edit(
-        Request $request,
-        int $id,
+        Request             $request,
+        int                 $id,
         SerializerInterface $serializer,
-        LevelRepository $levelRepository,
-        GameRepository $gameRepository,
-        ValidatorInterface $validator
+        LevelRepository     $levelRepository,
+        GameRepository      $gameRepository,
+        ValidatorInterface  $validator
     ): Response
     {
         $level = $levelRepository->findOneBy(["id" => $id]);

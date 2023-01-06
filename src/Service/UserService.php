@@ -2,12 +2,14 @@
 
 namespace App\Service;
 
+use App\Entity\ItemsQuantity;
 use App\Entity\ItemType;
 use App\Entity\User;
 use App\Entity\UserItem;
 use App\Exception\ItemFantasticAlreadyExistApiException;
 use App\Repository\UserItemRepository;
 use App\Repository\UserRepository;
+use Exception;
 
 class UserService
 {
@@ -58,6 +60,24 @@ class UserService
         $this->userItemRepository->save($link, $flush);
 
         return $user;
+    }
+
+    /**
+     * @param User $user
+     * @param ItemsQuantity[] $items
+     * @param bool $flush
+     * @return void
+     */
+    public function addItemsInInventory(User $user, array $items, bool $flush = false): void
+    {
+        foreach ($items as $item) {
+            try {
+                $this->addItemInInventory($user, $item->getItem(), $item->getQuantity());
+            } catch (Exception $ex) {
+                continue;
+            }
+        }
+        $this->userRepository->save($user, $flush);
     }
 
     /**

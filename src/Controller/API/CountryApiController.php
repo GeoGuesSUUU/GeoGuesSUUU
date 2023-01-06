@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\API;
 
 use App\Entity\Country;
 use App\Entity\User;
@@ -16,9 +16,9 @@ use App\Utils\ApiResponse;
 use Exception;
 use JsonException;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
 use OpenApi\Attributes as OAA;
-use Nelmio\ApiDocBundle\Annotation\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -109,7 +109,6 @@ class CountryApiController extends AbstractController
      * )
      * @param Request $request
      * @param SerializerInterface $serializer
-     * @param CountryRepository $countryRepository
      * @param CountryService $countryService
      * @param ValidatorInterface $validator
      * @return Response
@@ -118,11 +117,10 @@ class CountryApiController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/', name: 'app_country_api_new', methods: ['POST'], format: 'application/json')]
     public function new(
-        Request $request,
+        Request             $request,
         SerializerInterface $serializer,
-        CountryRepository $countryRepository,
-        CountryService $countryService,
-        ValidatorInterface $validator
+        CountryService      $countryService,
+        ValidatorInterface  $validator
     ): Response
     {
         /** @var Country $body */
@@ -175,16 +173,15 @@ class CountryApiController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}', name: 'app_country_api_edit', methods: ['PUT', 'PATCH'], format: 'application/json')]
     public function edit(
-        Request $request,
-        int $id,
+        Request             $request,
+        int                 $id,
         SerializerInterface $serializer,
-        CountryRepository $countryRepository,
-        CountryService $countryService,
-        UserRepository $userRepository,
-        ValidatorInterface $validator
+        CountryRepository   $countryRepository,
+        CountryService      $countryService,
+        UserRepository      $userRepository,
+        ValidatorInterface  $validator
     ): Response
     {
-        $user = null;
         $country = $countryRepository->findOneBy(["id" => $id]);
         if ($country === null) {
             throw new CountryNotFoundApiException();
@@ -302,17 +299,15 @@ class CountryApiController extends AbstractController
      *     description="Bad Request"
      * )
      * @param int $id
-     * @param UserRepository $userRepository
      * @param CountryService $countryService
      * @param UserService $userService
      * @return Response
      */
     #[Route('/{id}/claim', name: 'app_country_api_claim', methods: ['POST'], format: 'application/json')]
     public function claimById(
-        int $id,
-        UserRepository $userRepository,
+        int            $id,
         CountryService $countryService,
-        UserService $userService,
+        UserService    $userService,
     ): Response
     {
         $country = $countryService->getById($id);
@@ -333,15 +328,7 @@ class CountryApiController extends AbstractController
         }
 
         $user->setCoins($user->getCoins() + $reward->getCoins());
-        foreach ($reward->getItems() as $item) {
-            try {
-                $userService->addItemInInventory($user, $item->getItem(), $item->getQuantity());
-            } catch (Exception $ex) {
-                continue;
-            }
-        }
-
-        $userRepository->save($user, true);
+        $userService->addItemsInInventory($user, $reward->getItems(), true);
 
         return $this->json(ApiResponse::get($reward),
             200,
@@ -361,16 +348,14 @@ class CountryApiController extends AbstractController
      *     response=400,
      *     description="Bad Request"
      * )
-     * @param UserRepository $userRepository
      * @param CountryService $countryService
      * @param UserService $userService
      * @return Response
      */
     #[Route('/claim', name: 'app_country_api_claim_all', methods: ['POST'], format: 'application/json')]
     public function claimAll(
-        UserRepository $userRepository,
         CountryService $countryService,
-        UserService $userService,
+        UserService    $userService,
     ): Response
     {
 
@@ -380,15 +365,7 @@ class CountryApiController extends AbstractController
         $reward = $countryService->claimAllByUser($user);
 
         $user->setCoins($user->getCoins() + $reward->getCoins());
-        foreach ($reward->getItems() as $item) {
-            try {
-                $userService->addItemInInventory($user, $item->getItem(), $item->getQuantity());
-            } catch (Exception $ex) {
-                continue;
-            }
-        }
-
-        $userRepository->save($user, true);
+        $userService->addItemsInInventory($user, $reward->getItems(), true);
 
         return $this->json(ApiResponse::get($reward),
             200,
@@ -417,14 +394,14 @@ class CountryApiController extends AbstractController
      */
     #[Route('/{id}/attack/{itemId}', name: 'app_country_api_attack', methods: ['POST'], format: 'application/json')]
     public function attack(
-        int $id,
-        int $itemId,
+        int                $id,
+        int                $itemId,
         ItemTypeRepository $itemTypeRepository,
-        CountryService $countryService,
+        CountryService     $countryService,
     ): Response
     {
 
-        $item = $itemTypeRepository->findOneBy([ 'id' => $itemId ]);
+        $item = $itemTypeRepository->findOneBy(['id' => $itemId]);
         if ($item === null) {
             throw new ItemTypeNotFoundApiException();
         }
@@ -467,14 +444,14 @@ class CountryApiController extends AbstractController
      */
     #[Route('/{id}/support/{itemId}', name: 'app_country_api_support', methods: ['POST'], format: 'application/json')]
     public function support(
-        int $id,
-        int $itemId,
+        int                $id,
+        int                $itemId,
         ItemTypeRepository $itemTypeRepository,
-        CountryService $countryService,
+        CountryService     $countryService,
     ): Response
     {
 
-        $item = $itemTypeRepository->findOneBy([ 'id' => $itemId ]);
+        $item = $itemTypeRepository->findOneBy(['id' => $itemId]);
         if ($item === null) {
             throw new ItemTypeNotFoundApiException();
         }

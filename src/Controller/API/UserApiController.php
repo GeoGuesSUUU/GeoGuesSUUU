@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\API;
 
 use App\Entity\User;
 use App\Exception\UserForbiddenAccessApiException;
@@ -10,8 +10,8 @@ use App\Repository\UserRepository;
 use App\Utils\ApiResponse;
 use JsonException;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
-use Nelmio\ApiDocBundle\Annotation\Security;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
 use OpenApi\Attributes as OAA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -156,11 +156,12 @@ class UserApiController extends AbstractController
      */
     #[Route('/login', name: 'app_user_api_login', methods: ['POST'], format: 'application/json')]
     public function login(
-        Request $request,
-        SerializerInterface $serializer,
-        UserRepository $userRepository,
+        Request                     $request,
+        SerializerInterface         $serializer,
+        UserRepository              $userRepository,
         UserPasswordHasherInterface $passwordHasher
-    ): Response {
+    ): Response
+    {
         /** @var User $body */
         $body = $serializer->deserialize(
             $request->getContent(),
@@ -213,12 +214,13 @@ class UserApiController extends AbstractController
      */
     #[Route('/register', name: 'app_user_api_new', methods: ['POST'], format: 'application/json')]
     public function new(
-        Request $request,
-        SerializerInterface $serializer,
-        UserRepository $userRepository,
-        ValidatorInterface $validator,
+        Request                     $request,
+        SerializerInterface         $serializer,
+        UserRepository              $userRepository,
+        ValidatorInterface          $validator,
         UserPasswordHasherInterface $passwordHasher
-    ): Response {
+    ): Response
+    {
         /** @var User $body */
         $body = $serializer->deserialize(
             $request->getContent(),
@@ -279,13 +281,14 @@ class UserApiController extends AbstractController
      */
     #[Route('/{id}', name: 'app_user_api_edit', methods: ['PUT', 'PATCH'], format: 'application/json')]
     public function edit(
-        Request $request,
-        int $id,
-        SerializerInterface $serializer,
-        UserRepository $userRepository,
-        ValidatorInterface $validator,
+        Request                     $request,
+        int                         $id,
+        SerializerInterface         $serializer,
+        UserRepository              $userRepository,
+        ValidatorInterface          $validator,
         UserPasswordHasherInterface $passwordHasher
-    ): Response {
+    ): Response
+    {
         $user = $userRepository->findOneBy(["id" => $id]);
         if ($user === null) {
             throw new UserNotFoundApiException();
