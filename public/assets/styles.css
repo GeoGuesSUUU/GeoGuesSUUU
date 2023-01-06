@@ -2,6 +2,10 @@ main {
     padding-top: 100px;
 }
 
+header {
+    background-color: #FFFFFF;
+}
+
 header img {
     width: 40px;
     margin: 0 10px 0 10px;
