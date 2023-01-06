@@ -7,6 +7,7 @@ use App\Entity\ItemType;
 use App\Entity\User;
 use App\Entity\UserItem;
 use App\Exception\ItemFantasticAlreadyExistApiException;
+use App\Exception\UserNotFoundApiException;
 use App\Repository\UserItemRepository;
 use App\Repository\UserRepository;
 use Exception;
@@ -23,6 +24,38 @@ class UserService
     public function flush(): void
     {
         $this->userRepository->flush();
+    }
+
+    /**
+     * @param bool $detail
+     * @return User[]
+     */
+    public function getAll(bool $detail = false): array
+    {
+        $users = $this->userRepository->findAll();
+        if ($detail) {
+            foreach ($users as $user) {
+                $user->setLevelData();
+            }
+        }
+        return $users;
+    }
+
+    /**
+     * @param int $id
+     * @param bool $detail
+     * @return User
+     */
+    public function getById(int $id, bool $detail = false): User
+    {
+        $user = $this->userRepository->findOneBy(["id" => $id]);
+        if ($user === null) {
+            throw new UserNotFoundApiException();
+        }
+        if ($detail) {
+            $user->setLevelData();
+        }
+        return $user;
     }
 
     /**

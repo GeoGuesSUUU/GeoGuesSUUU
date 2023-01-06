@@ -7,6 +7,7 @@ use App\Exception\UserForbiddenAccessApiException;
 use App\Exception\UserNotFoundApiException;
 use App\Exception\UserNotValidApiException;
 use App\Repository\UserRepository;
+use App\Service\UserService;
 use App\Utils\ApiResponse;
 use JsonException;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
@@ -48,16 +49,13 @@ class UserApiController extends AbstractController
      *        @OA\Items(ref=@Model(type=User::class, groups={"country_anti_cr", "user_api_response"}))
      *     )
      * )
-     * @param UserRepository $userRepository
+     * @param UserService $userService
      * @return Response
      */
     #[Route('/', name: 'app_user_api_all', methods: ['GET'], format: 'application/json')]
-    public function all(UserRepository $userRepository): Response
+    public function all(UserService $userService): Response
     {
-        $users = $userRepository->findAll();
-        foreach ($users as $user) {
-            $user->setLevelData();
-        }
+        $users = $userService->getAll(true);
         return $this->json(ApiResponse::get($users),
             200,
             [],
@@ -77,17 +75,13 @@ class UserApiController extends AbstractController
      *     description="User not found"
      * )
      * @param int $id
-     * @param UserRepository $userRepository
+     * @param UserService $userService
      * @return Response
      */
     #[Route('/{id}', name: 'app_user_api_index', methods: ['GET'], format: 'application/json')]
-    public function one(int $id, UserRepository $userRepository): Response
+    public function one(int $id, UserService $userService): Response
     {
-        $user = $userRepository->findOneBy(["id" => $id]);
-        if ($user === null) {
-            throw new UserNotFoundApiException();
-        }
-        $user->setLevelData();
+        $user = $userService->getById($id, true);
         return $this->json(ApiResponse::get($user),
             200,
             [],
@@ -107,16 +101,13 @@ class UserApiController extends AbstractController
      *     description="User not found"
      * )
      * @param int $id
-     * @param UserRepository $userRepository
+     * @param UserService $userService
      * @return Response
      */
     #[Route('/{id}/private', name: 'app_user_private_api_index', methods: ['GET'], format: 'application/json')]
-    public function personalData(int $id, UserRepository $userRepository): Response
+    public function personalData(int $id, UserService $userService): Response
     {
-        $user = $userRepository->findOneBy(["id" => $id]);
-        if ($user === null) {
-            throw new UserNotFoundApiException();
-        }
+        $user = $userService->getById($id, true);
 
         // Security
         /** @var User $tokenUser */
@@ -124,7 +115,6 @@ class UserApiController extends AbstractController
         if ($tokenUser->getId() !== $user->getId() && !in_array("ROLE_ADMIN", $tokenUser->getRoles())) {
             throw new UserForbiddenAccessApiException();
         }
-        $user->setLevelData();
         return $this->json(ApiResponse::get($user),
             200,
             [],
@@ -273,6 +263,7 @@ class UserApiController extends AbstractController
      * @param Request $request
      * @param int $id
      * @param SerializerInterface $serializer
+     * @param UserService $userService
      * @param UserRepository $userRepository
      * @param ValidatorInterface $validator
      * @param UserPasswordHasherInterface $passwordHasher
@@ -284,15 +275,13 @@ class UserApiController extends AbstractController
         Request                     $request,
         int                         $id,
         SerializerInterface         $serializer,
+        UserService                 $userService,
         UserRepository              $userRepository,
         ValidatorInterface          $validator,
         UserPasswordHasherInterface $passwordHasher
     ): Response
     {
-        $user = $userRepository->findOneBy(["id" => $id]);
-        if ($user === null) {
-            throw new UserNotFoundApiException();
-        }
+        $user = $userService->getById($id);
 
         // Security
         /** @var User $tokenUser */
