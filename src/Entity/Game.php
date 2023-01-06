@@ -54,7 +54,7 @@ class Game
     private string $tags;
 
     #[ORM\Column(length: 255)]
-    #[Assert\Blank(message: "The server field is required !")]
+    #[Assert\NotBlank(message: "The server field is required !")]
     #[Assert\Length(
         min: 1,
         max: 1024,
