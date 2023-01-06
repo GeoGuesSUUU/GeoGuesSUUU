@@ -4,7 +4,6 @@
             'class': 'd-flex flex-column align-items-center'
         }
     }) }}
-
     <div class="form-floating mb-3 w-100">
         {{ form_widget(form.name, {
             'attr': {
@@ -47,6 +46,15 @@
         }) }}
         {{ form_label(form.fantastic) }}
     </div>
-    <button class="btn btn-success my-3">{{ button_label|default('Save') }}</button>
+    <div class="form-floating mb-3 w-100">
+        {{ form_widget(form.img, {
+            'attr': {
+                'class': 'form-control',
+                'placeholder': 'img'
+            }
+        }) }}
+        {{ form_label(form.img) }}
+    </div>
+    <button class="btn">{{ button_label|default('Save') }}</button>
     {{ form_end(form) }}
 </div>

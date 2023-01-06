@@ -1,45 +1,50 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}ItemType index{% endblock %}
+{% block title %}Item index{% endblock %}
 
 {% block body %}
-    <div class="d-flex flex-column align-items-center w-75 mx-auto">
-        <h1>List of Items</h1>
+<div class="d-flex flex-column align-items-center w-75 mx-auto">
 
-        <table class="table table-striped border">
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Type</th>
-                    <th>Rarity</th>
-                    <th>Fantastic</th>
-                    <th>actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for item_type in item_types %}
-                <tr>
-                    <td>{{ item_type.id }}</td>
-                    <td>{{ item_type.name }}</td>
-                    <td>{{ item_type.description }}</td>
-                    <td>{{ item_type.type }}</td>
-                    <td>{{ item_type.rarity }}</td>
-                    <td>{{ item_type.fantastic ? 'Yes' : 'No' }}</td>
-                    <td>
-                        <a class="btn btn-primary me-2" href="{{ path('app_item_type_show', {'id': item_type.id}) }}">show</a>
-                        <a class="btn btn-success" href="{{ path('app_item_type_edit', {'id': item_type.id}) }}">edit</a>
-                    </td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="7">no records found</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+<h1>List of Items</h1>
 
-        <a class="btn btn-primary" href="{{ path('app_item_type_new') }}">Create new</a>
-    </div>
+    <table class="table table-striped border">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Type</th>
+                <th>Rarity</th>
+                <th>Fantastic</th>
+                <th>Img</th>
+                <th>Effects</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item_type in item_types %}
+            <tr>
+                <td>{{ item_type.id }}</td>
+                <td>{{ item_type.name }}</td>
+                <td>{{ item_type.description }}</td>
+                <td>{{ item_type.type }}</td>
+                <td>{{ item_type.rarity }}</td>
+                <td>{{ item_type.fantastic ? 'Yes' : 'No' }}</td>
+                <td>{{ item_type.img }}</td>
+                <td>{{ item_type.effects ? item_type.effects|json_encode : '' }}</td>
+                <td class="d-flex">
+                    <a class="btn btn-primary me-2" href="{{ path('app_item_type_show', {'id': item_type.id}) }}">show</a>
+                    <a class="btn btn-success" href="{{ path('app_item_type_edit', {'id': item_type.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="9">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a class="btn btn-primary" href="{{ path('app_item_type_new') }}">Create new Item</a>
+</div>
 {% endblock %}

@@ -40,6 +40,7 @@ class ItemTypeType extends AbstractType
                 ],
             ])
             ->add('fantastic')
+            ->add('img')
         ;
     }
 
