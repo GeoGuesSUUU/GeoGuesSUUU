@@ -78,11 +78,11 @@ class ItemType
     #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item_anti_cr'])]
     private ?array $effects = [];
 
-    #[ORM\OneToMany(mappedBy: 'itemType', targetEntity: UserItem::class)]
+    #[ORM\OneToMany(mappedBy: 'itemType', targetEntity: UserItem::class, orphanRemoval: true)]
     #[Groups(groups: ['item_api_response'])]
     private Collection $userItems;
 
-    #[ORM\OneToMany(mappedBy: 'itemType', targetEntity: CountryItem::class)]
+    #[ORM\OneToMany(mappedBy: 'itemType', targetEntity: CountryItem::class, orphanRemoval: true)]
     #[Groups(groups: ['item_api_response'])]
     private Collection $countryItems;
 

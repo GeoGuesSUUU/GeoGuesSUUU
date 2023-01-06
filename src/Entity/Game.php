@@ -65,7 +65,7 @@ class Game
     private string $server;
 
     #[Groups(groups: ['game_api_response'])]
-    #[ORM\OneToMany(mappedBy: 'game', targetEntity: Level::class)]
+    #[ORM\OneToMany(mappedBy: 'game', targetEntity: Level::class, orphanRemoval: true)]
     private Collection $levels;
 
     public function __construct()
