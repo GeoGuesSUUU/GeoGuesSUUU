@@ -348,7 +348,7 @@ class Country
      * @param int $life
      * @return Country
      */
-    public function initLife(int $life): self
+    public function initCountryLife(int $life): self
     {
         $this->life = $life;
         return $this;

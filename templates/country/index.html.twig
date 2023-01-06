@@ -44,7 +44,7 @@
                     <td>{{ country.claimDate ? country.claimDate|date('Y-m-d H:i:s') : '' }}</td>
                     <td>{{ country.effects ? country.effects|json_encode : '' }}</td>
                     <td>{{ country.ownedAt ? country.ownedAt|date('Y-m-d H:i:s') : '' }}</td>
-                    <td>
+                    <td class="d-flex">
                         <a class="btn btn-primary me-2" href="{{ path('app_country_show', {'id': country.id}) }}">show</a>
                         <a class="btn btn-success" href="{{ path('app_country_edit', {'id': country.id}) }}">edit</a>
                     </td>
