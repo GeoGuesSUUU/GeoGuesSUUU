@@ -45,7 +45,7 @@ class Level
     #[Groups(groups: ['level_api_response', 'api_new', 'api_edit'])]
     private Game $game;
 
-    #[ORM\OneToMany(mappedBy: 'level', targetEntity: Score::class)]
+    #[ORM\OneToMany(mappedBy: 'level', targetEntity: Score::class, orphanRemoval: true)]
     #[Groups(groups: ['level_api_response'])]
     private Collection $scores;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\API;
 
 use App\Entity\Level;
 use App\Entity\Score;
@@ -15,9 +15,9 @@ use App\Repository\UserRepository;
 use App\Utils\ApiResponse;
 use JsonException;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
 use OpenApi\Attributes as OAA;
-use Nelmio\ApiDocBundle\Annotation\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -112,12 +112,12 @@ class ScoreApiController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/', name: 'app_score_api_new', methods: ['POST'], format: 'application/json')]
     public function new(
-        Request $request,
+        Request             $request,
         SerializerInterface $serializer,
-        ScoreRepository $scoreRepository,
-        LevelRepository $levelRepository,
-        UserRepository $userRepository,
-        ValidatorInterface $validator
+        ScoreRepository     $scoreRepository,
+        LevelRepository     $levelRepository,
+        UserRepository      $userRepository,
+        ValidatorInterface  $validator
     ): Response
     {
         /** @var Score $body */
@@ -135,16 +135,14 @@ class ScoreApiController extends AbstractController
 
             if (!is_null($level)) $body->setLevel($level);
             else throw new LevelNotFoundApiException();
-        }
-        else throw new ScoreNotValidApiException("The level field is required");
+        } else throw new ScoreNotValidApiException("The level field is required");
         if ($userId = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR)['user'] ?? null) {
             /** @var User $user */
             $user = $userRepository->findOneBy(["id" => $userId]);
 
             if (!is_null($user)) $body->setUser($user);
             else throw new UserNotFoundApiException();
-        }
-        else throw new ScoreNotValidApiException("The user field is required");
+        } else throw new ScoreNotValidApiException("The user field is required");
 
         $body->initCreatedAt();
 
@@ -188,13 +186,13 @@ class ScoreApiController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}', name: 'app_score_api_edit', methods: ['PUT', 'PATCH'], format: 'application/json')]
     public function edit(
-        Request $request,
-        int $id,
+        Request             $request,
+        int                 $id,
         SerializerInterface $serializer,
-        ScoreRepository $scoreRepository,
-        LevelRepository $levelRepository,
-        UserRepository $userRepository,
-        ValidatorInterface $validator
+        ScoreRepository     $scoreRepository,
+        LevelRepository     $levelRepository,
+        UserRepository      $userRepository,
+        ValidatorInterface  $validator
     ): Response
     {
         $score = $scoreRepository->findOneBy(["id" => $id]);

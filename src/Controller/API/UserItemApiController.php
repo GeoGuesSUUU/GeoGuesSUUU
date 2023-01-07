@@ -1,19 +1,18 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\API;
 
 use App\Entity\ItemType;
 use App\Entity\User;
 use App\Exception\ItemTypeNotFoundApiException;
 use App\Repository\ItemTypeRepository;
 use App\Repository\UserItemRepository;
-use App\Repository\UserRepository;
 use App\Service\UserService;
 use App\Utils\ApiResponse;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
 use OpenApi\Attributes as OAA;
-use Nelmio\ApiDocBundle\Annotation\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -45,10 +44,10 @@ class UserItemApiController extends AbstractController
      */
     #[Route('/add/{itemId}', name: 'app_user_item_api_add', methods: ['POST'], format: 'application/json')]
     public function add(
-        int $itemId,
-        UserService $userService,
+        int                $itemId,
+        UserService        $userService,
         ItemTypeRepository $itemTypeRepository,
-        Request $request
+        Request            $request
     ): Response
     {
         /** @var User $user */
@@ -85,10 +84,10 @@ class UserItemApiController extends AbstractController
      */
     #[Route('/remove/{itemId}', name: 'app_user_item_api_delete', methods: ['DELETE'], format: 'application/json')]
     public function remove(
-        int $itemId,
+        int                $itemId,
         UserItemRepository $userItemRepository,
-        UserService $userService,
-        Request $request
+        UserService        $userService,
+        Request            $request
     ): Response
     {
 

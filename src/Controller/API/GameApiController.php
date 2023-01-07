@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\API;
 
 use App\Entity\Game;
 use App\Exception\GameNotFoundApiException;
@@ -8,9 +8,9 @@ use App\Exception\GameNotValidApiException;
 use App\Repository\GameRepository;
 use App\Utils\ApiResponse;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
 use OpenApi\Attributes as OAA;
-use Nelmio\ApiDocBundle\Annotation\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -102,10 +102,10 @@ class GameApiController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/', name: 'app_game_api_new', methods: ['POST'], format: 'application/json')]
     public function new(
-        Request $request,
+        Request             $request,
         SerializerInterface $serializer,
-        GameRepository $gameRepository,
-        ValidatorInterface $validator
+        GameRepository      $gameRepository,
+        ValidatorInterface  $validator
     ): Response
     {
         /** @var Game $body */
@@ -153,11 +153,11 @@ class GameApiController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}', name: 'app_game_api_edit', methods: ['PUT', 'PATCH'], format: 'application/json')]
     public function edit(
-        Request $request,
-        int $id,
+        Request             $request,
+        int                 $id,
         SerializerInterface $serializer,
-        GameRepository $gameRepository,
-        ValidatorInterface $validator
+        GameRepository      $gameRepository,
+        ValidatorInterface  $validator
     ): Response
     {
         $game = $gameRepository->findOneBy(["id" => $id]);

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\API;
 
 use App\Entity\ItemType;
 use App\Exception\ItemTypeNotFoundApiException;
@@ -11,9 +11,9 @@ use App\Utils\ApiResponse;
 use Exception;
 use JsonException;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
 use OpenApi\Attributes as OAA;
-use Nelmio\ApiDocBundle\Annotation\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -106,10 +106,10 @@ class ItemApiController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/', name: 'app_item_api_new', methods: ['POST'], format: 'application/json')]
     public function new(
-        Request $request,
+        Request             $request,
         SerializerInterface $serializer,
-        ItemTypeRepository $itemTypeRepository,
-        ValidatorInterface $validator
+        ItemTypeRepository  $itemTypeRepository,
+        ValidatorInterface  $validator
     ): Response
     {
         /** @var ItemType $body */
@@ -151,20 +151,17 @@ class ItemApiController extends AbstractController
      * @param int $id
      * @param SerializerInterface $serializer
      * @param ItemTypeRepository $itemTypeRepository
-     * @param UserRepository $userRepository
      * @param ValidatorInterface $validator
      * @return Response
-     * @throws JsonException
      */
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}', name: 'app_item_api_edit', methods: ['PUT', 'PATCH'], format: 'application/json')]
     public function edit(
-        Request $request,
-        int $id,
+        Request             $request,
+        int                 $id,
         SerializerInterface $serializer,
-        ItemTypeRepository $itemTypeRepository,
-        UserRepository $userRepository,
-        ValidatorInterface $validator
+        ItemTypeRepository  $itemTypeRepository,
+        ValidatorInterface  $validator
     ): Response
     {
         $itemType = $itemTypeRepository->findOneBy(["id" => $id]);

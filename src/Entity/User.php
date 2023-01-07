@@ -95,11 +95,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(groups: ['user_api_response'])]
     private array $roles = ['ROLE_USER'];
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Score::class)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Score::class, orphanRemoval: true)]
     #[Groups(groups: ['user_details'])]
     private Collection $scores;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserItem::class)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserItem::class, orphanRemoval: true)]
     #[Groups(groups: ['user_private'])]
     private Collection $userItems;
 

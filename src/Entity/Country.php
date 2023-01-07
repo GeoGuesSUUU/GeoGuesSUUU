@@ -107,7 +107,7 @@ class Country
     private int $price = 0;
     // ==============================//
 
-    #[ORM\OneToMany(mappedBy: 'country', targetEntity: CountryItem::class)]
+    #[ORM\OneToMany(mappedBy: 'country', targetEntity: CountryItem::class, orphanRemoval: true)]
     #[Groups(groups: ['country_api_response'])]
     private Collection $countryItems;
 
