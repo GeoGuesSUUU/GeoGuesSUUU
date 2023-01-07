@@ -29,9 +29,11 @@
                     <td>{{ user.coins }}</td>
                     <td>{{ user.xp }}</td>
                     <td>{{ user.roles|json_encode() }}</td>
-                    <td class="d-flex">
-                        <a class="btn btn-primary me-2" href="{{ path('app_user_show', {'id': user.id}) }}">Show</a>
-                        <a class="btn btn-success" href="{{ path('app_user_edit', {'id': user.id}) }}">Edit</a>
+                    <td class="align-middle">
+                        <div class="h-100 d-flex">
+                            <a class="btn btn-primary me-2" href="{{ path('app_user_show', {'id': user.id}) }}">Show</a>
+                            <a class="btn btn-success" href="{{ path('app_user_edit', {'id': user.id}) }}">Edit</a>
+                        </div>
                     </td>
                 </tr>
             {% else %}

@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Score;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -14,18 +15,11 @@ class ScoreType extends AbstractType
     {
         $builder
             ->add('score')
-            ->add('createdAt')
-            ->add('time')
-            ->add('level', ChoiceType::class, [
-                'required' => true,
-                'multiple' => false,
-                'expanded' => false,
-                'choices' => [
-                    'Facile' => 'EASY',
-                    'Normal' => 'NORMAL',
-                    'Difficile' => 'HARD'
-                ],
+            ->add('createdAt', DateTimeType::class, [
+                'widget' => 'single_text',
+                'input'=> 'datetime_immutable'
             ])
+            ->add('time')
         ;
     }
 

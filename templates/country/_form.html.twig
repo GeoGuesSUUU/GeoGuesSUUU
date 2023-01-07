@@ -88,13 +88,21 @@
             }
         }) }}
     </div>
-    <div>
+    <div class="form-outline w-100">
         {{ form_label(form.claimDate) }}
-        {{ form_widget(form.claimDate) }}
+        {{ form_widget(form.claimDate, {
+            'attr': {
+                'class': 'form-control'
+            }
+        }) }}
     </div>
-    <div>
+    <div class="form-outline w-100">
         {{ form_label(form.ownedAt) }}
-        {{ form_widget(form.ownedAt) }}
+        {{ form_widget(form.ownedAt, {
+            'attr': {
+                'class': 'form-control'
+            }
+        }) }}
     </div>
     <button class="btn btn-success my-3">{{ button_label|default('Save') }}</button>
     {{ form_end(form) }}

@@ -23,9 +23,11 @@
                     <td>{{ level.difficulty }}</td>
                     <td>{{ level.label }}</td>
                     <td>{{ level.description }}</td>
-                    <td>
-                        <a class="btn btn-primary me-2" href="{{ path('app_level_show', {'id': level.id}) }}">show</a>
-                        <a class="btn btn-success" href="{{ path('app_level_edit', {'id': level.id}) }}">edit</a>
+                    <td class="align-middle">
+                        <div class="h-100 d-flex">
+                            <a class="btn btn-primary me-2" href="{{ path('app_level_show', {'id': level.id}) }}">Show</a>
+                            <a class="btn btn-success" href="{{ path('app_level_edit', {'id': level.id}) }}">Edit</a>
+                        </div>
                     </td>
                 </tr>
             {% else %}

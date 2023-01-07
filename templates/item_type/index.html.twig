@@ -32,9 +32,11 @@
                 <td>{{ item_type.fantastic ? 'Yes' : 'No' }}</td>
                 <td>{{ item_type.img }}</td>
                 <td>{{ item_type.effects ? item_type.effects|json_encode : '' }}</td>
-                <td class="d-flex">
-                    <a class="btn btn-primary me-2" href="{{ path('app_item_type_show', {'id': item_type.id}) }}">show</a>
-                    <a class="btn btn-success" href="{{ path('app_item_type_edit', {'id': item_type.id}) }}">edit</a>
+                <td class="align-middle">
+                    <div class="h-100 d-flex">
+                        <a class="btn btn-primary me-2" href="{{ path('app_item_type_show', {'id': item_type.id}) }}">Show</a>
+                        <a class="btn btn-success" href="{{ path('app_item_type_edit', {'id': item_type.id}) }}">Edit</a>
+                    </div>
                 </td>
             </tr>
         {% else %}
