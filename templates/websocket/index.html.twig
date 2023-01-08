@@ -1,0 +1,98 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+        <style>
+
+            #chat {
+                height: 60vh;
+                border: solid lightgrey 1px;
+                overflow: auto;
+                margin-bottom: 20px;
+            }
+
+            .message {
+                overflow-wrap: anywhere;
+                padding-block: 5px;
+                padding-inline: 10px;
+            }
+        </style>
+    <div class="d-flex card border-secondary m-3">
+        <div class="card-header">
+            Online Chat
+        </div>
+        <div class="card-body text-secondary">
+            <div id="chat">
+
+            </div>
+            <div>
+                <form id="chat-form" class="d-flex flex-row justify-content-center">
+                    <input type="color" class="form-control form-control-color" id="color-picker" title="Choose your color">
+                    <label for="message"></label><input type="text" id="message" class="form-control" placeholder="Envoyer un message"/>
+                    <button type="submit" id="sendBtn" class="btn btn-secondary">Send</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+
+        const colorPicker = document.getElementById("color-picker");
+
+        colorPicker.onchange = () => {
+            window.localStorage.setItem('color', colorPicker.value)
+        }
+
+        if (colorPicker) {
+            colorPicker.value = window.localStorage.getItem('color') ?? '#00DB87';
+        }
+
+        const socket = new WebSocket("ws://localhost:8001");
+        socket.onopen = () => {
+            console.log("ChatServer : CONNECTED");
+        }
+
+        socket.onclose = () => {
+            console.log("ChatServer : Close");
+        };
+
+        socket.onerror = () => {
+            console.log("ChatServer : Error");
+        };
+
+        function addMessage(message) {
+            console.log(message)
+            const messageHTML = "<div class='message'><strong style='color: " + message.user.color + "'>" + message.user.name + ":</strong> " + message.content + "</div>";
+            document.getElementById("chat").innerHTML += messageHTML
+        }
+
+        socket.onmessage = (event) => {
+            console.log(event.data);
+            try {
+                const message = JSON.parse(event.data);
+                addMessage(message);
+            } catch (e) {
+                // Catch any errors
+            }
+        };
+
+        document.getElementById("chat-form")?.addEventListener("submit", function (event) {
+            event.preventDefault()
+            const messageValue = document.getElementById("message").value
+            if (!messageValue || messageValue.length < 1) return
+
+
+            const message = {
+                event: '@Message',
+                user: {
+                    id: '{{ user.id }}',
+                    name: '{{ user.name }}',
+                    color: colorPicker?.value ?? '#00DB87'
+                },
+                content: messageValue,
+                publishAt: Date.now()
+            };
+            console.log('SEND : ', message)
+            socket.send(JSON.stringify(message));
+            addMessage(message);
+        });
+    </script>
+{% endblock %}
