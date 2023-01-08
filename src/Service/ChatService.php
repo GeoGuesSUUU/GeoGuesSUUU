@@ -58,7 +58,9 @@ class ChatService
                     'user' => [
                         'id' => $user->getId(),
                         'name' => $user->getName(),
-                        'color' => $msg->getColor()
+                        'color' => $msg->getColor(),
+                        'isAdmin' => in_array('ROLE_ADMIN', $msg->getUser()->getRoles()),
+                        'isVerified' => $msg->getUser()->isVerified()
                     ],
                     'content' => $msg->getContent(),
                     'publishAt' => $msg->getPublishAt()
@@ -88,7 +90,9 @@ class ChatService
                 'user' => [
                     'id' => $msg->getUser()->getId(),
                     'name' => $msg->getUser()->getName(),
-                    'color' => $msg->getColor()
+                    'color' => $msg->getColor(),
+                    'isAdmin' => in_array('ROLE_ADMIN', $msg->getUser()->getRoles()),
+                    'isVerified' => $msg->getUser()->isVerified()
                 ],
                 'content' => $msg->getContent(),
                 'publishAt' => $msg->getPublishAt()

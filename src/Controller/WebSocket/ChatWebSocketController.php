@@ -18,6 +18,7 @@ class ChatWebSocketController extends AbstractController
         return $this->render('websocket/index.html.twig', [
             'controller_name' => 'ChatWebsocketController',
             'user' => $user,
+            'isAdmin' => in_array('ROLE_ADMIN', $user->getRoles())
         ]);
     }
 }

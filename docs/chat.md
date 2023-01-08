@@ -48,6 +48,8 @@ To save message in database, please respect the following minimal format
             id: <user_id>
             name: <user_name>
             color: <color>
+            isAdmin: <boolean>
+            isVerified: <boolean>
         },
         content: <message_content>
         publishAt: <date>
@@ -55,7 +57,7 @@ To save message in database, please respect the following minimal format
 }
 ```
 
-**@SendMessage** Response (@Message) :
+**@GetMessages** Response (@Message) :
 ```
 {
     event: '@Messages',
@@ -65,6 +67,7 @@ To save message in database, please respect the following minimal format
                 id: <user_id>
                 name: <user_name>
                 color: <color>
+                isVerified: <boolean>
             },
             content: <message_content>
             publishAt: <date>
@@ -73,7 +76,7 @@ To save message in database, please respect the following minimal format
 }
 ```
 
-**@GetMessages** Response (@Message) :
+**@GetCountConnection** Response (@Message) :
 ```
 {
     event: '@ConnectionCount',
