@@ -77,6 +77,8 @@ To save message in database, please respect the following minimal format
 ```
 
 **@GetCountConnection** Response (@Message) :
+
+_This response is sent automatically when a user logs in/out_
 ```
 {
     event: '@ConnectionCount',

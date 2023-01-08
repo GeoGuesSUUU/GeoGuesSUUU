@@ -31,6 +31,8 @@ class ChatHandler implements MessageComponentInterface
     public function onOpen(ConnectionInterface $conn)
     {
         $this->connections->attach($conn);
+        $res = $this->chatService->getCountConnection();
+        $this->chatService->sendToEveryone(json_encode($res));
     }
 
     public function onMessage(ConnectionInterface $from, $msg)
@@ -62,12 +64,16 @@ class ChatHandler implements MessageComponentInterface
     public function onClose(ConnectionInterface $conn)
     {
         $this->connections->detach($conn);
+        $res = $this->chatService->getCountConnection();
+        $this->chatService->sendToEveryone(json_encode($res));
     }
 
     public function onError(ConnectionInterface $conn, Exception $e)
     {
         $this->connections->detach($conn);
         $conn->close();
+        $res = $this->chatService->getCountConnection();
+        $this->chatService->sendToEveryone(json_encode($res));
     }
 }
 

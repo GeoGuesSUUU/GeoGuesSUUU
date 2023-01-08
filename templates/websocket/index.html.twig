@@ -94,29 +94,19 @@
 
         // WebSocket
 
-        const socket = new WebSocket("ws://localhost:8001");
+        let socket = new WebSocket("ws://localhost:8001");
 
         socket.onopen = () => {
             console.log("ChatServer : CONNECTED");
             const request = {
                 event: '@GetMessages'
             };
-            const request2 = {
-                event: '@GetCountConnection'
-            };
             socket.send(JSON.stringify(request));
-            socket.send(JSON.stringify(request2));
-
-            // every 10 sec, update online user
-            setInterval(() => {
-                socket.send(JSON.stringify(request2));
-            }, 10000)
         }
 
         socket.onmessage = (event) => {
             try {
                 const response = JSON.parse(event.data);
-                console.log(response);
                 switch (response.event) {
                     case '@Message':
                         addMessage(response.response);
@@ -132,6 +122,20 @@
                 // Catch any errors
             }
         };
+
+        socket.onclose = () => {
+            console.warn('Connection lost, retry in 30 seconds...')
+            setTimeout(() => {
+                const closeFunction = socket.onclose;
+                const openFunction = socket.onopen;
+                const messageFunction = socket.onmessage;
+                socket = null;
+                socket = new WebSocket("ws://localhost:8001");
+                socket.onclose = closeFunction;
+                socket.onopen = openFunction;
+                socket.onmessage = messageFunction
+            }, 30000)
+        }
 
         // Form
 
