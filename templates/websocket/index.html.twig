@@ -15,10 +15,29 @@
                 padding-block: 5px;
                 padding-inline: 10px;
             }
+
+            .user-link {
+                text-decoration: none;
+                padding: 2px 5px;
+                border-radius: 5px;
+                transition: all 0.25s;
+            }
+
+            .user-link:hover {
+                background: #c6c6c6;
+            }
+
+            .message-content {
+                margin-inline: 5px;
+            }
         </style>
     <div class="d-flex card border-secondary m-3">
         <div class="card-header">
             Online Chat
+            <span class="badge bg-secondary">
+                <span id="user-online">0</span>
+                online
+            </span>
         </div>
         <div class="card-body text-secondary">
             <div id="chat">
@@ -27,7 +46,7 @@
             <div>
                 <form id="chat-form" class="d-flex flex-row justify-content-center">
                     <input type="color" class="form-control form-control-color" id="color-picker" title="Choose your color">
-                    <label for="message"></label><input type="text" id="message" class="form-control" placeholder="Envoyer un message"/>
+                    <label for="message"></label><input type="text" id="message" class="form-control" placeholder="Envoyer un message" autocomplete="false"/>
                     <button type="submit" id="sendBtn" class="btn btn-secondary">Send</button>
                 </form>
             </div>
@@ -36,43 +55,77 @@
     <script type="text/javascript">
 
         const colorPicker = document.getElementById("color-picker");
+        const chatElement = document.getElementById("chat");
+
+        // Color
 
         colorPicker.onchange = () => {
             window.localStorage.setItem('color', colorPicker.value)
         }
-
         if (colorPicker) {
             colorPicker.value = window.localStorage.getItem('color') ?? '#00DB87';
         }
 
-        const socket = new WebSocket("ws://localhost:8001");
-        socket.onopen = () => {
-            console.log("ChatServer : CONNECTED");
-        }
-
-        socket.onclose = () => {
-            console.log("ChatServer : Close");
-        };
-
-        socket.onerror = () => {
-            console.log("ChatServer : Error");
-        };
+        // Functions
 
         function addMessage(message) {
-            console.log(message)
-            const messageHTML = "<div class='message'><strong style='color: " + message.user.color + "'>" + message.user.name + ":</strong> " + message.content + "</div>";
-            document.getElementById("chat").innerHTML += messageHTML
+            const messageHTML = "<div class='message'><strong><a href='http://localhost:8000/admin/user/" + message.user.id + "' class='user-link' style='color: " + message.user.color + "'>" + message.user.name + "</a>:</strong><span class='message-content'>" + message.content + "</span></div>";
+            chatElement.innerHTML += messageHTML
+            chatElement.scrollTop = chatElement.scrollHeight
+        }
+
+        function addMessages(messages) {
+            for (const message of messages) {
+                addMessage(message)
+            }
+        }
+
+        function updateOnline(count) {
+            document.getElementById("user-online").innerHTML = count
+        }
+
+        // WebSocket
+
+        const socket = new WebSocket("ws://localhost:8001");
+
+        socket.onopen = () => {
+            console.log("ChatServer : CONNECTED");
+            const request = {
+                event: '@GetMessages'
+            };
+            const request2 = {
+                event: '@GetCountConnection'
+            };
+            socket.send(JSON.stringify(request));
+            socket.send(JSON.stringify(request2));
+
+            // every 10 sec, update online user
+            setInterval(() => {
+                socket.send(JSON.stringify(request2));
+            }, 10000)
         }
 
         socket.onmessage = (event) => {
-            console.log(event.data);
             try {
-                const message = JSON.parse(event.data);
-                addMessage(message);
+                const response = JSON.parse(event.data);
+                console.log(response);
+                switch (response.event) {
+                    case '@Message':
+                        addMessage(response.response);
+                        break;
+                    case '@Messages':
+                        addMessages(response.response)
+                        break;
+                    case '@ConnectionCount':
+                        updateOnline(response.response.count)
+                        break;
+                }
             } catch (e) {
                 // Catch any errors
             }
         };
+
+        // Form
 
         document.getElementById("chat-form")?.addEventListener("submit", function (event) {
             event.preventDefault()
@@ -81,7 +134,7 @@
 
 
             const message = {
-                event: '@Message',
+                event: '@SendMessage',
                 user: {
                     id: '{{ user.id }}',
                     name: '{{ user.name }}',
@@ -90,9 +143,9 @@
                 content: messageValue,
                 publishAt: Date.now()
             };
-            console.log('SEND : ', message)
             socket.send(JSON.stringify(message));
             addMessage(message);
+            document.getElementById("message").value = '';
         });
     </script>
 {% endblock %}

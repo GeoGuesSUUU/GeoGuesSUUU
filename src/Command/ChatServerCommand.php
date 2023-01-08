@@ -2,6 +2,8 @@
 
 namespace App\Command;
 
+use App\Repository\MessageRepository;
+use App\Service\UserService;
 use App\WebSocket\ChatHandler;
 use Ratchet\Http\HttpServer;
 use Ratchet\Server\IoServer;
@@ -12,8 +14,16 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand('app:server:chat', 'Start chat server')]
-class WebsocketServerCommand extends Command
+class ChatServerCommand extends Command
 {
+    public function __construct(
+        private readonly MessageRepository $messageRepository,
+        private readonly UserService       $userService,
+    )
+    {
+        parent::__construct();
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $port = 8001;
@@ -21,7 +31,10 @@ class WebsocketServerCommand extends Command
         $server = IoServer::factory(
             new HttpServer(
                 new WsServer(
-                    new ChatHandler()
+                    new ChatHandler(
+                        $this->messageRepository,
+                        $this->userService
+                    )
                 )
             ),
             $port
