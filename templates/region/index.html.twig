@@ -21,9 +21,11 @@
                     <td>{{ region.id }}</td>
                     <td>{{ region.name }}</td>
                     <td>{{ region.flag }}</td>
-                    <td>
-                        <a class="btn btn-primary me-2" href="{{ path('app_region_show', {'id': region.id}) }}">show</a>
-                        <a class="btn btn-success" href="{{ path('app_region_edit', {'id': region.id}) }}">edit</a>
+                    <td class="align-middle">
+                        <div class="h-100 d-flex">
+                            <a class="btn btn-primary me-2" href="{{ path('app_region_show', {'id': region.id}) }}">Show</a>
+                            <a class="btn btn-success" href="{{ path('app_region_edit', {'id': region.id}) }}">Edit</a>
+                        </div>
                     </td>
                 </tr>
             {% else %}
@@ -34,6 +36,6 @@
             </tbody>
         </table>
 
-        <a class="btn btn-primary" href="{{ path('app_region_new') }}">Create new</a>
+        <a class="btn btn-primary" href="{{ path('app_region_new') }}">Create new Region</a>
     </div>
 {% endblock %}

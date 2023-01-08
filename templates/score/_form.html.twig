@@ -12,23 +12,19 @@
             }
         }) }}
     </div>
-    <div>
+    <div class="form-outline w-100">
         {{ form_label(form.createdAt) }}
-        {{ form_widget(form.createdAt) }}
+        {{ form_widget(form.createdAt, {
+            'attr': {
+                'class': 'form-control'
+            }
+        }) }}
     </div>
     <div class="form-outline w-100">
         {{ form_label(form.time) }}
         {{ form_widget(form.time, {
             'attr': {
                 'class': 'form-control'
-            }
-        }) }}
-    </div>
-    <div class="w-100">
-        {{ form_label(form.level) }}
-        {{ form_widget(form.level, {
-            'attr': {
-                'class': 'form-select'
             }
         }) }}
     </div>
