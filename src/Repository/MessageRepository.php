@@ -48,7 +48,6 @@ class MessageRepository extends ServiceEntityRepository
         $date = new \DateTimeImmutable();
         $date = $date->setTimestamp($date->getTimestamp() - ($hours * 3600));
         $dateString = $date->format('Y-m-d H:i:s');
-        echo "DELETE FROM message WHERE publish_at <= '". $dateString ."'";
         return $this->getEntityManager()
             ->createQuery(
                 "DELETE FROM App:Message m WHERE m.publishAt <= '". $dateString ."'"
