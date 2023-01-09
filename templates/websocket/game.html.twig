@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Game | {{ data.title }}{% endblock %}</title>
+    <link rel="icon" href="{% if icon starts with '/assets/' %}{{ 'http://' ~ host }}{% endif %}{{ asset('/assets/img/earth-icon.svg') }}">
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('app') }}
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+        <link href="{{ asset('assets/game-find-the-flag.css') }}" rel="stylesheet">
+    {% endblock %}
+</head>
+<body>
+    <main class="d-flex flex-column vh-100 align-items-center">
+        {% block body %}
+            <div class="container py-4">
+                <header class="pb-3 mb-4 border-bottom">
+                    <div class="d-flex align-items-center text-dark text-decoration-none">
+                        <img src="{% if icon starts with '/assets/' %}{{ 'http://' ~ host }}{% endif %}{{ icon | default(asset('/assets/img/earth-icon.svg')) }}" alt="flag icon" width="50">
+                        <span class="fs-3 px-2">{{ data.title }}</span>
+                    </div>
+                </header>
+
+                {% if data.img is defined %}
+                    <div class="game-img p-5 mb-4 bg-light rounded-3" style='background-image: url("{{ data.img }}")'>
+                        <div class="container-fluid py-5 my-2" ></div>
+                    </div>
+                {% endif %}
+
+                <div class="row align-items-md-stretch mb-4">
+                    <div class="col-md-12">
+                        <div class="h-100 p-5 text-bg-secondary rounded-3">
+                            <h2>Description : </h2>
+                            <p>{{ data.description }}</p>
+
+                            {% if data.levels.toArray is not empty %}
+                                <h3>Level : </h3>
+                                <select class="form-select" aria-label="select game">
+                                    {% for option in data.levels.toArray %}
+                                        <option value="{{ option.difficulty }}">
+                                            {{ option.label }} {{ option.difficulty }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row align-items-md-stretch">
+                    <div class="col-md-6">
+                        <div class="h-100 p-5 text-bg-dark rounded-3">
+                            <h2>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+                                    <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+                                </svg>
+                                Single Player
+                            </h2>
+                            <p>Play alone without score multiplier. Play now without delay!</p>
+                            <button class="btn btn-outline-light" type="button">Play</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="h-100 p-5 bg-light border rounded-3">
+                            <h2>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
+                                    <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
+                                </svg>
+                                Multi Player
+                            </h2>
+                            <p>Play with multiple players with a score multiplier based on the number of players, maximum number of players 8. Create a salon or join one !</p>
+                            <button class="btn btn-outline-secondary" type="button">Create</button>
+                            <button class="btn btn-outline-secondary" type="button">Join</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endblock %}
+    </main>
+
+{% block javascripts %}
+    {{ encore_entry_script_tags('app') }}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+    {% if script is defined %}
+    <script src="{% if icon starts with '/assets/' %}{{ 'http://' ~ host }}{% endif %}{{ asset(script) }}"></script>
+    {% endif %}
+{% endblock %}
+</body>
+</html>
+

@@ -1,9 +1,6 @@
 .game-img {
-    height: 300px;
-
-    object-fit: cover;
-    object-position: center;
-    filter: brightness(0.8);
+    background-position: center;
+    background-size: 100%;
 }
 
 .game-title {
