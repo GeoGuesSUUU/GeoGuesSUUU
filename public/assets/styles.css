@@ -3,6 +3,7 @@ main {
 }
 
 header {
+    z-index: 999;
     background-color: #FFFFFF;
 }
 

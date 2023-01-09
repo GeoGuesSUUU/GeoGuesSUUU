@@ -3,6 +3,8 @@
 ![](https://img.shields.io/badge/PHP-8.1-777BB4?style=for-the-badge&logo=php&logoColor=white)
 ![](https://img.shields.io/badge/Symfony-6.1-FFFFFF?style=for-the-badge&logo=symfony&logoColor=white)
 
+<img src="./public/assets/img/earth-icon.svg" alt="app logo" width="100">
+
 ## Requirement
 
 | **name**    | **version** |
@@ -19,6 +21,18 @@
     - DATABASE_URL
     - JWT_PASSPHRASE
 4. Start Symfony project: `symphony serve`
+
+## Architecture
+
+<img src="./public/assets/img/archi-geoguessuuu.svg" alt="archi" width="500">
+
+## Port
+
+| **Port** | description          |
+|----------|----------------------|
+| 8000     | WebService + API Doc |
+| 8001     | Chat Server          |
+
 
 ## API Documentation
 

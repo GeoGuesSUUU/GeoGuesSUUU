@@ -21,3 +21,14 @@ Or...
 ```shell
 php bin/console app:country:init [(number)?]
 ```
+
+## Start Chat Server
+
+execute the following command:
+```shell
+symfony console app:server:chat
+```
+Or...
+```shell
+php bin/console app:server:chat
+```

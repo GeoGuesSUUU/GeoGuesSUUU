@@ -23,9 +23,11 @@
                     <td>{{ score.score }}</td>
                     <td>{{ score.createdAt ? score.createdAt|date('Y-m-d H:i:s') : '' }}</td>
                     <td>{{ score.time }}</td>
-                    <td>
-                        <a class="btn btn-primary me-2" href="{{ path('app_score_show', {'id': score.id}) }}">show</a>
-                        <a class="btn btn-success" href="{{ path('app_score_edit', {'id': score.id}) }}">edit</a>
+                    <td class="align-middle">
+                        <div class="h-100 d-flex">
+                            <a class="btn btn-primary me-2" href="{{ path('app_score_show', {'id': score.id}) }}">Show</a>
+                            <a class="btn btn-success" href="{{ path('app_score_edit', {'id': score.id}) }}">Edit</a>
+                        </div>
                     </td>
                 </tr>
             {% else %}
@@ -36,6 +38,6 @@
             </tbody>
         </table>
 
-        <a class="btn btn-primary" href="{{ path('app_score_new') }}">Create new</a>
+        <a class="btn btn-primary" href="{{ path('app_score_new') }}">Create new Score</a>
     </div>
 {% endblock %}
