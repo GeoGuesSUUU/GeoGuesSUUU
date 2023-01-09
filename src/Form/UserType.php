@@ -34,6 +34,19 @@ class UserType extends AbstractType
             ])
             ->add('coins')
             ->add('xp')
+            ->add('locale', ChoiceType::class, [
+                'required' => true,
+                'multiple' => false,
+                'expanded' => false,
+                'choices' => [
+                    'English' => 'en-US',
+                    'French' => 'fr',
+                    'Spanish' => 'es',
+                    'German' => 'de',
+                    'Italian' => 'it',
+                    'Chinese' => 'zh-CN',
+                ]
+            ])
             ->add('roles', ChoiceType::class, [
                 'required' => true,
                 'multiple' => false,
@@ -41,7 +54,7 @@ class UserType extends AbstractType
                 'choices' => [
                     'User' => 'ROLE_USER',
                     'Admin' => 'ROLE_ADMIN',
-                ],
+                ]
             ])
             ->add('isVerified');
 
