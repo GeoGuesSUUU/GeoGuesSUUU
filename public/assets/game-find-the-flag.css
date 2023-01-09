@@ -1,0 +1,14 @@
+.game-img {
+    height: 300px;
+
+    object-fit: cover;
+    object-position: center;
+    filter: brightness(0.8);
+}
+
+.game-title {
+    top: 75px;
+    font-size: 100px;
+    width: 100%;
+    text-align: center;
+}

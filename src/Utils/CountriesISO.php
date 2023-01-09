@@ -2,8 +2,6 @@
 
 namespace App\Utils;
 
-use UnitEnum;
-
 enum CountriesISO: string
 {
     case AF = 'Afghanistan';
