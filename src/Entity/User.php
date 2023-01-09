@@ -107,6 +107,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(groups: ['user_details'])]
     private Collection $countries;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Message::class)]
+    private Collection $messages;
+
     /**
      * @var string The hashed password
      */
@@ -524,6 +527,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setImg(?string $img): User
     {
         $this->img = $img;
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getMessages(): Collection
+    {
+        return $this->messages;
+    }
+
+    /**
+     * @param Collection $messages
+     * @return User
+     */
+    public function setMessages(Collection $messages): User
+    {
+        $this->messages = $messages;
         return $this;
     }
 }
