@@ -40,6 +40,14 @@
         }) }}
         {{ form_label(form.continent) }}
     </div>
+    <div class="w-100">
+        {{ form_label(form.user) }}
+        {{ form_widget(form.user, {
+            'attr': {
+                'class': 'form-select'
+            }
+        }) }}
+    </div>
     <div class="form-outline w-100">
         {{ form_label(form.initLife) }}
         {{ form_widget(form.initLife, {
@@ -104,6 +112,33 @@
             }
         }) }}
     </div>
+    <h3>Effects</h3>
+    <div class="w-100 effects"
+         data-index="{{ form.effects|length > 0 ? form.effects|last.vars.name + 1 : 0 }}"
+         data-prototype="{{ form_widget(form.effects.vars.prototype)|e('html_attr') }}"
+    >
+        {% for effect in form.effects %}
+            <div class="d-flex w-100 mb-3 effect">
+                <div class="form-floating me-1 w-100">
+                    {{ form_widget(effect.value, {
+                        'attr': {
+                            'class': 'form-control',
+                            'placeholder': 'value'
+                        }
+                    }) }}
+                    {{ form_label(effect.value) }}
+                </div>
+                <div class="me-1 w-100">
+                    {{ form_widget(effect.type, {
+                        'attr': {
+                            'class': 'form-select p-3'
+                        }
+                    }) }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <button type="button" class="add_item_link btn btn-primary" data-collection-holder-class="effects">Add Effect</button>
     <button class="btn btn-success my-3">{{ button_label|default('Save') }}</button>
     {{ form_end(form) }}
 </div>
