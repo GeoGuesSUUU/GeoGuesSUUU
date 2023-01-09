@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Message;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Exception;
 
 /**
  * @extends ServiceEntityRepository<Message>
@@ -37,6 +38,21 @@ class MessageRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function removeAllOlderMessages(int $hours = 1)
+    {
+        $date = new \DateTimeImmutable();
+        $date = $date->setTimestamp($date->getTimestamp() - ($hours * 3600));
+        $dateString = $date->format('Y-m-d H:i:s');
+        return $this->getEntityManager()
+            ->createQuery(
+                "DELETE FROM App:Message m WHERE m.publishAt <= '". $dateString ."'"
+            )
+            ->getResult();
     }
 
 //    /**
