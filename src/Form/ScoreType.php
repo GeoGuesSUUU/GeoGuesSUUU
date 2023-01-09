@@ -2,7 +2,10 @@
 
 namespace App\Form;
 
+use App\Entity\Level;
 use App\Entity\Score;
+use App\Entity\User;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -20,6 +23,20 @@ class ScoreType extends AbstractType
                 'input'=> 'datetime_immutable'
             ])
             ->add('time')
+            ->add('user', EntityType::class, [
+                'class' => User::class,
+                'choice_label' =>  function (User $user) {
+                    return $user->getName() . ' ' . $user->getEmail();
+                },
+                'required' => true
+            ])
+            ->add('level', EntityType::class, [
+                'class' => Level::class,
+                'choice_label' =>  function (Level $level) {
+                    return $level->getLabel() . ' ' . $level->getDifficulty();
+                },
+                'required' => true
+            ])
         ;
     }
 
