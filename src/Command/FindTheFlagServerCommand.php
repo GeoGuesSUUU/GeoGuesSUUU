@@ -2,9 +2,7 @@
 
 namespace App\Command;
 
-use App\Repository\MessageRepository;
 use App\Service\UserService;
-use App\WebSocket\ChatHandler;
 use App\WebSocket\FindTheFlagGameHandler;
 use Ratchet\Http\HttpServer;
 use Ratchet\Server\IoServer;
@@ -17,7 +15,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 #[AsCommand('app:server:find-the-flag', 'Start "Find The Flag" Game Server')]
 class FindTheFlagServerCommand extends Command
 {
-    public function __construct()
+    public function __construct(
+        private readonly UserService $userService,
+    )
     {
         parent::__construct();
     }
@@ -29,7 +29,7 @@ class FindTheFlagServerCommand extends Command
         $server = IoServer::factory(
             new HttpServer(
                 new WsServer(
-                    new FindTheFlagGameHandler()
+                    new FindTheFlagGameHandler($this->userService)
                 )
             ),
             $port

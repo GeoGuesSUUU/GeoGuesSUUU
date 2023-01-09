@@ -29,13 +29,13 @@
 
                 <div class="row align-items-md-stretch mb-4">
                     <div class="col-md-12">
-                        <div class="h-100 p-5 text-bg-secondary rounded-3">
+                        <div class="card-mode h-100 p-5 text-bg-secondary rounded-3">
                             <h2>Description : </h2>
                             <p>{{ data.description }}</p>
 
                             {% if data.levels.toArray is not empty %}
                                 <h3>Level : </h3>
-                                <select class="form-select" aria-label="select game">
+                                <select id="level-input" class="form-select" aria-label="select game">
                                     {% for option in data.levels.toArray %}
                                         <option value="{{ option.difficulty }}">
                                             {{ option.label }} {{ option.difficulty }}
@@ -47,9 +47,13 @@
                     </div>
                 </div>
 
+                <div id="game-body">
+
+                </div>
+
                 <div class="row align-items-md-stretch">
                     <div class="col-md-6">
-                        <div class="h-100 p-5 text-bg-dark rounded-3">
+                        <div class="card-mode h-100 p-5 text-bg-dark rounded-3">
                             <h2>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
                                     <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
@@ -57,11 +61,11 @@
                                 Single Player
                             </h2>
                             <p>Play alone without score multiplier. Play now without delay!</p>
-                            <button class="btn btn-outline-light" type="button">Play</button>
+                            <button id="btn-single-play" class="btn btn-outline-light" type="button">Play</button>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="h-100 p-5 bg-light border rounded-3">
+                        <div class="card-mode h-100 p-5 bg-light border rounded-3">
                             <h2>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
                                     <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>

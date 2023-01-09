@@ -4,6 +4,7 @@ namespace App\WebSocket;
 
 use App\Repository\MessageRepository;
 use App\Service\ChatService;
+use App\Service\FindTheFlagGameService;
 use App\Service\UserService;
 use Exception;
 use Ratchet\ConnectionInterface;
@@ -13,10 +14,14 @@ use SplObjectStorage;
 class FindTheFlagGameHandler implements MessageComponentInterface
 {
     protected SplObjectStorage $connections;
+    private FindTheFlagGameService $findTheFlagGameService;
 
-    public function __construct()
+    public function __construct(
+        UserService $userService,
+    )
     {
         $this->connections = new SplObjectStorage;
+        $this->findTheFlagGameService = new FindTheFlagGameService($userService, $this->connections);
     }
 
     public function onOpen(ConnectionInterface $conn)
@@ -29,14 +34,22 @@ class FindTheFlagGameHandler implements MessageComponentInterface
         /** @var array $json */
         $json = json_decode($msg, true);
         switch ($json['event']) {
-            case '@StartGame':
+            case '@StartGameSingle':
+                $res = $this->findTheFlagGameService->startGame($json);
+                $from->send(json_encode($res));
                 break;
             case '@CreateOrJoinRoom':
+                $res = $this->findTheFlagGameService->createOrJoinRoom($from, $json);
+                $from->send(json_encode($res));
                 break;
-            case '@GuessCountry':
+            case '@LeaveRoom':
+                $res = $this->findTheFlagGameService->LeaveRoom($from, $json);
+                $from->send(json_encode($res));
                 break;
-            case '@FinishGame':
-                break;
+//            case '@GuessCountry':
+//                break;
+//            case '@FinishGame':
+//                break;
             default:
         }
     }
