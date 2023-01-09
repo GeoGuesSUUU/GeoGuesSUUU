@@ -45,3 +45,11 @@ header img {
 .rotating {
     animation: rotating 10s linear infinite;
 }
+
+.element-effect {
+    width: 100%;
+}
+
+.element-effect .form-select {
+    padding: 1rem !important;
+}
