@@ -5,6 +5,7 @@
 {% block body %}
     <div class="d-flex flex-column align-items-center w-75 mx-auto">
         <h1>List of Regions</h1>
+        <a class="btn btn-primary mb-3" href="{{ path('app_region_new') }}">Create new Region</a>
 
         <table class="table table-striped border">
             <thead>
@@ -35,7 +36,5 @@
             {% endfor %}
             </tbody>
         </table>
-
-        <a class="btn btn-primary" href="{{ path('app_region_new') }}">Create new Region</a>
     </div>
 {% endblock %}

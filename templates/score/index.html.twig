@@ -5,6 +5,7 @@
 {% block body %}
     <div class="d-flex flex-column align-items-center w-75 mx-auto">
         <h1>List of Scores</h1>
+        <a class="btn btn-primary mb-3" href="{{ path('app_score_new') }}">Create new Score</a>
 
         <table class="table table-striped border">
             <thead>
@@ -37,7 +38,5 @@
             {% endfor %}
             </tbody>
         </table>
-
-        <a class="btn btn-primary" href="{{ path('app_score_new') }}">Create new Score</a>
     </div>
 {% endblock %}

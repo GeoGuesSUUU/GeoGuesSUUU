@@ -5,16 +5,17 @@
 {% block body %}
     <div class="d-flex flex-column align-items-center w-75 mx-auto">
         <h1>List of Levels</h1>
+        <a class="btn btn-primary mb-3" href="{{ path('app_level_new') }}">Create new Level</a>
 
         <table class="table table-striped border">
             <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Difficulty</th>
-                    <th>Label</th>
-                    <th>Description</th>
-                    <th>actions</th>
-                </tr>
+            <tr>
+                <th>Id</th>
+                <th>Difficulty</th>
+                <th>Label</th>
+                <th>Description</th>
+                <th>actions</th>
+            </tr>
             </thead>
             <tbody>
             {% for level in levels %}
@@ -25,7 +26,8 @@
                     <td>{{ level.description }}</td>
                     <td class="align-middle">
                         <div class="h-100 d-flex">
-                            <a class="btn btn-primary me-2" href="{{ path('app_level_show', {'id': level.id}) }}">Show</a>
+                            <a class="btn btn-primary me-2"
+                               href="{{ path('app_level_show', {'id': level.id}) }}">Show</a>
                             <a class="btn btn-success" href="{{ path('app_level_edit', {'id': level.id}) }}">Edit</a>
                         </div>
                     </td>
@@ -37,7 +39,5 @@
             {% endfor %}
             </tbody>
         </table>
-
-        <a class="btn btn-primary" href="{{ path('app_level_new') }}">Create new</a>
     </div>
 {% endblock %}
