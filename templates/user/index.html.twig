@@ -16,6 +16,7 @@
                 <th>Password</th>
                 <th>Coins</th>
                 <th>Xp</th>
+                <th>Locale</th>
                 <th>Roles</th>
                 <th>actions</th>
             </tr>
@@ -29,6 +30,7 @@
                     <td class="text-truncate" style="max-width: 200px" >{{ user.password }}</td>
                     <td>{{ user.coins }}</td>
                     <td>{{ user.xp }}</td>
+                    <td>{{ user.locale }}</td>
                     <td>{{ user.roles|json_encode() }}</td>
                     <td class="align-middle">
                         <div class="h-100 d-flex">
