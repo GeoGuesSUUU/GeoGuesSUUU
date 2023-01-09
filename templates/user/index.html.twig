@@ -5,6 +5,7 @@
 {% block body %}
     <div class="d-flex flex-column align-items-center w-75 mx-auto">
         <h1>List of Users</h1>
+        <a class="btn btn-primary mb-3" href="{{ path('app_user_new') }}">Create new User</a>
 
         <table class="table table-striped border">
             <thead>
@@ -43,7 +44,5 @@
             {% endfor %}
             </tbody>
         </table>
-
-        <a class="btn btn-primary" href="{{ path('app_user_new') }}">Create new user</a>
     </div>
 {% endblock %}

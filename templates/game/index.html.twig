@@ -5,6 +5,7 @@
 {% block body %}
     <div class="d-flex flex-column align-items-center w-75 mx-auto">
         <h1>List of Games</h1>
+        <a class="btn btn-primary mb-3" href="{{ path('app_game_new') }}">Create new Game</a>
 
         <table class="table table-striped border">
             <thead>
@@ -12,7 +13,6 @@
                     <th>Id</th>
                     <th>Title</th>
                     <th>Description</th>
-                    <th>Img</th>
                     <th>Tags</th>
                     <th>Server</th>
                     <th>actions</th>
@@ -24,7 +24,6 @@
                     <td>{{ game.id }}</td>
                     <td>{{ game.title }}</td>
                     <td>{{ game.description }}</td>
-                    <td>{{ game.img }}</td>
                     <td>{{ game.tags }}</td>
                     <td>{{ game.server }}</td>
                     <td class="align-middle">
@@ -41,7 +40,5 @@
             {% endfor %}
             </tbody>
         </table>
-
-        <a class="btn btn-primary" href="{{ path('app_game_new') }}">Create new</a>
     </div>
 {% endblock %}
