@@ -28,6 +28,22 @@
             }
         }) }}
     </div>
+    <div class="w-100">
+        {{ form_label(form.user) }}
+        {{ form_widget(form.user, {
+            'attr': {
+                'class': 'form-select'
+            }
+        }) }}
+    </div>
+    <div class="w-100">
+        {{ form_label(form.level) }}
+        {{ form_widget(form.level, {
+            'attr': {
+                'class': 'form-select'
+            }
+        }) }}
+    </div>
     <button class="btn btn-success my-3">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}
 </div>
