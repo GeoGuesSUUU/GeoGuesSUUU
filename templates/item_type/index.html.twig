@@ -24,7 +24,13 @@
             <tbody>
             {% for item_type in item_types %}
                 <tr>
-                    <td><img crossorigin="anonymous" class="representation-image" src="{{ item_type.img }}"></td>
+                    <td>
+                        {% if item_type.img is not empty %}
+                            <img crossorigin="anonymous" class="representation-image" src="{{ item_type.img }}">
+                        {% else %}
+                            <img class="representation-image" src="/assets/img/items/item_default.svg">
+                        {% endif %}
+                    </td>
                     <td>{{ item_type.id }}</td>
                     <td>{{ item_type.name }}</td>
                     <td>{{ item_type.description }}</td>

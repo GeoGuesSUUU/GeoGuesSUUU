@@ -35,7 +35,13 @@
             </tr>
             <tr>
                 <th>Image</th>
-                <td><img crossorigin="anonymous" class="representation-image" src="{{ item_type.img }}"></td>
+                <td>
+                    {% if item_type.img is not empty %}
+                        <img crossorigin="anonymous" class="representation-image" src="{{ item_type.img }}">
+                    {% else %}
+                        <img class="representation-image" src="/assets/img/items/item_default.svg">
+                    {% endif %}
+                </td>
             </tr>
             <tr>
                 <th>Effects</th>
