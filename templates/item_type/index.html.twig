@@ -11,6 +11,7 @@
         <table class="table table-striped border">
             <thead>
             <tr>
+                <th>Image</th>
                 <th>Id</th>
                 <th>Name</th>
                 <th>Description</th>
@@ -23,6 +24,7 @@
             <tbody>
             {% for item_type in item_types %}
                 <tr>
+                    <td><img crossorigin="anonymous" class="representation-image" src="{{ item_type.img }}"></td>
                     <td>{{ item_type.id }}</td>
                     <td>{{ item_type.name }}</td>
                     <td>{{ item_type.description }}</td>
