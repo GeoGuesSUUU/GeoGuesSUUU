@@ -35,7 +35,7 @@ class FindTheFlagGameHandler implements MessageComponentInterface
         $json = json_decode($msg, true);
         switch ($json['event']) {
             case '@StartGameSingle':
-                $res = $this->findTheFlagGameService->startGame($json);
+                $res = $this->findTheFlagGameService->createPrivateRoomAndStartGame($from, $json);
                 $from->send(json_encode($res));
                 break;
             case '@CreateOrJoinRoom':

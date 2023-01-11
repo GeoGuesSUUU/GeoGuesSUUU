@@ -2,16 +2,19 @@
 
 namespace App\Service;
 
+use App\Entity\FindTheFlagRoom;
+use App\Entity\GameConnection;
+use App\Entity\GameRoom;
+use App\Entity\GameRoomMember;
 use App\Entity\User;
-use App\Utils\CountriesISO;
+use App\Utils\GameRoomVisibility;
 use Exception;
 use Ratchet\ConnectionInterface;
 use SplObjectStorage;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class FindTheFlagGameService extends WebSocketService
 {
-    private array $rooms;
+    private GameRoomService $gameRoomService;
 
     public function __construct(
         private readonly UserService       $userService,
@@ -19,106 +22,66 @@ class FindTheFlagGameService extends WebSocketService
     )
     {
         parent::__construct($connections);
+        $this->gameRoomService = new GameRoomService();
     }
 
     /**
-     * @throws Exception
+     * @param GameRoom $room
+     * @param User $user
+     * @return void
      */
-    public function startGame(array $data): array
+    public function connectRoomEmit(GameRoom $room, User $user): void
     {
-        $guessCount = (int) ($data['difficulty'] * 3);
-        $isoArray = [];
-        $isoAvailable = CountriesISO::countriesCases();
-        for ($i = 0; $i < $guessCount; $i++) {
-            $rand = random_int(0, count($isoAvailable) - 1);
-            $iso = $isoAvailable[$rand];
-
-            if (in_array(strtolower($iso->name), $isoArray)) continue;
-            $isoArray[] = strtolower($iso->name);
-        }
-
-        return [
-            'event' => '@GameStart',
-            'guess' => $isoArray
-        ];
-    }
-
-    public function connectRoomEmit(array $room, User $user) {
-        $connections = array_map(fn($conn) => $conn['connection'], $room);
         $res = [
             'event' => '@NewRoomConnection',
-            'user' => [
-                'id' => $user->getId(),
-                'name' => $user->getName(),
-                'isAdmin' => in_array('ROLE_ADMIN', $user->getRoles()),
-                'isVerified' => $user->isVerified()
-            ]
+            'user' => GameRoomMember::convertUser($user)
         ];
 
-        /** @var ConnectionInterface $connection */
-        foreach ($connections as $connection) {
-            $connection->send(json_encode($res));
+        foreach ($room->getConnections() as $connection) {
+            if ($connection->getUser()->getId() === $user->getId()) continue;
+            $connection->getConnection()->send(json_encode($res));
         }
     }
 
-    public function leaveRoomEmit(array $room, User $user) {
-        $connections = array_map(fn($conn) => $conn['connection'], $room);
+    /**
+     * @param GameRoom $room
+     * @param User $user
+     * @return void
+     */
+    public function leaveRoomEmit(GameRoom $room, User $user): void
+    {
         $res = [
             'event' => '@RemoveRoomConnection',
-            'user' => [
-                'id' => $user->getId(),
-                'name' => $user->getName(),
-                'isAdmin' => in_array('ROLE_ADMIN', $user->getRoles()),
-                'isVerified' => $user->isVerified()
-            ]
+            'user' => GameRoomMember::convertUser($user)
         ];
 
-        /** @var ConnectionInterface $connection */
-        foreach ($connections as $connection) {
-            $connection->send(json_encode($res));
+        foreach ($room->getConnections() as $connection) {
+            if ($connection->getUser()->getId() === $user->getId()) continue;
+            $connection->getConnection()->send(json_encode($res));
         }
     }
 
     public function createOrJoinRoom(ConnectionInterface $from, array $data): array
     {
         $roomName = $data['roomName'];
-        if (is_null($roomName) || strlen($roomName) < 1) {
-            return [
-                'exception' => [
-                    'code' => 401,
-                    'message' => 'Invalid Room Name'
-                ]
-            ];
-        }
 
         try {
             $user = $this->userService->getById($data['user']['id']);
 
-            $room = $this->rooms[$roomName];
-            $this->connectRoomEmit($room, $user);
-            $connection = [
-                'user' => $user,
-                'connection' => $from
-            ];
+            $room = $this->gameRoomService->getRoomByName($roomName);
             if (is_null($room)) {
-                $this->rooms[$roomName] = [
-                    'name' => $roomName,
-                    'isPrivate' => false,
-                    'connections' => $connection
-                ];
-            } else {
-                $room['connections'][] = $connection;
+                $room = $this->gameRoomService->createFindTheFlagRoom($roomName, GameRoomVisibility::PUBLIC);
             }
+
+            $newConnection = new GameConnection($user, $from);
+            $room->addConnection($newConnection);
+
+            $this->connectRoomEmit($room, $user);
 
             return [
                 'event' => '@RoomCreatedOrJoined',
-                'name' => $roomName,
-                'members' => array_map(fn($conn) => [
-                    'id' => $conn['user']->getId(),
-                    'name' => $conn['user']->getName(),
-                    'isAdmin' => in_array('ROLE_ADMIN', $conn['user']->getRoles()),
-                    'isVerified' => $conn['user']->isVerified()
-                ],$room)
+                'name' => $room->getName(),
+                'members' => $this->gameRoomService->getMembers()
             ];
         } catch (Exception $ex) {
             //
@@ -131,36 +94,53 @@ class FindTheFlagGameService extends WebSocketService
         }
     }
 
-    public function LeaveRoom(ConnectionInterface $from, array $data): array
+    public function LeaveRoom(ConnectionInterface $from, array $data): array | null
     {
         $roomName = $data['roomName'];
-        if (is_null($roomName) || strlen($roomName) < 1) {
-            return [
-                'exception' => [
-                    'code' => 401,
-                    'message' => 'Invalid Room Name'
-                ]
-            ];
-        }
+        $room = $this->gameRoomService
+            ->getRoomByName($roomName)?->removeConnectionByConnectionInterface($from);
+
+        if (is_null($room)) return null;
 
         try {
             $user = $this->userService->getById($data['user']['id']);
 
-            $room = $this->rooms[$roomName];
-            $this->leaveRoomEmit($room, $user);
-            if (is_null($room)) {
-                throw new NotFoundHttpException();
+            if (count($room->getConnections()) <= 0) {
+                $this->gameRoomService->removeRoomByName($roomName);
             } else {
-                $key = array_search(
-                    $user->getId(),
-                    array_map(fn($conn) => $conn['user']->getId(), $room['connections'])
-                );
-                unset($this->rooms[$roomName]['connections'][$key]);
-                return [
-                    'event' => '@RoomLeaved',
-                    'name' => $roomName
-                ];
+                $this->leaveRoomEmit($room, $user);
             }
+            return [
+                'event' => '@RoomLeaved',
+                'name' => $roomName
+            ];
+        } catch (Exception $ex) {
+            //
+            return [
+                'exception' => [
+                    'code' => $ex->getCode(),
+                    'message' => $ex->getMessage()
+                ]
+            ];
+        }
+    }
+
+    public function createPrivateRoomAndStartGame(ConnectionInterface $from, array $data): array
+    {
+        try {
+            $user = $this->userService->getById($data['user']['id']);
+            $room = $this->gameRoomService->createFindTheFlagRoom(null, GameRoomVisibility::PRIVATE);
+
+            $newConnection = new GameConnection($user, $from);
+            $room->addConnection($newConnection);
+
+            $room->initGame($data['difficulty']);
+
+            return [
+                'event' => '@GameStart',
+                'room' => $room->getName(),
+                'guess' => $room->getGuess()
+            ];
         } catch (Exception $ex) {
             //
             return [

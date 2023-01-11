@@ -45,6 +45,7 @@ class UserService
      * @param int $id
      * @param bool $detail
      * @return User
+     * @throws UserNotFoundApiException
      */
     public function getById(int $id, bool $detail = false): User
     {

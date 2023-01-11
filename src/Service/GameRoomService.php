@@ -1,0 +1,95 @@
+<?php
+
+namespace App\Service;
+
+use App\Entity\FindTheFlagRoom;
+use App\Entity\GameConnection;
+use App\Entity\GameRoom;
+use App\Entity\GameRoomMember;
+use App\Entity\User;
+use App\Utils\GameRoomVisibility;
+
+class GameRoomService
+{
+    /** @var (GameRoom | FindTheFlagRoom)[] array  */
+    private array $rooms;
+
+    public function __construct()
+    {
+        $this->rooms = [];
+    }
+
+    /**
+     * @param string|null $name
+     * @param GameRoomVisibility $visibility
+     * @param GameConnection ...$connection
+     * @return GameRoom
+     */
+    public function createRoom(
+        ?string $name,
+        GameRoomVisibility $visibility = GameRoomVisibility::PUBLIC,
+        GameConnection ...$connection
+    ): GameRoom
+    {
+        if (is_null($name) || strlen($name) < 1) {
+            $name = 'Room' . uniqid();
+        }
+        $newRoom = new GameRoom($name, $visibility);
+        $newRoom->addConnections(...$connection);
+        $this->rooms[] = $newRoom;
+        return $newRoom;
+    }
+
+    /**
+     * @param string|null $name
+     * @param GameRoomVisibility $visibility
+     * @param GameConnection ...$connection
+     * @return FindTheFlagRoom
+     */
+    public function createFindTheFlagRoom(
+        ?string $name,
+        GameRoomVisibility $visibility = GameRoomVisibility::PUBLIC,
+        GameConnection ...$connection
+    ): FindTheFlagRoom
+    {
+        if (is_null($name) || strlen($name) < 1) {
+            $name = 'Room' . uniqid();
+        }
+        $newRoom = new FindTheFlagRoom($name, $visibility);
+        $newRoom->addConnections(...$connection);
+        $this->rooms[] = $newRoom;
+        return $newRoom;
+    }
+
+    /**
+     * @param string $name
+     * @return GameRoom | FindTheFlagRoom | null
+     */
+    public function getRoomByName(string $name): GameRoom | FindTheFlagRoom | null
+    {
+        return $this->rooms[$name] ?? null;
+    }
+
+    /**
+     * @return User[]
+     */
+    public function getUsers(): array
+    {
+        return array_map(fn($conn) => $conn->getUsers(), $this->rooms);
+    }
+
+    /**
+     * @return GameRoomMember[]
+     */
+    public function getMembers(): array
+    {
+        return array_map(fn($conn) => GameRoomMember::convertUser($conn->getUsers()) , $this->rooms);
+    }
+
+    public function removeRoomByName(string $name): GameRoomService
+    {
+        $this->rooms = array_filter($this->rooms, fn($room) => $room->getName() !== $name);
+        return $this;
+    }
+
+}
