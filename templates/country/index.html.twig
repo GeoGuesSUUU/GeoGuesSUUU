@@ -11,6 +11,7 @@
         <table class="table table-striped border">
             <thead>
             <tr>
+                <th>Flag</th>
                 <th>Id</th>
                 <th>Name</th>
                 <th>Code</th>
@@ -26,6 +27,7 @@
             <tbody>
             {% for country in countries %}
                 <tr>
+                    <td><img crossorigin="anonymous" class="representation-image" src="{{ country.flag }}"></td>
                     <td>{{ country.id }}</td>
                     <td>{{ country.name }}</td>
                     <td>{{ country.code }}</td>

@@ -10,6 +10,7 @@
         <table class="table table-striped border">
             <thead>
                 <tr>
+                    <th>Image</th>
                     <th>Id</th>
                     <th>Title</th>
                     <th>Description</th>
@@ -21,6 +22,7 @@
             <tbody>
             {% for game in games %}
                 <tr>
+                    <td><img crossorigin="anonymous" class="representation-image" src="{{ game.img }}"></td>
                     <td>{{ game.id }}</td>
                     <td>{{ game.title }}</td>
                     <td>{{ game.description }}</td>
