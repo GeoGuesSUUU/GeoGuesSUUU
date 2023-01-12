@@ -191,3 +191,16 @@ function guessEvent(isCorrect = false) {
         leave()
     }
 }
+
+function finish() {
+    const request = {
+        event: '@GuessCountry',
+        room_name: room.name,
+        user_id: userId,
+        response: {
+            iso,
+            country_name: response,
+        },
+    }
+    socket.send(JSON.stringify(request));
+}

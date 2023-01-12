@@ -10,10 +10,6 @@
     text-align: center;
 }
 
-.card-mode {
-    transition: all 1s;
-}
-
 #game-body {
     display: none;
     transition: all 1s;
@@ -111,5 +107,10 @@ img.guess-false {
 .progress-bar.guess-false {
     transition: box-shadow 0.5s;
     animation: progress-guess-false 1s ease forwards;
+}
+
+.no-level-message, .no-level-message svg  {
+    font-size: larger;
+    font-weight: bold;
 }
 
