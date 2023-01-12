@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Repository\LevelRepository;
+use App\Repository\ScoreRepository;
 use App\Service\UserService;
 use App\WebSocket\FindTheFlagGameHandler;
 use Ratchet\Http\HttpServer;
@@ -18,7 +19,8 @@ class FindTheFlagServerCommand extends Command
 {
     public function __construct(
         private readonly UserService $userService,
-        private readonly LevelRepository $levelRepository
+        private readonly LevelRepository $levelRepository,
+        private readonly ScoreRepository $scoreRepository,
     )
     {
         parent::__construct();
@@ -31,7 +33,11 @@ class FindTheFlagServerCommand extends Command
         $server = IoServer::factory(
             new HttpServer(
                 new WsServer(
-                    new FindTheFlagGameHandler($this->userService, $this->levelRepository)
+                    new FindTheFlagGameHandler(
+                        $this->userService,
+                        $this->levelRepository,
+                        $this->scoreRepository
+                    )
                 )
             ),
             $port

@@ -24,6 +24,6 @@ class FindTheFlagAnswer
 
     public function isCorrect(): bool
     {
-        return $this->correctAnswer === $this->userAnswer;
+        return strtolower($this->correctAnswer) === strtolower($this->userAnswer);
     }
 }

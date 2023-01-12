@@ -37,7 +37,6 @@ function leave() {
 
 let guess = []
 let guessIndex = 0
-let responseArray = []
 
 function percent(unit, max) {
     return Math.round(unit * 100 / max);
@@ -66,6 +65,10 @@ function play() {
     document.getElementById('btn-quit').onclick = () => leaveRoomEmit();
 }
 
+function clearGameMain() {
+    document.getElementById('game-main').innerHTML = '';
+}
+
 // WebSocket
 
 let socket = new WebSocket("ws://localhost:9000");
@@ -91,9 +94,9 @@ socket.onmessage = (event) => {
             case '@CountryGuess':
                 guessEvent(response.is_correct)
                 break;
-            // case '@ConnectionCount':
-            //     updateOnline(response.response.count)
-            //     break;
+            case '@GameFinished':
+                finishEvent(response);
+                break;
         }
     } catch (e) {
         // Catch any errors
@@ -141,7 +144,6 @@ function leaveRoomEmit() {
         room_name: room.name,
         user_id: userId
     }
-    console.log(request)
     socket.send(JSON.stringify(request));
 }
 
@@ -178,29 +180,83 @@ function guessEvent(isCorrect = false) {
     guessIndex += 1
     progress.setAttribute('style', `width: ${percent(guessIndex+1, guess.length)}%`);
     progress.innerHTML = `${guessIndex+1}/${guess.length}`;
-    responseArray.push(document.getElementById('game-input-guess').value)
     document.getElementById('game-input-guess').value = '';
     if (guess[guessIndex]) {
         img.setAttribute('src', `https://countryflagsapi.com/svg/${guess[guessIndex]}`)
     } else {
-        // TODO : EMIT FINISH
-        console.log(responseArray)
+        finish();
         guess = []
         guessIndex = 0
-        responseArray = []
-        leave()
+        clearGameMain();
     }
 }
 
 function finish() {
     const request = {
-        event: '@GuessCountry',
+        event: '@FinishGame',
         room_name: room.name,
         user_id: userId,
-        response: {
-            iso,
-            country_name: response,
-        },
+        game_time: 1000,
     }
     socket.send(JSON.stringify(request));
+}
+
+function finishEvent(response) {
+    let answerDivs = '';
+    const adminBadge = response.user.isAdmin ? '<span title="Admin"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-globe-americas" viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0ZM2.04 4.326c.325 1.329 2.532 2.54 3.717 3.19.48.263.793.434.743.484-.08.08-.162.158-.242.234-.416.396-.787.749-.758 1.266.035.634.618.824 1.214 1.017.577.188 1.168.38 1.286.983.082.417-.075.988-.22 1.52-.215.782-.406 1.48.22 1.48 1.5-.5 3.798-3.186 4-5 .138-1.243-2-2-3.5-2.5-.478-.16-.755.081-.99.284-.172.15-.322.279-.51.216-.445-.148-2.5-2-1.5-2.5.78-.39.952-.171 1.227.182.078.099.163.208.273.318.609.304.662-.132.723-.633.039-.322.081-.671.277-.867.434-.434 1.265-.791 2.028-1.12.712-.306 1.365-.587 1.579-.88A7 7 0 1 1 2.04 4.327Z"/></svg></span>' : '';
+    const verifiedBadge = response.user.isVerified ? '<span title="Verified User"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#00DB87" class="bi bi-patch-check-fill" viewBox="0 0 16 16"> <path d="M10.067.87a2.89 2.89 0 0 0-4.134 0l-.622.638-.89-.011a2.89 2.89 0 0 0-2.924 2.924l.01.89-.636.622a2.89 2.89 0 0 0 0 4.134l.637.622-.011.89a2.89 2.89 0 0 0 2.924 2.924l.89-.01.622.636a2.89 2.89 0 0 0 4.134 0l.622-.637.89.011a2.89 2.89 0 0 0 2.924-2.924l-.01-.89.636-.622a2.89 2.89 0 0 0 0-4.134l-.637-.622.011-.89a2.89 2.89 0 0 0-2.924-2.924l-.89.01-.622-.636zm.287 5.984-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708.708z"/></svg></span>' : '';
+    response.game.answers.forEach((answer, index) => {
+        answerDivs += `
+            <div class="d-flex flex-row align-items-center justify-content-start py-2">
+                <span class="fs-4 px-3 text-nowrap">n° ${index+1}</span>
+                <img src="https://countryflagsapi.com/svg/${answer.iso}" alt="flag-${answer.iso}" class="img-fluid rounded object-fit-contain" width="100" crossorigin="anonymous">
+                <div class="p-3">
+                    <p class="m-0" style="width: 350px"><strong>Correct : </strong>${answer.correct_answer}</p>
+                    <p class="m-0" style="color: ${answer.is_correct ? 'green' : 'red'}"><strong>Response : </strong>${answer.user_answer}</p>
+                </div>
+            </div>
+        `
+    })
+    document.getElementById('game-main').innerHTML = `
+        <div class="row align-items-md-stretch">
+            <div class="col-md-6">
+                <div class="card-mode h-100 p-5 text-bg-dark rounded-3">
+                    <h2 class="d-flex flex-row align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="currentColor" class="bi bi-geo-alt-fill px-2" viewBox="0 0 16 16">
+                          <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
+                        </svg>
+                        Answers
+                    </h2>
+                    <div class="d-flex flex-column">
+                        ${answerDivs}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card-mode h-100 p-5 text-bg-dark rounded-3">
+                    <h2>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="currentColor" class="bi bi-person-lines-fill px-2" viewBox="0 0 16 16">
+                          <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-5 6s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zM11 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5zm.5 2.5a.5.5 0 0 0 0 1h4a.5.5 0 0 0 0-1h-4zm2 3a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1h-2zm0 3a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1h-2z"/>
+                        </svg>
+                        User Score
+                    </h2>
+                    <div class="d-flex flex-column align-items-center justify-content-center">
+                        <span class="fs-3 mb-3"><strong>Score : </strong>${response.game.score}</span>
+                        <img src="${response.user.img}" alt="img-user-${response.user.id}" class="img-fluid rounded-circle object-fit-cover" width="150" />
+                        <span class="fs-4">${response.user.name} ${adminBadge} ${verifiedBadge}</span>
+                        <ul style="list-style: none" class="my-3">
+                            <li class="fs-5 m-2">
+                                <span><strong>XP : </strong>${response.user.xp}</span>
+                                <small style="color: green"> + ${response.game.rewards.xp}</small>
+                            </li>
+                            <li class="fs-5 m-2">
+                                <span><strong>Coins : </strong>${response.user.coins}</span>
+                                <small style="color: green"> + ${response.game.rewards.coins}</small>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
 }

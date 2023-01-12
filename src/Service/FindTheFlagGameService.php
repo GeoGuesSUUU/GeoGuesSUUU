@@ -9,6 +9,7 @@ use App\Entity\Score;
 use App\Entity\User;
 use App\Exception\LevelNotFoundApiException;
 use App\Repository\LevelRepository;
+use App\Repository\ScoreRepository;
 use App\Utils\GameRoomVisibility;
 use Exception;
 use Ratchet\ConnectionInterface;
@@ -21,6 +22,7 @@ class FindTheFlagGameService extends WebSocketService
     public function __construct(
         private readonly UserService       $userService,
         private readonly LevelRepository   $levelRepository,
+        private readonly ScoreRepository   $scoreRepository,
         SplObjectStorage                   $connections
     )
     {
@@ -231,8 +233,10 @@ class FindTheFlagGameService extends WebSocketService
             $s->setTime($time);
             $s->setCreatedAt(new \DateTimeImmutable());
 
-            $coins = round($score / 10);
-            $xp = round($score / 10 * 2);
+            $this->scoreRepository->save($s);
+
+            $coins = round($score / 20);
+            $xp = round($score / 100 * 2);
 
             $user->addScore($s);
             $user->setCoins($oldCoins + $coins);
@@ -246,20 +250,27 @@ class FindTheFlagGameService extends WebSocketService
                     'id' => $user->getId(),
                     'name' => $user->getName(),
                     'isAdmin' => in_array('ROLE_ADMIN', $user->getRoles()),
-                    'isVerified' => $user->isVerified()
+                    'isVerified' => $user->isVerified(),
+                    'img' => $user->getImg(),
+                    'xp' => $user->getXp(),
+                    'coins' => $user->getCoins(),
+                    'before' => [
+                        'xp' => $oldXp,
+                        'coins' => $oldCoins,
+                    ]
                 ],
                 'game' => [
                     'score' => $score,
-                    'reward' => [
+                    'rewards' => [
                         'xp' => $xp,
                         'coins' => $coins
                     ],
-                    'answer' => array_map(fn($a) => [
+                    'answers' => array_map(fn($a) => [
                         'iso' => $a->iso,
                         'correct_answer' => $a->correctAnswer,
                         'user_answer' => $a->userAnswer,
                         'is_correct' => $a->isCorrect()
-                    ], $userGuess->getAnswers())
+                    ], array_values($userGuess->getAnswers()))
                 ]
             ];
         } catch (Exception $ex) {

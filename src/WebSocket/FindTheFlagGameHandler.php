@@ -3,6 +3,7 @@
 namespace App\WebSocket;
 
 use App\Repository\LevelRepository;
+use App\Repository\ScoreRepository;
 use App\Service\FindTheFlagGameService;
 use App\Service\UserService;
 use Exception;
@@ -18,10 +19,16 @@ class FindTheFlagGameHandler implements MessageComponentInterface
     public function __construct(
         UserService $userService,
         LevelRepository $levelRepository,
+        ScoreRepository   $scoreRepository,
     )
     {
         $this->connections = new SplObjectStorage;
-        $this->findTheFlagGameService = new FindTheFlagGameService($userService, $levelRepository, $this->connections);
+        $this->findTheFlagGameService = new FindTheFlagGameService(
+            $userService,
+            $levelRepository,
+            $scoreRepository,
+            $this->connections
+        );
     }
 
     public function onOpen(ConnectionInterface $conn)

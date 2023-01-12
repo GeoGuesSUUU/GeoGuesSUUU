@@ -42,7 +42,7 @@ class FindTheFlagRoom extends GameRoom
                 continue;
             }
             $guessArray[] = strtolower($iso->name);
-            $answerArray[strtolower($iso->name)] = strtolower($iso->value);
+            $answerArray[strtolower($iso->name)] = $iso->value;
         }
         $this->guess = $guessArray;
         $this->answers = $answerArray;
@@ -92,13 +92,13 @@ class FindTheFlagRoom extends GameRoom
     {
         if (empty($this->answers)) throw new GameNotStartException();
 
-        if (is_null($this->score[$userId] ?? null)) {
+        if (is_null($this->userGuess[$userId] ?? null)) {
             $this->userGuess[$userId] = new FindTheFlagUserGuess(
                 $userId
             );
         }
 
-        $this->userGuess[$userId]->addAnswer($iso, $this->answers[$iso], strtolower($response));
+        $this->userGuess[$userId]->addAnswer($iso, $this->answers[$iso], $response);
 
         return $this->userGuess[$userId]->getAnswer($iso)->isCorrect();
     }
