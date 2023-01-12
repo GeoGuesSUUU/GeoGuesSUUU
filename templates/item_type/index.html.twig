@@ -7,6 +7,7 @@
 
         <h1>List of Items</h1>
         <a class="btn btn-primary mb-3" href="{{ path('app_item_type_new') }}">Create new Item</a>
+        {{ include('item_type/_add_levels.html.twig') }}
 
         <table class="table table-striped border">
             <thead>
