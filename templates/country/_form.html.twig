@@ -31,14 +31,14 @@
         }) }}
         {{ form_label(form.flag) }}
     </div>
-    <div class="form-floating mb-3 w-100">
+    <div class="w-100">
+        {{ form_label(form.continent) }}
         {{ form_widget(form.continent, {
             'attr': {
-                'class': 'form-control',
+                'class': 'form-select',
                 'placeholder': 'continent'
             }
         }) }}
-        {{ form_label(form.continent) }}
     </div>
     <div class="w-100">
         {{ form_label(form.user) }}

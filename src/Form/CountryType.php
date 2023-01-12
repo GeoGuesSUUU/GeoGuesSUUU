@@ -8,6 +8,7 @@ use Doctrine\DBAL\Types\DateTimeImmutableType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeImmutableToDateTimeTransformer;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -21,7 +22,20 @@ class CountryType extends AbstractType
             ->add('name')
             ->add('code')
             ->add('flag')
-            ->add('continent')
+            ->add('continent', ChoiceType::class, [
+                'required' => true,
+                'multiple' => false,
+                'expanded' => false,
+                'choices' => [
+                    'Asia' => 'asia',
+                    'Africa' => 'africa',
+                    'North America' => 'north-america',
+                    'South America' => 'south-america',
+                    'Antarctica' => 'antarctica',
+                    'Oceania' => 'oceania',
+                    'Europe' => 'europe'
+                ]
+            ])
             ->add('user', EntityType::class, [
                 'class' => User::class,
                 'choice_label' =>  function (User $user) {
