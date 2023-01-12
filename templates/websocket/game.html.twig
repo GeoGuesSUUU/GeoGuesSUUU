@@ -37,11 +37,12 @@
                                 <h3>Level : </h3>
                                 <select id="level-input" class="form-select" aria-label="select game">
                                     {% for option in data.levels.toArray %}
-                                        <option value="{{ option.difficulty }}">
-                                            {{ option.label }} {{ option.difficulty }}
+                                        <option value="{{ option.id }}-{{ option.difficulty }}" aria-describedby="{{ option.description }}">
+                                            {{ option.label }}  [{{ option.difficulty }}]
                                         </option>
                                     {% endfor %}
                                 </select>
+                                <div id="level-desc"></div>
                             {% endif %}
                         </div>
                     </div>
@@ -73,8 +74,8 @@
                                 Multi Player
                             </h2>
                             <p>Play with multiple players with a score multiplier based on the number of players, maximum number of players 8. Create a salon or join one !</p>
-                            <button class="btn btn-outline-secondary" type="button">Create</button>
-                            <button class="btn btn-outline-secondary" type="button">Join</button>
+                            <button class="btn btn-outline-secondary" type="button" disabled>Create</button>
+                            <button class="btn btn-outline-secondary" type="button" disabled>Join</button>
                         </div>
                     </div>
                 </div>
@@ -86,6 +87,34 @@
     {{ encore_entry_script_tags('app') }}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
     {% if script is defined %}
+    <script>
+        const userId = {{ user.id }};
+
+        const levelSelect = document.getElementById('level-input')
+        if (levelSelect) {
+            const desc = levelSelect.options[levelSelect.options.selectedIndex].getAttribute('aria-describedby')
+            if (desc) {
+                document.getElementById('level-desc').innerHTML = `
+                <div class="mt-2 p-2 bg-dark rounded-3">
+                    <h4>Level Description :</h4>
+                    <span class="p-2">${desc}</span>
+                </div>`;
+            }
+
+            levelSelect.onchange = () => {
+                const desc = levelSelect.options[levelSelect.options.selectedIndex].getAttribute('aria-describedby')
+                if (desc) {
+                    document.getElementById('level-desc').innerHTML = `
+                    <div class="mt-2 p-2 bg-dark rounded-3">
+                        <h4>Level Description :</h4>
+                        <span class="p-2">${desc}</span>
+                    </div>`;
+                } else {
+                    document.getElementById('level-desc').innerHTML = ''
+                }
+            }
+        }
+    </script>
     <script src="{% if icon starts with '/assets/' %}{{ 'http://' ~ host }}{% endif %}{{ asset(script) }}"></script>
     {% endif %}
 {% endblock %}

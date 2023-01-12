@@ -6,13 +6,14 @@ use App\Entity\FindTheFlagRoom;
 use App\Entity\GameConnection;
 use App\Entity\GameRoom;
 use App\Entity\GameRoomMember;
+use App\Entity\Level;
 use App\Entity\User;
 use App\Utils\GameRoomVisibility;
 
 class GameRoomService
 {
     /** @var (GameRoom | FindTheFlagRoom)[] array  */
-    private array $rooms;
+    public array $rooms;
 
     public function __construct()
     {
@@ -21,12 +22,14 @@ class GameRoomService
 
     /**
      * @param string|null $name
+     * @param Level $level
      * @param GameRoomVisibility $visibility
      * @param GameConnection ...$connection
      * @return GameRoom
      */
     public function createRoom(
         ?string $name,
+        Level $level,
         GameRoomVisibility $visibility = GameRoomVisibility::PUBLIC,
         GameConnection ...$connection
     ): GameRoom
@@ -34,7 +37,7 @@ class GameRoomService
         if (is_null($name) || strlen($name) < 1) {
             $name = 'Room' . uniqid();
         }
-        $newRoom = new GameRoom($name, $visibility);
+        $newRoom = new GameRoom($name, $level, $visibility);
         $newRoom->addConnections(...$connection);
         $this->rooms[] = $newRoom;
         return $newRoom;
@@ -42,12 +45,14 @@ class GameRoomService
 
     /**
      * @param string|null $name
+     * @param Level $level
      * @param GameRoomVisibility $visibility
      * @param GameConnection ...$connection
      * @return FindTheFlagRoom
      */
     public function createFindTheFlagRoom(
         ?string $name,
+        Level $level,
         GameRoomVisibility $visibility = GameRoomVisibility::PUBLIC,
         GameConnection ...$connection
     ): FindTheFlagRoom
@@ -55,9 +60,9 @@ class GameRoomService
         if (is_null($name) || strlen($name) < 1) {
             $name = 'Room' . uniqid();
         }
-        $newRoom = new FindTheFlagRoom($name, $visibility);
+        $newRoom = new FindTheFlagRoom($name, $level, $visibility);
         $newRoom->addConnections(...$connection);
-        $this->rooms[] = $newRoom;
+        $this->rooms[$newRoom->getName()] = $newRoom;
         return $newRoom;
     }
 

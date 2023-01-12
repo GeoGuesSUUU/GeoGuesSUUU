@@ -9,18 +9,22 @@ class GameRoom
 {
     private string $name;
 
+    private Level $level;
+
     private GameRoomVisibility $visibility;
 
-    /** @var GameConnection[] array  */
+    /** @var GameConnection[] $connections  */
     private array $connections;
 
     /**
      * @param string $name
+     * @param Level $level
      * @param GameRoomVisibility $visibility
      */
-    public function __construct(string $name, GameRoomVisibility $visibility)
+    public function __construct(string $name, Level $level, GameRoomVisibility $visibility)
     {
         $this->name = $name;
+        $this->level = $level;
         $this->visibility = $visibility;
         $this->connections = [];
     }
@@ -40,6 +44,24 @@ class GameRoom
     public function setName(string $name): GameRoom
     {
         $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * @return Level
+     */
+    public function getLevel(): Level
+    {
+        return $this->level;
+    }
+
+    /**
+     * @param Level $level
+     * @return GameRoom
+     */
+    public function setLevel(Level $level): GameRoom
+    {
+        $this->level = $level;
         return $this;
     }
 

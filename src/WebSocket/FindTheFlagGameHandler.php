@@ -2,8 +2,7 @@
 
 namespace App\WebSocket;
 
-use App\Repository\MessageRepository;
-use App\Service\ChatService;
+use App\Repository\LevelRepository;
 use App\Service\FindTheFlagGameService;
 use App\Service\UserService;
 use Exception;
@@ -18,10 +17,11 @@ class FindTheFlagGameHandler implements MessageComponentInterface
 
     public function __construct(
         UserService $userService,
+        LevelRepository $levelRepository,
     )
     {
         $this->connections = new SplObjectStorage;
-        $this->findTheFlagGameService = new FindTheFlagGameService($userService, $this->connections);
+        $this->findTheFlagGameService = new FindTheFlagGameService($userService, $levelRepository, $this->connections);
     }
 
     public function onOpen(ConnectionInterface $conn)
@@ -43,13 +43,17 @@ class FindTheFlagGameHandler implements MessageComponentInterface
                 $from->send(json_encode($res));
                 break;
             case '@LeaveRoom':
-                $res = $this->findTheFlagGameService->LeaveRoom($from, $json);
+                $res = $this->findTheFlagGameService->leaveRoom($from, $json);
                 $from->send(json_encode($res));
                 break;
-//            case '@GuessCountry':
-//                break;
-//            case '@FinishGame':
-//                break;
+            case '@GuessCountry':
+                $res = $this->findTheFlagGameService->guessCountry($from, $json);
+                $from->send(json_encode($res));
+                break;
+            case '@FinishGame':
+                $res = $this->findTheFlagGameService->finishGame($from, $json);
+                $from->send(json_encode($res));
+                break;
             default:
         }
     }

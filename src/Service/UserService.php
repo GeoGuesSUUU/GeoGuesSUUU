@@ -26,6 +26,11 @@ class UserService
         $this->userRepository->flush();
     }
 
+    public function save(User $user, bool $flush = false): void
+    {
+        $this->userRepository->save($user, $flush);
+    }
+
     /**
      * @param bool $detail
      * @return User[]
