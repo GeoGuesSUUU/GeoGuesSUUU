@@ -72,7 +72,7 @@ class FindTheFlagGameHandler implements MessageComponentInterface
     {
         $this->connections->detach($conn);
         $this->findTheFlagGameService->extractConnection($conn);
-        $this->logger->error('Find The Flag - Connection Error');
+        $this->logger->info('Find The Flag - Connection Error');
     }
 
     public function onError(ConnectionInterface $conn, Exception $e)
@@ -80,7 +80,7 @@ class FindTheFlagGameHandler implements MessageComponentInterface
         $this->connections->detach($conn);
         $this->findTheFlagGameService->extractConnection($conn);
         $conn->close();
-        $this->logger->info('Find The Flag - Connection Closed');
+        $this->logger->error('Find The Flag - Connection Closed');
     }
 }
 

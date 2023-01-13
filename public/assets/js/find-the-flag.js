@@ -36,10 +36,50 @@ function leave() {
 }
 
 let guess = []
+let imgs = [];
 let guessIndex = 0
 
 function percent(unit, max) {
     return Math.round(unit * 100 / max);
+}
+
+const loadImage = src =>
+    new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.crossOrigin = 'anonymous'
+        img.src = src;
+    });
+
+async function loadExtra() {
+    const subarray = guess.slice(3).map(iso => 'https://countryflagsapi.com/svg/' + iso);
+    for (let i = 0; i < subarray.length; i += 3) {
+        await Promise.all([subarray[i], subarray[i+1], subarray[i+2]].map(loadImage)).then(images => {
+            images.forEach((image) =>
+                imgs.push(image)
+            );
+        });
+    }
+}
+
+async function loadingGame() {
+    const imagesString = [];
+    if (guess.length >= 3) {
+        imagesString.push('https://countryflagsapi.com/svg/' + guess[0]);
+        imagesString.push('https://countryflagsapi.com/svg/' + guess[1]);
+        imagesString.push('https://countryflagsapi.com/svg/' + guess[2]);
+        await Promise.all(imagesString.map(loadImage)).then(images => {
+            images.forEach((image) =>
+                imgs.push(image)
+            );
+        });
+
+        if (guess.length > 3) {
+            loadExtra();
+        }
+        play()
+    }
 }
 
 function play() {
@@ -52,7 +92,7 @@ function play() {
                     <div class="progress w-100 m-2" role="progressbar" aria-label="Example with label" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
                       <div id="progress-content" class="progress-bar" style="width: ${percent(1, guess.length)}%">1/${guess.length}</div>
                     </div>
-                    <img id="game-flag-img-guess" src="https://countryflagsapi.com/svg/${guess[0]}" class="img-fluid rounded w-50" crossorigin="anonymous" alt="flag">
+                    <img id="game-flag-img-guess" src="${imgs[0].src}" class="img-fluid rounded w-50" crossorigin="anonymous" alt="flag">
                     <form id="guess-form" class="d-flex flex-column">
                         <input id="game-input-guess" class="form-control my-3" name="guess" placeholder="Guess the country...">
                         <button type="submit" class="btn btn-dark">Submit</button>
@@ -77,7 +117,7 @@ socket.onopen = () => {
     console.log("FindTheFlagServer : CONNECTED");
 }
 
-socket.onmessage = (event) => {
+socket.onmessage = async (event) => {
     try {
         const response = JSON.parse(event.data);
         console.log(response)
@@ -86,7 +126,7 @@ socket.onmessage = (event) => {
                 guess = [];
                 guess.push(...response.guess)
                 room = { name: response.room }
-                play()
+                await loadingGame();
                 break;
             case '@RoomLeaved':
                 leave()
@@ -110,7 +150,7 @@ socket.onclose = () => {
         const openFunction = socket.onopen;
         const messageFunction = socket.onmessage;
         socket = null;
-        socket = new WebSocket("ws://localhost:8001");
+        socket = new WebSocket("ws://localhost:9000");
         socket.onclose = closeFunction;
         socket.onopen = openFunction;
         socket.onmessage = messageFunction
@@ -182,7 +222,7 @@ function guessEvent(isCorrect = false) {
     progress.innerHTML = `${guessIndex+1}/${guess.length}`;
     document.getElementById('game-input-guess').value = '';
     if (guess[guessIndex]) {
-        img.setAttribute('src', `https://countryflagsapi.com/svg/${guess[guessIndex]}`)
+        img.setAttribute('src', `${imgs[guessIndex].src}`)
     } else {
         finish();
         guess = []

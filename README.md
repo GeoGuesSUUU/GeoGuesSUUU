@@ -28,10 +28,11 @@
 
 ## Port
 
-| **Port** | description          |
-|----------|----------------------|
-| 8000     | WebService + API Doc |
-| 8001     | Chat Server          |
+| **Port** | **Description**      | **Protocol** |
+|----------|----------------------|--------------|
+| 8000     | WebService + API Doc | HTTP         |
+| 8001     | Chat Server          | WebSocket    |
+| 9000     | Game - Find The Flag | WebSocket    |
 
 
 ## API Documentation

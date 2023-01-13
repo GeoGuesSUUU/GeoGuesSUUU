@@ -166,7 +166,8 @@ class FindTheFlagGameService extends WebSocketService
             return [
                 'event' => '@GameStart',
                 'room' => $room->getName(),
-                'guess' => $room->getGuess()
+                'guess' => $room->getGuess(),
+                'n' => count($this->gameRoomService->getRooms())
             ];
         } catch (Exception $ex) {
             //
