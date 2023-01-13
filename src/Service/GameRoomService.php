@@ -9,6 +9,7 @@ use App\Entity\GameRoomMember;
 use App\Entity\Level;
 use App\Entity\User;
 use App\Utils\GameRoomVisibility;
+use Ratchet\ConnectionInterface;
 
 class GameRoomService
 {
@@ -67,6 +68,14 @@ class GameRoomService
     }
 
     /**
+     * @return array
+     */
+    public function getRooms(): array
+    {
+        return $this->rooms;
+    }
+
+    /**
      * @param string $name
      * @return GameRoom | FindTheFlagRoom | null
      */
@@ -95,6 +104,13 @@ class GameRoomService
     {
         $this->rooms = array_filter($this->rooms, fn($room) => $room->getName() !== $name);
         return $this;
+    }
+
+    public function extract(ConnectionInterface $from): void
+    {
+        foreach ($this->rooms as $room) {
+            $room->removeConnectionByConnectionInterface($from);
+        }
     }
 
 }

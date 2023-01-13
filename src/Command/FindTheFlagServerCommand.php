@@ -6,6 +6,7 @@ use App\Repository\LevelRepository;
 use App\Repository\ScoreRepository;
 use App\Service\UserService;
 use App\WebSocket\FindTheFlagGameHandler;
+use Psr\Log\LoggerInterface;
 use Ratchet\Http\HttpServer;
 use Ratchet\Server\IoServer;
 use Ratchet\WebSocket\WsServer;
@@ -18,6 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class FindTheFlagServerCommand extends Command
 {
     public function __construct(
+        private readonly LoggerInterface $logger,
         private readonly UserService $userService,
         private readonly LevelRepository $levelRepository,
         private readonly ScoreRepository $scoreRepository,
@@ -34,6 +36,7 @@ class FindTheFlagServerCommand extends Command
             new HttpServer(
                 new WsServer(
                     new FindTheFlagGameHandler(
+                        $this->logger,
                         $this->userService,
                         $this->levelRepository,
                         $this->scoreRepository

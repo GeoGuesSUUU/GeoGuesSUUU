@@ -101,6 +101,16 @@ class FindTheFlagGameService extends WebSocketService
         }
     }
 
+    public function extractConnection(ConnectionInterface $from): void
+    {
+        $this->gameRoomService->extract($from);
+        foreach ($this->gameRoomService->getRooms() as $room) {
+            if (count($room->getConnections()) === 0) {
+                $this->gameRoomService->removeRoomByName($room->getName());
+            }
+        }
+    }
+
     public function leaveRoom(ConnectionInterface $from, array $data): array
     {
         $roomName = $data['room_name'];

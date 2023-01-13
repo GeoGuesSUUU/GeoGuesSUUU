@@ -7,6 +7,7 @@ use App\Repository\ScoreRepository;
 use App\Service\FindTheFlagGameService;
 use App\Service\UserService;
 use Exception;
+use Psr\Log\LoggerInterface;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 use SplObjectStorage;
@@ -17,6 +18,7 @@ class FindTheFlagGameHandler implements MessageComponentInterface
     private FindTheFlagGameService $findTheFlagGameService;
 
     public function __construct(
+        private readonly LoggerInterface $logger,
         UserService $userService,
         LevelRepository $levelRepository,
         ScoreRepository   $scoreRepository,
@@ -34,6 +36,7 @@ class FindTheFlagGameHandler implements MessageComponentInterface
     public function onOpen(ConnectionInterface $conn)
     {
         $this->connections->attach($conn);
+        $this->logger->info('Find The Flag - Connection Opened');
     }
 
     public function onMessage(ConnectionInterface $from, $msg)
@@ -68,12 +71,16 @@ class FindTheFlagGameHandler implements MessageComponentInterface
     public function onClose(ConnectionInterface $conn)
     {
         $this->connections->detach($conn);
+        $this->findTheFlagGameService->extractConnection($conn);
+        $this->logger->error('Find The Flag - Connection Error');
     }
 
     public function onError(ConnectionInterface $conn, Exception $e)
     {
         $this->connections->detach($conn);
+        $this->findTheFlagGameService->extractConnection($conn);
         $conn->close();
+        $this->logger->info('Find The Flag - Connection Closed');
     }
 }
 
