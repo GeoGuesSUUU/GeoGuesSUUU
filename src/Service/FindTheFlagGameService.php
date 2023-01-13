@@ -233,12 +233,14 @@ class FindTheFlagGameService extends WebSocketService
 
             $score = $userGuess->getScore();
 
+            $trueScore = $score !== 0 ? round($score + 5000 / max($time / 1000, 1)) : 0;
+
             $user = $this->userService->getById($data['user_id']);
             $oldCoins = $user->getCoins();
             $oldXp = $user->getXp();
 
             $s = new Score();
-            $s->setScore($score);
+            $s->setScore($trueScore);
             $s->setUser($user);
             $s->setLevel($room->getLevel());
             $s->setTime($time);
@@ -253,6 +255,21 @@ class FindTheFlagGameService extends WebSocketService
             $user->setCoins($oldCoins + $coins);
             $user->setXp($oldXp + $xp);
             $this->userService->save($user, true);
+
+            // Chrono Label
+
+            $uSec = $time % 1000;
+            if ($uSec < 10) $uSec = '00'.$uSec;
+            elseif ($uSec < 100) $uSec = '0'.$uSec;
+            $input = floor($time / 1000);
+            $seconds = $input % 60;
+            if ($seconds < 10) $seconds = '0' . $seconds;
+            $input = floor($input / 60);
+            $minutes = $input % 60;
+            if ($minutes < 10) $minutes = '0' . $minutes;
+            $input = floor($input / 60);
+            $hours = $input % 60;
+            if ($hours < 10) $hours = '0' . $hours;
 
             return [
                 'event' => '@GameFinished',
@@ -271,7 +288,11 @@ class FindTheFlagGameService extends WebSocketService
                     ]
                 ],
                 'game' => [
-                    'score' => $score,
+                    'score' => $trueScore,
+                    'time' => [
+                      'ms' => $time,
+                      'chrono' => $hours . ':' . $minutes . ':' . $seconds . '.' . $uSec
+                    ],
                     'rewards' => [
                         'xp' => $xp,
                         'coins' => $coins

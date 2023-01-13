@@ -38,6 +38,7 @@ function leave() {
 let guess = []
 let imgs = [];
 let guessIndex = 0
+let time = 0;
 
 function percent(unit, max) {
     return Math.round(unit * 100 / max);
@@ -103,6 +104,7 @@ function play() {
 
     }
     document.getElementById('btn-quit').onclick = () => leaveRoomEmit();
+    time = Date.now()
 }
 
 function clearGameMain() {
@@ -225,18 +227,22 @@ function guessEvent(isCorrect = false) {
         img.setAttribute('src', `${imgs[guessIndex].src}`)
     } else {
         finish();
-        guess = []
-        guessIndex = 0
+        guess = [];
+        imgs = [];
+        guessIndex = 0;
         clearGameMain();
     }
 }
 
 function finish() {
+    const gameTime = Date.now() - time;
+    console.log(gameTime)
+    time = 0;
     const request = {
         event: '@FinishGame',
         room_name: room.name,
         user_id: userId,
-        game_time: 1000,
+        game_time: gameTime,
     }
     socket.send(JSON.stringify(request));
 }
@@ -282,8 +288,9 @@ function finishEvent(response) {
                     </h2>
                     <div class="d-flex flex-column align-items-center justify-content-center">
                         <span class="fs-3 mb-3"><strong>Score : </strong>${response.game.score}</span>
+                        <span class="fs-4 mb-3"><strong>Time : </strong>${response.game.time.chrono}</span>
                         <img src="${response.user.img}" alt="img-user-${response.user.id}" class="img-fluid rounded-circle object-fit-cover" width="150" />
-                        <span class="fs-4">${response.user.name} ${adminBadge} ${verifiedBadge}</span>
+                        <span class="fs-4 my-1">${response.user.name} ${adminBadge} ${verifiedBadge}</span>
                         <ul style="list-style: none" class="my-3">
                             <li class="fs-5 m-2">
                                 <span><strong>XP : </strong>${response.user.xp}</span>
