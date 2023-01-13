@@ -5,6 +5,7 @@
 {% block body %}
     <div class="d-flex flex-column align-items-center w-75 mx-auto">
         <h1>List of Users</h1>
+        <a class="btn btn-primary mb-3" href="{{ path('app_user_new') }}">Create new User</a>
 
         <table class="table table-striped border">
             <thead>
@@ -15,6 +16,7 @@
                 <th>Password</th>
                 <th>Coins</th>
                 <th>Xp</th>
+                <th>Locale</th>
                 <th>Roles</th>
                 <th>actions</th>
             </tr>
@@ -28,6 +30,7 @@
                     <td class="text-truncate" style="max-width: 200px" >{{ user.password }}</td>
                     <td>{{ user.coins }}</td>
                     <td>{{ user.xp }}</td>
+                    <td>{{ user.locale }}</td>
                     <td>{{ user.roles|json_encode() }}</td>
                     <td class="align-middle">
                         <div class="h-100 d-flex">
@@ -43,7 +46,5 @@
             {% endfor %}
             </tbody>
         </table>
-
-        <a class="btn btn-primary" href="{{ path('app_user_new') }}">Create new user</a>
     </div>
 {% endblock %}

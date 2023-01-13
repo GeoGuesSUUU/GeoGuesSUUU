@@ -1,44 +1,49 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-        <style>
-
-            #chat {
-                height: 60vh;
-                border: solid lightgrey 1px;
-                overflow: auto;
-                margin-bottom: 20px;
+    <style>
+        #chat {
+            height: 60vh;
+            border: solid lightgrey 1px;
+            overflow: auto;
+            margin-bottom: 20px;
+        }
+        .message {
+            overflow-wrap: anywhere;
+            padding-block: 5px;
+            padding-inline: 10px;
+        }
+        .user-link {
+            text-decoration: none;
+            padding: 2px 5px;
+            border-radius: 5px;
+            transition: all 0.25s;
+        }
+        .user-link:hover {
+            background: #c6c6c6;
+        }
+        .message-content {
+            margin-inline: 5px;
+        }
+        .online-post {
+            background: #00bb1f;
+        }
+        .bi-arrow-clockwise {
+            animation: reload 2s ease infinite;
+        }
+        @keyframes reload {
+            from {
+                transform: rotateZ(0deg);
             }
-
-            .message {
-                overflow-wrap: anywhere;
-                padding-block: 5px;
-                padding-inline: 10px;
+            to {
+                transform: rotateZ(360deg);
             }
-
-            .user-link {
-                text-decoration: none;
-                padding: 2px 5px;
-                border-radius: 5px;
-                transition: all 0.25s;
-            }
-
-            .user-link:hover {
-                background: #c6c6c6;
-            }
-
-            .message-content {
-                margin-inline: 5px;
-            }
-
-            .online-post {
-                background: #00bb1f;
-            }
-        </style>
+        }
+    </style>
     <div class="d-flex card border-secondary m-3">
         <div class="card-header">
             Online Chat
-            <span class="badge bg-secondary">
+            <span class="badge-online badge bg-secondary">
                 <span class="online-post d-inline-block rounded-circle p-1"></span>
                 <span id="user-online">0</span>
                 online
@@ -50,29 +55,27 @@
             </div>
             <div>
                 <form id="chat-form" class="d-flex flex-row justify-content-center">
-                    <input type="color" class="form-control form-control-color" id="color-picker" title="Choose your color">
-                    <label for="message"></label><input type="text" id="message" class="form-control" placeholder="Envoyer un message" autocomplete="false"/>
+                    <input type="color" class="form-control form-control-color" id="color-picker"
+                           title="Choose your color">
+                    <label for="message"></label><input type="text" id="message" class="form-control"
+                                                        placeholder="Envoyer un message" autocomplete="false"/>
                     <button type="submit" id="sendBtn" class="btn btn-secondary">Send</button>
                 </form>
             </div>
         </div>
     </div>
     <script type="text/javascript">
-
         const colorPicker = document.getElementById("color-picker");
         const chatElement = document.getElementById("chat");
-
+        const spanOnline = document.getElementsByClassName("badge-online")[0];
         // Color
-
         colorPicker.onchange = () => {
             window.localStorage.setItem('color', colorPicker.value)
         }
         if (colorPicker) {
             colorPicker.value = window.localStorage.getItem('color') ?? '#00DB87';
         }
-
         // Functions
-
         function addMessage(message) {
             const adminBadge = message.user.isAdmin ? '<span title="Admin"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-globe-americas" viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0ZM2.04 4.326c.325 1.329 2.532 2.54 3.717 3.19.48.263.793.434.743.484-.08.08-.162.158-.242.234-.416.396-.787.749-.758 1.266.035.634.618.824 1.214 1.017.577.188 1.168.38 1.286.983.082.417-.075.988-.22 1.52-.215.782-.406 1.48.22 1.48 1.5-.5 3.798-3.186 4-5 .138-1.243-2-2-3.5-2.5-.478-.16-.755.081-.99.284-.172.15-.322.279-.51.216-.445-.148-2.5-2-1.5-2.5.78-.39.952-.171 1.227.182.078.099.163.208.273.318.609.304.662-.132.723-.633.039-.322.081-.671.277-.867.434-.434 1.265-.791 2.028-1.12.712-.306 1.365-.587 1.579-.88A7 7 0 1 1 2.04 4.327Z"/></svg></span>' : '';
             const verifiedBadge = message.user.isVerified ? '<span title="Verified User"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#00DB87" class="bi bi-patch-check-fill" viewBox="0 0 16 16"> <path d="M10.067.87a2.89 2.89 0 0 0-4.134 0l-.622.638-.89-.011a2.89 2.89 0 0 0-2.924 2.924l.01.89-.636.622a2.89 2.89 0 0 0 0 4.134l.637.622-.011.89a2.89 2.89 0 0 0 2.924 2.924l.89-.01.622.636a2.89 2.89 0 0 0 4.134 0l.622-.637.89.011a2.89 2.89 0 0 0 2.924-2.924l-.01-.89.636-.622a2.89 2.89 0 0 0 0-4.134l-.637-.622.011-.89a2.89 2.89 0 0 0-2.924-2.924l-.89.01-.622-.636zm.287 5.984-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708.708z"/></svg></span>' : '';
@@ -80,22 +83,24 @@
             chatElement.innerHTML += messageHTML
             chatElement.scrollTop = chatElement.scrollHeight
         }
-
         function addMessages(messages) {
             console.log(messages)
             for (const message of messages) {
                 addMessage(message)
             }
         }
-
         function updateOnline(count) {
-            document.getElementById("user-online").innerHTML = count
+            if (count === null || count === undefined) {
+                spanOnline.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>
+                Reconnection in <span id="reconnect-counter">30</span> seconds...`;
+            } else {
+                spanOnline.innerHTML = `<span class="online-post d-inline-block rounded-circle p-1"></span>
+                <span id="user-online">${count}</span>
+                online`;
+            }
         }
-
         // WebSocket
-
         let socket = new WebSocket("ws://localhost:8001");
-
         socket.onopen = () => {
             console.log("ChatServer : CONNECTED");
             const request = {
@@ -103,7 +108,6 @@
             };
             socket.send(JSON.stringify(request));
         }
-
         socket.onmessage = (event) => {
             try {
                 const response = JSON.parse(event.data);
@@ -122,10 +126,16 @@
                 // Catch any errors
             }
         };
-
         socket.onclose = () => {
-            console.warn('Connection lost, retry in 30 seconds...')
+            updateOnline(null);
+            console.warn('Connection lost, retry in 30 seconds...');
+            let timer = 30;
+            const interval = setInterval(() => {
+                if (timer === 0) return;
+                document.getElementById('reconnect-counter').innerHTML = (--timer).toString();
+            },1000)
             setTimeout(() => {
+                clearInterval(interval);
                 const closeFunction = socket.onclose;
                 const openFunction = socket.onopen;
                 const messageFunction = socket.onmessage;
@@ -133,18 +143,14 @@
                 socket = new WebSocket("ws://localhost:8001");
                 socket.onclose = closeFunction;
                 socket.onopen = openFunction;
-                socket.onmessage = messageFunction
+                socket.onmessage = messageFunction;
             }, 30000)
         }
-
         // Form
-
         document.getElementById("chat-form")?.addEventListener("submit", function (event) {
             event.preventDefault()
             const messageValue = document.getElementById("message").value
             if (!messageValue || messageValue.length < 1) return
-
-
             const message = {
                 event: '@SendMessage',
                 user: {

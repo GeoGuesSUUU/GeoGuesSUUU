@@ -33,6 +33,14 @@
         }) }}
         {{ form_label(form.password) }}
     </div>
+    <div class="w-100">
+        {{ form_label(form.locale) }}
+        {{ form_widget(form.locale, {
+            'attr': {
+                'class': 'form-select'
+            }
+        }) }}
+    </div>
     <div class="form-outline w-100">
         {{ form_label(form.coins) }}
         {{ form_widget(form.coins, {

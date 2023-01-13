@@ -39,7 +39,7 @@ class Level
         maxMessage: "The description cannot be longer than {{ limit }} characters"
     )]
     #[Groups(groups: ['level_api_response', 'api_new', 'api_edit', 'level_anti_cr'])]
-    private string $description;
+    private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'levels')]
     #[Groups(groups: ['level_api_response', 'api_new', 'api_edit'])]
@@ -106,18 +106,18 @@ class Level
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
     /**
-     * @param string $description
+     * @param string|null $description
      * @return $this
      */
-    public function setDescription(string $description): self
+    public function setDescription(?string $description): self
     {
         $this->description = $description;
 

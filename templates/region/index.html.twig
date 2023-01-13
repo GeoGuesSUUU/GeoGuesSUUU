@@ -5,22 +5,23 @@
 {% block body %}
     <div class="d-flex flex-column align-items-center w-75 mx-auto">
         <h1>List of Regions</h1>
+        <a class="btn btn-primary mb-3" href="{{ path('app_region_new') }}">Create new Region</a>
 
         <table class="table table-striped border">
             <thead>
                 <tr>
+                    <th>Flag</th>
                     <th>Id</th>
                     <th>Name</th>
-                    <th>Flag</th>
                     <th>actions</th>
                 </tr>
             </thead>
             <tbody>
             {% for region in regions %}
                 <tr>
+                    <td><img crossorigin="anonymous" class="representation-image" src="{{ region.flag }}"></td>
                     <td>{{ region.id }}</td>
                     <td>{{ region.name }}</td>
-                    <td>{{ region.flag }}</td>
                     <td class="align-middle">
                         <div class="h-100 d-flex">
                             <a class="btn btn-primary me-2" href="{{ path('app_region_show', {'id': region.id}) }}">Show</a>
@@ -35,7 +36,5 @@
             {% endfor %}
             </tbody>
         </table>
-
-        <a class="btn btn-primary" href="{{ path('app_region_new') }}">Create new Region</a>
     </div>
 {% endblock %}

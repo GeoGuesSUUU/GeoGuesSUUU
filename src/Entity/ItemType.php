@@ -21,7 +21,7 @@ class ItemType
     #[Groups(groups: ['item_api_response', 'item_anti_cr'])]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     #[Assert\Length(
         min: 1,
         max: 255,

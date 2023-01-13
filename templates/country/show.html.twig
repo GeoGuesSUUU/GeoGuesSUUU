@@ -23,7 +23,7 @@
             </tr>
             <tr>
                 <th>Flag</th>
-                <td>{{ country.flag }}</td>
+                <td><img crossorigin="anonymous" class="representation-image" src="{{ country.flag }}"></td>
             </tr>
             <tr>
                 <th>Continent</th>
@@ -58,12 +58,12 @@
                 <td>{{ country.claimDate ? country.claimDate|date('Y-m-d H:i:s') : '' }}</td>
             </tr>
             <tr>
-                <th>Effects</th>
-                <td>{{ country.effects ? country.effects|json_encode : '' }}</td>
-            </tr>
-            <tr>
                 <th>OwnedAt</th>
                 <td>{{ country.ownedAt ? country.ownedAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Effects</th>
+                <td>{{ country.effects ? country.effects|json_encode : '' }}</td>
             </tr>
             </tbody>
         </table>

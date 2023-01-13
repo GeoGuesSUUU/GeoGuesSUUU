@@ -6,9 +6,9 @@ use App\Utils\EffectType;
 
 class Effect
 {
-    private string $type;
+    public string $type;
 
-    private int $value;
+    public int $value;
 
     /**
      * @return string
@@ -48,5 +48,4 @@ class Effect
         $this->value = $value;
         return $this;
     }
-
 }

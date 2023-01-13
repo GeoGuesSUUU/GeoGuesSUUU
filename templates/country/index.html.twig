@@ -6,23 +6,20 @@
     <div class="d-flex flex-column align-items-center w-75 mx-auto">
 
         <h1>List of Countries</h1>
+        <a class="btn btn-primary mb-3" href="{{ path('app_country_new') }}">Create new Country</a>
 
         <table class="table table-striped border">
             <thead>
             <tr>
+                <th>Flag</th>
                 <th>Id</th>
                 <th>Name</th>
                 <th>Code</th>
-                <th>Flag</th>
                 <th>Continent</th>
-                <th>InitLife</th>
                 <th>Life</th>
-                <th>LifeMax</th>
                 <th>Shield</th>
-                <th>ShieldMax</th>
                 <th>InitPrice</th>
                 <th>ClaimDate</th>
-                <th>Effects</th>
                 <th>OwnedAt</th>
                 <th>actions</th>
             </tr>
@@ -30,19 +27,15 @@
             <tbody>
             {% for country in countries %}
                 <tr>
+                    <td><img crossorigin="anonymous" class="representation-image" src="{{ country.flag }}"></td>
                     <td>{{ country.id }}</td>
                     <td>{{ country.name }}</td>
                     <td>{{ country.code }}</td>
-                    <td>{{ country.flag }}</td>
                     <td>{{ country.continent }}</td>
-                    <td>{{ country.initLife }}</td>
                     <td>{{ country.life }}</td>
-                    <td>{{ country.lifeMax }}</td>
                     <td>{{ country.shield }}</td>
-                    <td>{{ country.shieldMax }}</td>
                     <td>{{ country.initPrice }}</td>
                     <td>{{ country.claimDate ? country.claimDate|date('Y-m-d H:i:s') : '' }}</td>
-                    <td>{{ country.effects ? country.effects|json_encode : '' }}</td>
                     <td>{{ country.ownedAt ? country.ownedAt|date('Y-m-d H:i:s') : '' }}</td>
                     <td class="align-middle">
                         <div class="h-100 d-flex">
@@ -58,7 +51,5 @@
             {% endfor %}
             </tbody>
         </table>
-
-        <a class="btn btn-primary" href="{{ path('app_country_new') }}">Create new</a>
     </div>
 {% endblock %}

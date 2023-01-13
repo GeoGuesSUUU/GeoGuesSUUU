@@ -3,7 +3,17 @@
         'attr': {
             'class': 'd-flex flex-column align-items-center'
         }
-    }) }}    <div class="form-floating mb-3 w-100">
+    }) }}
+    <div class="form-floating mb-3 w-100">
+        {{ form_widget(form.label, {
+            'attr': {
+                'class': 'form-control',
+                'placeholder': 'label'
+            }
+        }) }}
+        {{ form_label(form.label) }}
+    </div>
+    <div class="form-floating mb-3 w-100">
         {{ form_widget(form.description, {
             'attr': {
                 'class': 'form-control',
@@ -12,19 +22,20 @@
         }) }}
         {{ form_label(form.description) }}
     </div>
-    <div class="w-100">
-        {{ form_label(form.label) }}
-        {{ form_widget(form.label, {
-            'attr': {
-                'class': 'form-select'
-            }
-        }) }}
-    </div>
+
     <div class="form-outline w-100">
         {{ form_label(form.difficulty) }}
         {{ form_widget(form.difficulty, {
             'attr': {
                 'class': 'form-control'
+            }
+        }) }}
+    </div>
+    <div class="w-100">
+        {{ form_label(form.game) }}
+        {{ form_widget(form.game, {
+            'attr': {
+                'class': 'form-select'
             }
         }) }}
     </div>

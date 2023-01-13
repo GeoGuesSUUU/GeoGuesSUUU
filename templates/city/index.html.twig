@@ -6,21 +6,22 @@
     <div class="d-flex flex-column align-items-center w-75 mx-auto">
         <h1>List of Cities</h1>
 
+        <a class="btn btn-primary mb-3" href="{{ path('app_city_new') }}">Create new City</a>
         <table class="table table-striped border">
             <thead>
                 <tr>
+                    <th>Flag</th>
                     <th>Id</th>
                     <th>Name</th>
-                    <th>Flag</th>
                     <th>actions</th>
                 </tr>
             </thead>
             <tbody>
             {% for city in cities %}
                 <tr>
+                    <td><img crossorigin="anonymous" class="representation-image" src="{{ city.flag }}"></td>
                     <td>{{ city.id }}</td>
                     <td>{{ city.name }}</td>
-                    <td>{{ city.flag }}</td>
                     <td class="align-middle">
                         <div class="h-100 d-flex">
                             <a class="btn btn-primary me-2" href="{{ path('app_city_show', {'id': city.id}) }}">Show</a>
@@ -35,7 +36,5 @@
             {% endfor %}
             </tbody>
         </table>
-
-        <a class="btn btn-primary" href="{{ path('app_city_new') }}">Create new</a>
     </div>
 {% endblock %}
