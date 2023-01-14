@@ -95,12 +95,9 @@ class Country
     #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
     private ?DateTimeImmutable $claimDate;
 
-    /**
-     * @OA\Property(type="array", @OA\Items(ref="Effect::class"))
-     */
-    #[ORM\Column]
+    #[ORM\OneToMany(mappedBy: 'country', targetEntity: Effect::class, orphanRemoval: true)]
     #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
-    private ?array $effects = [];
+    private Collection $effects;
 
     // ==============================//
     #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
@@ -121,6 +118,7 @@ class Country
 
     public function __construct()
     {
+        $this->effects = new ArrayCollection();
         $this->countryItems = new ArrayCollection();
     }
 
@@ -445,26 +443,29 @@ class Country
     }
 
     /**
-     * @return array|null
+     * @return Collection<int, Effect>
      */
-    public function getEffects(): ?array
+    public function getEffects(): Collection
     {
         return $this->effects;
     }
 
-    /**
-     * @param array|null $effects
-     * @return Country
-     */
-    public function setEffects(?array $effects): Country
+    public function addEffect(Effect $effect): self
     {
-        $this->effects = $effects;
+        if (!$this->effects->contains($effect)) {
+            $this->effects->add($effect);
+            $effect->setCountry($this);
+        }
+
         return $this;
     }
 
-    public function addEffect(mixed $effect): Country
+    public function removeEffect(Effect $effect): self
     {
-        $this->effects[] = $effect;
+        if ($this->effects->removeElement($effect) && $effect->getCountry() === $this) {
+            $effect->setCountry(null);
+        }
+
         return $this;
     }
 }
