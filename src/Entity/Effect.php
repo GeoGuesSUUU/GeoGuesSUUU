@@ -25,11 +25,11 @@ class Effect
     public int $value;
 
     #[Groups(groups: ['effect_api_response'])]
-    #[ORM\ManyToOne(inversedBy: 'effects')]
+    #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'effects')]
     private ?Country $country;
 
     #[Groups(groups: ['effect_api_response'])]
-    #[ORM\ManyToOne(inversedBy: 'effects')]
+    #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'effects')]
     private ?ItemType $itemType;
 
     /**

@@ -43,7 +43,7 @@ class CountryApiController extends AbstractController
      *     description="Return all countries",
      *     @OA\JsonContent(
      *        type="array",
-     *        @OA\Items(ref=@Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr"}))
+     *        @OA\Items(ref=@Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr", "effect_anti_cr"}))
      *     )
      * )
      * @param CountryRepository $countryRepository
@@ -60,7 +60,9 @@ class CountryApiController extends AbstractController
         return $this->json(ApiResponse::get($countries),
             200,
             [],
-            ['groups' => ['user_anti_cr', 'country_api_response', 'country_item_anti_cr', 'item_anti_cr']]
+            ['groups' => [
+                'user_anti_cr', 'country_api_response', 'country_item_anti_cr', 'item_anti_cr', 'effect_anti_cr'
+            ]]
         );
     }
 
@@ -69,7 +71,7 @@ class CountryApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return country by Id",
-     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr"})
+     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr", "effect_anti_cr"})
      * )
      * @OA\Response(
      *     response=404,
@@ -91,7 +93,9 @@ class CountryApiController extends AbstractController
         return $this->json(ApiResponse::get($country),
             200,
             [],
-            ['groups' => ['user_anti_cr', 'country_api_response', 'country_item_anti_cr', 'item_anti_cr']]
+            ['groups' => [
+                'user_anti_cr', 'country_api_response', 'country_item_anti_cr', 'item_anti_cr', 'effect_anti_cr'
+            ]]
         );
     }
 
@@ -101,7 +105,7 @@ class CountryApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return new country",
-     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr"})
+     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr", "effect_anti_cr"})
      * )
      * @OA\Response(
      *     response=400,
@@ -144,7 +148,9 @@ class CountryApiController extends AbstractController
         return $this->json(ApiResponse::get($country),
             200,
             [],
-            ['groups' => ['user_anti_cr', 'country_api_response', 'country_item_anti_cr', 'item_anti_cr']]
+            ['groups' => [
+                'user_anti_cr', 'country_api_response', 'country_item_anti_cr', 'item_anti_cr', 'effect_anti_cr'
+            ]]
         );
     }
 
@@ -154,7 +160,7 @@ class CountryApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return edited country",
-     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr"})
+     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr", "effect_anti_cr"})
      * )
      * @OA\Response(
      *     response=400,
@@ -222,7 +228,9 @@ class CountryApiController extends AbstractController
             ApiResponse::get($country),
             200,
             [],
-            ['groups' => ['user_anti_cr', 'country_api_response', 'country_item_anti_cr', 'item_anti_cr']]
+            ['groups' => [
+                'user_anti_cr', 'country_api_response', 'country_item_anti_cr', 'item_anti_cr', 'effect_anti_cr'
+            ]]
         );
     }
 
@@ -254,7 +262,7 @@ class CountryApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return country",
-     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr"})
+     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr", "effect_anti_cr"})
      * )
      * @OA\Response(
      *     response=400,
@@ -283,7 +291,9 @@ class CountryApiController extends AbstractController
         return $this->json(ApiResponse::get($country),
             200,
             [],
-            ['groups' => ['user_anti_cr', 'country_api_response', 'country_item_anti_cr', 'item_anti_cr']]
+            ['groups' => [
+                'user_anti_cr', 'country_api_response', 'country_item_anti_cr', 'item_anti_cr', 'effect_anti_cr'
+            ]]
         );
     }
 
@@ -379,7 +389,7 @@ class CountryApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return country",
-     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr"})
+     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr", "effect_anti_cr"})
      * )
      * @OA\Response(
      *     response=400,
@@ -420,7 +430,9 @@ class CountryApiController extends AbstractController
         return $this->json(ApiResponse::get($country),
             200,
             [],
-            ['groups' => ['user_anti_cr', 'country_api_response', 'country_item_anti_cr', 'item_anti_cr']]
+            ['groups' => [
+                'user_anti_cr', 'country_api_response', 'country_item_anti_cr', 'item_anti_cr', 'effect_anti_cr'
+            ]]
         );
     }
 
@@ -429,7 +441,7 @@ class CountryApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return country",
-     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr"})
+     *     @Model(type=Country::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr", "effect_anti_cr"})
      * )
      * @OA\Response(
      *     response=400,
@@ -469,7 +481,9 @@ class CountryApiController extends AbstractController
         return $this->json(ApiResponse::get($country),
             200,
             [],
-            ['groups' => ['user_anti_cr', 'country_api_response', 'country_item_anti_cr', 'item_anti_cr']]
+            ['groups' => [
+                'user_anti_cr', 'country_api_response', 'country_item_anti_cr', 'item_anti_cr', 'effect_anti_cr'
+            ]]
         );
     }
 }

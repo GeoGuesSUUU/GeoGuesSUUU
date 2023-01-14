@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Repository\EffectRepository;
 use App\Repository\ItemTypeRepository;
 use App\Utils\ItemTypeType;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -241,6 +242,18 @@ class ItemType
     public function getEffects(): Collection
     {
         return $this->effects;
+    }
+
+    public function setEffectsByArray(EffectRepository $effectRepository, array $effects): self
+    {
+        foreach ($effects as $effect) {
+            $e = new Effect();
+            $e->setType($effect['type']);
+            $e->setValue($effect['value']);
+            $this->addEffect($e);
+            $effectRepository->save($e);
+        }
+        return $this;
     }
 
     public function addEffect(Effect $effect): self

@@ -5,10 +5,9 @@ namespace App\Controller\API;
 use App\Entity\ItemType;
 use App\Exception\ItemTypeNotFoundApiException;
 use App\Exception\ItemTypeNotValidApiException;
+use App\Repository\EffectRepository;
 use App\Repository\ItemTypeRepository;
-use App\Repository\UserRepository;
 use App\Utils\ApiResponse;
-use Exception;
 use JsonException;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
@@ -23,7 +22,7 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-define('ITEM_IGNORE_FILED', ['id', 'userItems', 'countryItems']);
+define('ITEM_IGNORE_FILED', ['id', 'userItems', 'countryItems', 'effects']);
 
 #[OAA\Tag(name: 'Item')]
 #[Security(name: 'Bearer')]
@@ -60,7 +59,7 @@ class ItemApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return itemType by Id",
-     *     @Model(type=ItemType::class, groups={"user_anti_cr", "item_api_response"})
+     *     @Model(type=ItemType::class, groups={"user_anti_cr", "item_api_response", "effect_anti_cr"})
      * )
      * @OA\Response(
      *     response=404,
@@ -80,7 +79,7 @@ class ItemApiController extends AbstractController
         return $this->json(ApiResponse::get($itemType),
             200,
             [],
-            ['groups' => ['user_anti_cr', 'item_api_response']]
+            ['groups' => ['user_anti_cr', 'item_api_response', 'effect_anti_cr']]
         );
     }
 
@@ -90,7 +89,7 @@ class ItemApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return new itemType",
-     *     @Model(type=ItemType::class, groups={"user_anti_cr", "item_api_response"})
+     *     @Model(type=ItemType::class, groups={"user_anti_cr", "item_api_response", "effect_anti_cr"})
      * )
      * @OA\Response(
      *     response=400,
@@ -99,9 +98,10 @@ class ItemApiController extends AbstractController
      * @param Request $request
      * @param SerializerInterface $serializer
      * @param ItemTypeRepository $itemTypeRepository
+     * @param EffectRepository $effectRepository
      * @param ValidatorInterface $validator
      * @return Response
-     * @throws Exception
+     * @throws JsonException
      */
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/', name: 'app_item_api_new', methods: ['POST'], format: 'application/json')]
@@ -109,6 +109,7 @@ class ItemApiController extends AbstractController
         Request             $request,
         SerializerInterface $serializer,
         ItemTypeRepository  $itemTypeRepository,
+        EffectRepository $effectRepository,
         ValidatorInterface  $validator
     ): Response
     {
@@ -119,6 +120,11 @@ class ItemApiController extends AbstractController
             'json',
             [AbstractNormalizer::IGNORED_ATTRIBUTES => ITEM_IGNORE_FILED]
         );
+
+        // Set Effects
+        if ($effects = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR)['effects'] ?? null) {
+            $body->setEffectsByArray($effectRepository, $effects);
+        }
 
         $errors = $validator->validate($body);
         if (
@@ -131,7 +137,7 @@ class ItemApiController extends AbstractController
         return $this->json(ApiResponse::get($body),
             200,
             [],
-            ['groups' => ['user_anti_cr', 'item_api_response']]
+            ['groups' => ['user_anti_cr', 'item_api_response', 'effect_anti_cr']]
         );
     }
 
@@ -141,7 +147,7 @@ class ItemApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return edited itemType",
-     *     @Model(type=ItemType::class, groups={"user_anti_cr", "item_api_response"})
+     *     @Model(type=ItemType::class, groups={"user_anti_cr", "item_api_response", "effect_anti_cr"})
      * )
      * @OA\Response(
      *     response=400,
@@ -151,8 +157,10 @@ class ItemApiController extends AbstractController
      * @param int $id
      * @param SerializerInterface $serializer
      * @param ItemTypeRepository $itemTypeRepository
+     * @param EffectRepository $effectRepository
      * @param ValidatorInterface $validator
      * @return Response
+     * @throws JsonException
      */
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}', name: 'app_item_api_edit', methods: ['PUT', 'PATCH'], format: 'application/json')]
@@ -161,6 +169,7 @@ class ItemApiController extends AbstractController
         int                 $id,
         SerializerInterface $serializer,
         ItemTypeRepository  $itemTypeRepository,
+        EffectRepository $effectRepository,
         ValidatorInterface  $validator
     ): Response
     {
@@ -182,6 +191,11 @@ class ItemApiController extends AbstractController
         // reset the ID if it has been changed on request
         $body->setId($id);
 
+        // Set Effects
+        if ($effects = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR)['effects'] ?? null) {
+            $body->setEffectsByArray($effectRepository, $effects);
+        }
+
         $errors = $validator->validate($body);
         if (
             $errors->count() > 0
@@ -198,7 +212,7 @@ class ItemApiController extends AbstractController
             ApiResponse::get($itemTypeUpdated),
             200,
             [],
-            ['groups' => ['user_anti_cr', 'item_api_response']]
+            ['groups' => ['user_anti_cr', 'item_api_response', 'effect_anti_cr']]
         );
     }
 
