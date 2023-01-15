@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Repository\EffectRepository;
 use App\Repository\ItemTypeRepository;
 use App\Utils\ItemTypeType;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -71,12 +72,9 @@ class ItemType
     #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item_anti_cr'])]
     private ?string $img;
 
-    /**
-     * @OA\Property(type="array", @OA\Items(ref="Effect::class"))
-     */
-    #[ORM\Column]
+    #[ORM\OneToMany(mappedBy: 'itemType', targetEntity: Effect::class, orphanRemoval: true)]
     #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item_anti_cr'])]
-    private ?array $effects = [];
+    private Collection $effects;
 
     #[ORM\OneToMany(mappedBy: 'itemType', targetEntity: UserItem::class, orphanRemoval: true)]
     #[Groups(groups: ['item_api_response'])]
@@ -88,6 +86,7 @@ class ItemType
 
     public function __construct()
     {
+        $this->effects = new ArrayCollection();
         $this->userItems = new ArrayCollection();
         $this->countryItems = new ArrayCollection();
     }
@@ -238,18 +237,41 @@ class ItemType
     }
 
     /**
-     * @return array|null
+     * @return Collection<int, Effect>
      */
-    public function getEffects(): ?array
+    public function getEffects(): Collection
     {
         return $this->effects;
     }
 
-    /**
-     * @param array|null $effects
-     */
-    public function setEffects(?array $effects): void
+    public function setEffectsByArray(EffectRepository $effectRepository, array $effects): self
     {
-        $this->effects = $effects;
+        foreach ($effects as $effect) {
+            $e = new Effect();
+            $e->setType($effect['type']);
+            $e->setValue($effect['value']);
+            $this->addEffect($e);
+            $effectRepository->save($e);
+        }
+        return $this;
+    }
+
+    public function addEffect(Effect $effect): self
+    {
+        if (!$this->effects->contains($effect)) {
+            $this->effects->add($effect);
+            $effect->setItemType($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEffect(Effect $effect): self
+    {
+        if ($this->effects->removeElement($effect) && $effect->getItemType() === $this) {
+            $effect->setItemType(null);
+        }
+
+        return $this;
     }
 }

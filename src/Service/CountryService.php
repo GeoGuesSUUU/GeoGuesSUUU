@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\ClaimRewards;
 use App\Entity\Country;
 use App\Entity\CountryItem;
+use App\Entity\Effect;
 use App\Entity\ItemsQuantity;
 use App\Entity\ItemType;
 use App\Entity\User;
@@ -18,6 +19,7 @@ use App\Repository\CountryRepository;
 use App\Repository\UserRepository;
 use App\Utils\EffectType;
 use App\Utils\ItemTypeType;
+use DateTimeImmutable;
 use Exception;
 
 class CountryService
@@ -107,10 +109,10 @@ class CountryService
      * @param string $type
      * @return array|null
      */
-    public function foundEffectByType(Country $country, string $type): array | null
+    public function foundEffectByType(Country $country, string $type): Effect | null
     {
         foreach ($country->getEffects() as $effect) {
-            if (isset($effect['type']) && $effect['type'] === $type) {
+            if ($effect->getType() === $type) {
                 return $effect;
             }
         }
@@ -118,45 +120,27 @@ class CountryService
     }
 
     /**
-     * @param Country $country
-     * @param array $effect
-     * @return int
-     */
-    public function foundEffectKey(Country $country, array $effect): int
-    {
-        foreach ($country->getEffects() as $key => $e) {
-            if (isset($e['type']) && isset($effect['type']) && $e['type'] === $effect['type']) {
-                return $key;
-            }
-        }
-        return -1;
-    }
-
-    /**
      * Add or Overwrite Effect value
      * @param Country $country
-     * @param array $effect
+     * @param Effect $effect
      * @return Country
      */
-    public function addEffect(Country $country, array $effect): Country
+    public function addEffect(Country $country, Effect $effect): Country
     {
-        $e = $this->foundEffectByType($country, $effect['type']);
+        $e = $this->foundEffectByType($country, $effect->getType());
 
         if (is_null($e)) {
             return $country->addEffect($effect);
         }
 
-        $key = $this->foundEffectKey($country, $effect);
-        $es = $country->getEffects();
-        if ($key !== -1) {
-            $es[$key]['value'] = $effect['value'];
-        }
-        return $country->setEffects($es);
+        $country->getEffects()->get($effect->id)?->setValue($effect->getValue());
+        return $country;
     }
 
     public function removeAllEffect(Country $country): Country
     {
-        return $country->setEffects([]);
+        $country->getEffects()->clear();
+        return $country;
     }
 
     public function removeItemByType(Country $country, string $type): void
@@ -194,9 +178,9 @@ class CountryService
         $this->userRepository->save($user);
 
         $entity->setUser($user);
-        $entity->setOwnedAt(new \DateTimeImmutable());
-        $entity->setClaimDate(new \DateTimeImmutable());
-        $entity->setEffects([]);
+        $entity->setOwnedAt(new DateTimeImmutable());
+        $entity->setClaimDate(new DateTimeImmutable());
+        $entity = $this->removeAllEffect($entity);
         $entity->setLife($entity->getInitLife());
         $entity->setLifeMax($entity->getInitLife());
         $entity->setShield(0);
@@ -246,13 +230,11 @@ class CountryService
         // TODO: damage price
 
         foreach ($item->getEffects() as $effect) {
-            if (isset($effect['type']) && isset($effect['value'])) {
-                if ($effect['type'] === EffectType::MALUS_SHIELD->value) {
-                    $damageShield += $effect['value'];
-                }
-                elseif ($effect['type'] === EffectType::MALUS_LIFE->value) {
-                    $damageLife += $effect['value'];
-                }
+            if ($effect->getType() === EffectType::MALUS_SHIELD->value) {
+                $damageShield += $effect->getValue();
+            }
+            elseif ($effect->getType() === EffectType::MALUS_LIFE->value) {
+                $damageLife += $effect->getValue();
             }
         }
 
@@ -309,19 +291,17 @@ class CountryService
         $extraShieldMax = $country->getShieldMax();
 
         foreach ($item->getEffects() as $effect) {
-            if (isset($effect['type']) && isset($effect['value'])) {
-                if ($effect['type'] === EffectType::BONUS_SHIELD->value) {
-                    $extraShield += $effect['value'];
-                }
-                elseif ($effect['type'] === EffectType::BONUS_SHIELD_MAX->value) {
-                    $extraShieldMax += $effect['value'];
-                }
-                elseif ($effect['type'] === EffectType::BONUS_LIFE->value) {
-                    $extraLife += $effect['value'];
-                }
-                elseif ($effect['type'] === EffectType::BONUS_LIFE_MAX->value) {
-                    $extraLifeMax += $effect['value'];
-                }
+            if ($effect->getType() === EffectType::BONUS_SHIELD->value) {
+                $extraShield += $effect->getValue();
+            }
+            elseif ($effect->getType() === EffectType::BONUS_SHIELD_MAX->value) {
+                $extraShieldMax += $effect->getValue();
+            }
+            elseif ($effect->getType() === EffectType::BONUS_LIFE->value) {
+                $extraLife += $effect->getValue();
+            }
+            elseif ($effect->getType() === EffectType::BONUS_LIFE_MAX->value) {
+                $extraLifeMax += $effect->getValue();
             }
         }
 
@@ -389,11 +369,9 @@ class CountryService
             if ($item->getType() === ItemTypeType::TYPE_EQUIPMENT->value) {
                 foreach ($item->getEffects() as $effect) {
                     if (
-                        isset($effect['type']) &&
-                        isset($effect['value']) &&
-                        $effect['type'] === EffectType::BONUS_PRICE->value
+                        $effect->getType() === EffectType::BONUS_PRICE->value
                     ) {
-                        $pricePercentage += (float) ($effect['value'] * $link->getQuantity());
+                        $pricePercentage += (float) ($effect->getValue() * $link->getQuantity());
                     }
                 }
             }
@@ -426,7 +404,7 @@ class CountryService
         $rewards->setCoins($coins * $days);
         $rewards->setItems($rewardItems);
 
-        $country->setClaimDate(new \DateTimeImmutable());
+        $country->setClaimDate(new DateTimeImmutable());
         $this->save($country, $flush);
         return $rewards;
     }
