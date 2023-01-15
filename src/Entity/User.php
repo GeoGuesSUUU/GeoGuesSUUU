@@ -252,6 +252,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        return in_array("ROLE_ADMIN", $this->roles);
+    }
+
+    /**
      * @see PasswordAuthenticatedUserInterface
      */
     public function getPassword(): string

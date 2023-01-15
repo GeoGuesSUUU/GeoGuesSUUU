@@ -26,6 +26,11 @@ class UserService
         $this->userRepository->flush();
     }
 
+    public function save(User $user, bool $flush = false): void
+    {
+        $this->userRepository->save($user, $flush);
+    }
+
     /**
      * @param bool $detail
      * @return User[]
@@ -45,6 +50,7 @@ class UserService
      * @param int $id
      * @param bool $detail
      * @return User
+     * @throws UserNotFoundApiException
      */
     public function getById(int $id, bool $detail = false): User
     {

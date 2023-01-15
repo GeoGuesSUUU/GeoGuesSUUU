@@ -1,0 +1,116 @@
+.game-img {
+    background-position: center;
+    background-size: 100%;
+}
+
+.game-title {
+    top: 75px;
+    font-size: 100px;
+    width: 100%;
+    text-align: center;
+}
+
+#game-body {
+    display: none;
+    transition: all 1s;
+}
+
+@keyframes fade-hide {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes fade-show {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+*.show {
+    animation: fade-show 1s ease forwards;
+}
+
+*.hide {
+    animation: fade-hide 1s ease forwards;
+}
+
+@keyframes img-guess-true {
+    0% {
+        box-shadow: none;
+    }
+    50% {
+        box-shadow: 0 0 42px rgba(0, 250, 0, 0.33);
+    }
+    100% {
+        box-shadow: none;
+    }
+}
+
+@keyframes img-guess-false {
+    0% {
+        box-shadow: none;
+    }
+    50% {
+        box-shadow: 0 0 42px rgba(250, 0, 0, 0.33);
+    }
+    100% {
+        box-shadow: none;
+    }
+}
+
+img.guess-true {
+    transition: box-shadow 0.5s;
+    animation: img-guess-true 1s ease forwards;
+}
+
+img.guess-false {
+    transition: box-shadow 0.5s;
+    animation: img-guess-false 1s ease forwards;
+}
+
+@keyframes progress-guess-true {
+    0% {
+        background-color: #0d6efd;
+    }
+    50% {
+        background-color: #0B0;
+    }
+    100% {
+        background-color: #0d6efd;
+    }
+}
+
+@keyframes progress-guess-false {
+    0% {
+        background-color: #0d6efd;
+    }
+    50% {
+        background-color: #B00;
+    }
+    100% {
+        background-color: #0d6efd;
+    }
+}
+
+.progress-bar.guess-true {
+    transition: background-color 0.5s;
+    animation: progress-guess-true 1s ease forwards;
+}
+
+.progress-bar.guess-false {
+    transition: box-shadow 0.5s;
+    animation: progress-guess-false 1s ease forwards;
+}
+
+.no-level-message, .no-level-message svg  {
+    font-size: larger;
+    font-weight: bold;
+}
+

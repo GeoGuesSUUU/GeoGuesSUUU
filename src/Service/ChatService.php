@@ -5,12 +5,10 @@ namespace App\Service;
 use App\Entity\Message;
 use App\Repository\MessageRepository;
 use Exception;
-use Ratchet\ConnectionInterface;
 use SplObjectStorage;
 
-class ChatService
+class ChatService extends WebSocketService
 {
-    private SplObjectStorage $connections;
 
     public function __construct(
         private readonly MessageRepository $messageRepository,
@@ -18,27 +16,7 @@ class ChatService
         SplObjectStorage                   $connections
     )
     {
-        $this->connections = $connections;
-    }
-
-    public function sendToEveryone(mixed $data): void
-    {
-        foreach($this->connections as $connection)
-        {
-            $connection->send($data);
-        }
-    }
-
-    public function sendToEveryoneExceptSrc(ConnectionInterface $from, mixed $data): void
-    {
-        foreach($this->connections as $connection)
-        {
-            if($connection === $from)
-            {
-                continue;
-            }
-            $connection->send($data);
-        }
+        parent::__construct($connections);
     }
 
     public function addMessageToDB(array $data): array
