@@ -4,6 +4,8 @@ const btnSinglePLay = document.getElementById('btn-single-play')
 const cardModes = document.getElementsByClassName('card-mode')
 const levelInput = document.getElementById('level-input')
 
+const DEFAULT_USER_IMG='https://media.tenor.com/ZgsyS1epGSYAAAAd/siuuu-ronaldo.gif';
+
 if (!userId) throw new Error('Please init "userId" variable !')
 
 let room = {
@@ -289,7 +291,7 @@ function finishEvent(response) {
                     <div class="d-flex flex-column align-items-center justify-content-center">
                         <span class="fs-3 mb-3"><strong>Score : </strong>${response.game.score}</span>
                         <span class="fs-4 mb-3"><strong>Time : </strong>${response.game.time.chrono}</span>
-                        <img src="${response.user.img}" alt="img-user-${response.user.id}" class="img-fluid rounded-circle object-fit-cover" width="150" />
+                        <img src="${response.user.img ?? DEFAULT_USER_IMG}" alt="img-user-${response.user.id}" class="img-fluid rounded-circle object-fit-cover" width="150" />
                         <span class="fs-4 my-1">${response.user.name} ${adminBadge} ${verifiedBadge}</span>
                         <ul style="list-style: none" class="my-3">
                             <li class="fs-5 m-2">
