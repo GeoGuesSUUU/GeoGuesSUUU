@@ -72,6 +72,7 @@ class ItemType
     private ?string $img;
 
     #[ORM\Column(options: [ "unsigned" => true ])]
+    #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item_anti_cr'])]
     private int $price = 0;
 
     #[ORM\OneToMany(mappedBy: 'itemType', targetEntity: Effect::class, cascade: ['persist'], orphanRemoval: true)]
@@ -85,6 +86,10 @@ class ItemType
     #[ORM\OneToMany(mappedBy: 'itemType', targetEntity: CountryItem::class, orphanRemoval: true)]
     #[Groups(groups: ['item_api_response'])]
     private Collection $countryItems;
+
+    #[ORM\OneToOne(mappedBy: 'item', cascade: ['persist'], orphanRemoval: true)]
+    #[Groups(groups: ['item_api_response'])]
+    private ?StoreItem $storeItem = null;
 
     public function __construct()
     {
@@ -292,6 +297,24 @@ class ItemType
     public function setPrice(int $price): ItemType
     {
         $this->price = $price;
+        return $this;
+    }
+
+    /**
+     * @return StoreItem|null
+     */
+    public function getStoreItem(): ?StoreItem
+    {
+        return $this->storeItem;
+    }
+
+    /**
+     * @param StoreItem|null $storeItem
+     * @return ItemType
+     */
+    public function setStoreItem(?StoreItem $storeItem): ItemType
+    {
+        $this->storeItem = $storeItem;
         return $this;
     }
 }

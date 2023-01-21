@@ -4,17 +4,22 @@ namespace App\Entity;
 
 use App\Repository\StoreItemRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: StoreItemRepository::class)]
+#[UniqueEntity(fields: ['item'], message: 'There is already this item in the store')]
 class StoreItem
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(groups: ['store_api_response', 'store_anti_cr'])]
     private int $id;
 
-    #[ORM\OneToOne(inversedBy: 'storeItem', cascade: ['persist'])]
+    #[ORM\OneToOne(inversedBy: 'storeItem')]
+    #[Groups(groups: ['store_api_response', 'api_new', 'api_edit'])]
     private ?ItemType $item = null;
 
     #[Assert\Length(
@@ -24,13 +29,33 @@ class StoreItem
         maxMessage: "The type cannot be longer than {{ limit }} characters"
     )]
     #[ORM\Column(length: 255)]
-    private string $type ='auto';
+    #[Groups(groups: ['store_api_response', 'api_new', 'api_edit', 'store_anti_cr'])]
+    private string $type = 'auto';
 
     #[ORM\Column]
+    #[Groups(groups: ['store_api_response', 'api_new', 'api_edit', 'store_anti_cr'])]
     private bool $trending = false;
 
+    #[Assert\GreaterThanOrEqual(value: 0, message: "The promotion cannot be less than {{ limit }}")]
+    #[Assert\LessThanOrEqual(value: 100, message: "The promotion cannot be greater than {{ limit }}")]
     #[ORM\Column]
+    #[Groups(groups: ['store_api_response', 'api_new', 'api_edit', 'store_anti_cr'])]
     private int $promotion = 0;
+
+    // ==============================//
+    #[Groups(groups: ['store_api_response', 'store_anti_cr'])]
+    private int $promoPrice = 0;
+    // ==============================//
+
+    /**
+     * @param int $id
+     * @return StoreItem
+     */
+    public function setId(int $id): StoreItem
+    {
+        $this->id = $id;
+        return $this;
+    }
 
     /**
      * @return int
@@ -113,6 +138,24 @@ class StoreItem
     {
         $this->promotion = $promotion;
 
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPromoPrice(): int
+    {
+        return $this->promoPrice;
+    }
+
+    /**
+     * @param int $promoPrice
+     * @return StoreItem
+     */
+    public function setPromoPrice(int $promoPrice): StoreItem
+    {
+        $this->promoPrice = $promoPrice;
         return $this;
     }
 }

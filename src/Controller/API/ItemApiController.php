@@ -59,7 +59,7 @@ class ItemApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return itemType by Id",
-     *     @Model(type=ItemType::class, groups={"user_anti_cr", "item_api_response", "effect_anti_cr"})
+     *     @Model(type=ItemType::class, groups={"user_anti_cr", "item_api_response", "effect_anti_cr", "store_anti_cr"})
      * )
      * @OA\Response(
      *     response=404,
@@ -79,7 +79,7 @@ class ItemApiController extends AbstractController
         return $this->json(ApiResponse::get($itemType),
             200,
             [],
-            ['groups' => ['user_anti_cr', 'item_api_response', 'effect_anti_cr']]
+            ['groups' => ['user_anti_cr', 'item_api_response', 'effect_anti_cr', 'store_anti_cr']]
         );
     }
 
@@ -89,7 +89,7 @@ class ItemApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return new itemType",
-     *     @Model(type=ItemType::class, groups={"user_anti_cr", "item_api_response", "effect_anti_cr"})
+     *     @Model(type=ItemType::class, groups={"user_anti_cr", "item_api_response", "effect_anti_cr", "store_anti_cr"})
      * )
      * @OA\Response(
      *     response=400,
@@ -137,7 +137,7 @@ class ItemApiController extends AbstractController
         return $this->json(ApiResponse::get($body),
             200,
             [],
-            ['groups' => ['user_anti_cr', 'item_api_response', 'effect_anti_cr']]
+            ['groups' => ['user_anti_cr', 'item_api_response', 'effect_anti_cr', 'store_anti_cr']]
         );
     }
 
@@ -147,7 +147,7 @@ class ItemApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return edited itemType",
-     *     @Model(type=ItemType::class, groups={"user_anti_cr", "item_api_response", "effect_anti_cr"})
+     *     @Model(type=ItemType::class, groups={"user_anti_cr", "item_api_response", "effect_anti_cr", "store_anti_cr"})
      * )
      * @OA\Response(
      *     response=400,
@@ -212,7 +212,7 @@ class ItemApiController extends AbstractController
             ApiResponse::get($itemTypeUpdated),
             200,
             [],
-            ['groups' => ['user_anti_cr', 'item_api_response', 'effect_anti_cr']]
+            ['groups' => ['user_anti_cr', 'item_api_response', 'effect_anti_cr', 'store_anti_cr']]
         );
     }
 
