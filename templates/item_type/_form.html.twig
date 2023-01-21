@@ -23,6 +23,15 @@
         {{ form_label(form.description) }}
     </div>
     <div class="form-floating mb-3 w-100">
+        {{ form_widget(form.price, {
+            'attr': {
+                'class': 'form-control',
+                'placeholder': 'price'
+            }
+        }) }}
+        {{ form_label(form.price) }}
+    </div>
+    <div class="form-floating mb-3 w-100">
         {{ form_widget(form.img, {
             'attr': {
                 'class': 'form-control',

@@ -16,6 +16,7 @@
                 <th>Id</th>
                 <th>Name</th>
                 <th>Description</th>
+                <th>Price</th>
                 <th>Type</th>
                 <th>Rarity</th>
                 <th>Fantastic</th>
@@ -27,7 +28,7 @@
                 <tr>
                     <td>
                         {% if item_type.img is not empty %}
-                            <img crossorigin="anonymous" class="representation-image" src="{{ item_type.img }}">
+                            <img class="representation-image" src="{{ item_type.img }}">
                         {% else %}
                             <img class="representation-image" src="/assets/img/items/item_default.svg">
                         {% endif %}
@@ -35,6 +36,7 @@
                     <td>{{ item_type.id }}</td>
                     <td>{{ item_type.name }}</td>
                     <td>{{ item_type.description }}</td>
+                    <td>{{ item_type.price }}</td>
                     <td>{{ item_type.type }}</td>
                     <td>{{ item_type.rarity }}</td>
                     <td>{{ item_type.fantastic ? 'Yes' : 'No' }}</td>
