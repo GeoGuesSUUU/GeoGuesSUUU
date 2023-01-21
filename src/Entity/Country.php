@@ -67,26 +67,38 @@ class Country
     #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
     private string $continent;
 
+    #[Assert\GreaterThanOrEqual(value: 0, message: "The initLife cannot be less than 0")]
+    #[Assert\LessThanOrEqual(value: 999999999999999999, message: "The initLife cannot be greater than 999999999999999999")]
     #[ORM\Column(type: 'bigint', options: [ "unsigned" => true ])]
     #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
     private int $initLife = 0;
 
+    #[Assert\GreaterThanOrEqual(value: 0, message: "The life cannot be less than 0")]
+    #[Assert\LessThanOrEqual(value: 999999999999999999, message: "The life cannot be greater than 999999999999999999")]
     #[ORM\Column(type: 'bigint', options: [ "unsigned" => true ])]
     #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
     private int $life = 0;
 
+    #[Assert\GreaterThanOrEqual(value: 0, message: "The lifeMax cannot be less than 0")]
+    #[Assert\LessThanOrEqual(value: 999999999999999999, message: "The lifeMax cannot be greater than 999999999999999999")]
     #[ORM\Column(type: 'bigint', options: [ "unsigned" => true ])]
     #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
     private int $lifeMax = 0;
 
+    #[Assert\GreaterThanOrEqual(value: 0, message: "The shield cannot be less than 0")]
+    #[Assert\LessThanOrEqual(value: 999999999999999999, message: "The shield cannot be greater than 999999999999999999")]
     #[ORM\Column(type: 'bigint', options: [ "unsigned" => true ])]
     #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
     private int $shield = 0;
 
+    #[Assert\GreaterThanOrEqual(value: 0, message: "The shieldMax cannot be less than 0")]
+    #[Assert\LessThanOrEqual(value: 999999999999999999, message: "The shieldMax cannot be greater than 999999999999999999")]
     #[ORM\Column(type: 'bigint', options: [ "unsigned" => true ])]
     #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
     private int $shieldMax = 0;
 
+    #[Assert\GreaterThanOrEqual(value: 0, message: "The initPrice be less than 0")]
+    #[Assert\LessThanOrEqual(value: 4000000000, message: "The initPrice be greater than 4000000000")]
     #[ORM\Column(options: [ "unsigned" => true ])]
     #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
     private int $initPrice = 0;

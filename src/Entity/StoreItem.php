@@ -36,8 +36,8 @@ class StoreItem
     #[Groups(groups: ['store_api_response', 'api_new', 'api_edit', 'store_anti_cr'])]
     private bool $trending = false;
 
-    #[Assert\GreaterThanOrEqual(value: 0, message: "The promotion cannot be less than {{ limit }}")]
-    #[Assert\LessThanOrEqual(value: 100, message: "The promotion cannot be greater than {{ limit }}")]
+    #[Assert\GreaterThanOrEqual(value: 0, message: "The promotion cannot be less than 0")]
+    #[Assert\LessThanOrEqual(value: 100, message: "The promotion cannot be greater than 100")]
     #[ORM\Column]
     #[Groups(groups: ['store_api_response', 'api_new', 'api_edit', 'store_anti_cr'])]
     private int $promotion = 0;
