@@ -39,6 +39,11 @@ class StoreItemRepository extends ServiceEntityRepository
         }
     }
 
+    public function flush(): void
+    {
+        $this->getEntityManager()->flush();
+    }
+
 //    /**
 //     * @return StoreItem[] Returns an array of StoreItem objects
 //     */
