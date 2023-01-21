@@ -67,27 +67,27 @@ class Country
     #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
     private string $continent;
 
-    #[ORM\Column(type: 'bigint')]
+    #[ORM\Column(type: 'bigint', options: [ "unsigned" => true ])]
     #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
     private int $initLife = 0;
 
-    #[ORM\Column(type: 'bigint')]
+    #[ORM\Column(type: 'bigint', options: [ "unsigned" => true ])]
     #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
     private int $life = 0;
 
-    #[ORM\Column(type: 'bigint')]
+    #[ORM\Column(type: 'bigint', options: [ "unsigned" => true ])]
     #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
     private int $lifeMax = 0;
 
-    #[ORM\Column(type: 'bigint')]
+    #[ORM\Column(type: 'bigint', options: [ "unsigned" => true ])]
     #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
     private int $shield = 0;
 
-    #[ORM\Column(type: 'bigint')]
+    #[ORM\Column(type: 'bigint', options: [ "unsigned" => true ])]
     #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
     private int $shieldMax = 0;
 
-    #[ORM\Column]
+    #[ORM\Column(options: [ "unsigned" => true ])]
     #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
     private int $initPrice = 0;
 
