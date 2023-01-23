@@ -8,7 +8,6 @@ use App\Utils\ItemTypeType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use OpenApi\Annotations as OA;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -72,7 +71,10 @@ class ItemType
     #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item_anti_cr'])]
     private ?string $img;
 
-    #[ORM\OneToMany(mappedBy: 'itemType', targetEntity: Effect::class, orphanRemoval: true)]
+    #[ORM\Column(options: [ "unsigned" => true ])]
+    private int $price = 0;
+
+    #[ORM\OneToMany(mappedBy: 'itemType', targetEntity: Effect::class, cascade: ['persist'], orphanRemoval: true)]
     #[Groups(groups: ['item_api_response', 'api_new', 'api_edit', 'item_anti_cr'])]
     private Collection $effects;
 
@@ -272,6 +274,24 @@ class ItemType
             $effect->setItemType(null);
         }
 
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPrice(): int
+    {
+        return $this->price;
+    }
+
+    /**
+     * @param int $price
+     * @return ItemType
+     */
+    public function setPrice(int $price): ItemType
+    {
+        $this->price = $price;
         return $this;
     }
 }

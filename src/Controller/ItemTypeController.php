@@ -5,15 +5,13 @@ namespace App\Controller;
 use App\Entity\Effect;
 use App\Entity\ItemType;
 use App\Form\ItemTypeType;
-use App\Form\MultipleItemType;
 use App\Repository\ItemTypeRepository;
+use App\Utils\Rarity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/admin/item/type')]
 class ItemTypeController extends AbstractController
@@ -46,7 +44,7 @@ class ItemTypeController extends AbstractController
     }
 
     #[Route('/add_items', name: 'app_item_type_add_items', methods: ['POST'])]
-    public function addItems(Request $request, ItemTypeRepository $itemTypeRepository, SluggerInterface $slugger): Response
+    public function addItems(Request $request, ItemTypeRepository $itemTypeRepository): Response
     {
         /** @var UploadedFile $file */
         $file = $request->files->get('file');
@@ -70,23 +68,22 @@ class ItemTypeController extends AbstractController
                         $newItem = new ItemType();
                         $newItem->setName($data[0]);
                         $newItem->setDescription($data[1]);
-                        $newItem->setType($data[2]);
-                        $newItem->setRarity($data[3]);
-                        $newItem->setFantastic($data[4]);
+                        $newItem->setType($data[2] ?? \App\Utils\ItemTypeType::TYPE_OTHER);
+                        $newItem->setRarity($data[3] ?? Rarity::COMMON);
+                        $newItem->setFantastic($data[4] === 'TRUE');
                         $newItem->setImg($data[7]);
-
-                        $effects = [];
+                        $newItem->setPrice($data[8] ?? 0);
 
                         if (str_contains($data[5], ",")) {
-                            $effectsType = explode(",", $data[5]);
-                            $effectsValue = explode(",", $data[6]);
+                            $effectsType = explode(", ", $data[5]);
+                            $effectsValue = explode(", ", $data[6]);
 
                             for ($i = 0; $i < sizeof($effectsType); $i++) {
                                 $newEffect = new Effect();
                                 $newEffect->setType($effectsType[$i]);
                                 $newEffect->setValue($effectsValue[$i]);
 
-                                $effects[] = $newEffect;
+                                $newItem->addEffect($newEffect);
                             }
 
                             if (str_contains($newItem->getDescription(), "%d")) {
@@ -97,14 +94,12 @@ class ItemTypeController extends AbstractController
                             $newEffect->setType($data[5]);
                             $newEffect->setValue($data[6]);
 
-                            $effects[] = $newEffect;
+                            $newItem->addEffect($newEffect);
 
                             if (str_contains($newItem->getDescription(), "%d")) {
                                 $newItem->setDescription(sprintf($newItem->getDescription(), $newEffect->getValue()));
                             }
                         }
-
-                        $newItem->setEffects($effects);
 
                         $itemTypeRepository->save($newItem, true);
                     }

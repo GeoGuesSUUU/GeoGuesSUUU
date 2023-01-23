@@ -3,12 +3,13 @@
 namespace App\Form;
 
 use App\Entity\ItemType;
-use App\Form\EffectType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class ItemTypeType extends AbstractType
 {
@@ -43,6 +44,16 @@ class ItemTypeType extends AbstractType
             ])
             ->add('fantastic')
             ->add('img')
+            ->add('price', IntegerType::class, [
+                'constraints' => [
+                    new Assert\GreaterThanOrEqual(['value' => 0]),
+                    new Assert\LessThanOrEqual(['value' => 4000000000]),
+                ],
+                'attr' => [
+                    'min' => 0,
+                    'max' => 4000000000,
+                ]
+            ])
             ->add('effects', CollectionType::class, [
                 'entry_type' => EffectType::class,
                 'entry_options' => ['label' => false],
