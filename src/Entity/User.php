@@ -49,11 +49,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(groups: ['user_api_response', 'api_new', 'api_edit', 'api_login', 'user_anti_cr'])]
     private string $email;
 
-    #[ORM\Column]
+    #[Assert\GreaterThanOrEqual(value: 0, message: "The coins cannot be less than 0")]
+    #[Assert\LessThanOrEqual(value: 999999999999999999, message: "The coins cannot be greater than 999999999999999999")]
+    #[ORM\Column(type: 'bigint', options: [ "unsigned" => true ])]
     #[Groups(groups: ['user_private', 'api_edit', 'user_anti_cr'])]
     private int $coins = 0;
 
-    #[ORM\Column(type: 'bigint')]
+    #[Assert\GreaterThanOrEqual(value: 0, message: "The xp cannot be less than 0")]
+    #[Assert\LessThanOrEqual(value: 999999999999999999, message: "The xp cannot be greater than 999999999999999999")]
+    #[ORM\Column(type: 'bigint', options: [ "unsigned" => true ])]
     #[Groups(groups: ['user_api_response', 'api_edit', 'user_anti_cr'])]
     private int $xp = 0;
 
