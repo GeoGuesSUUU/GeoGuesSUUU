@@ -29,6 +29,7 @@ class FindTheFlagWebSocketController extends AbstractController
             'controller_name' => 'FindTheFlagWebsocketController',
             'user' => $user,
             'data' => $game,
+            'bootstrap' => true,
             'icon' => '/assets/img/items/flag.svg',
             'script' => 'assets/js/find-the-flag.js',
             'host' => $_SERVER['HTTP_HOST']
@@ -56,6 +57,7 @@ class FindTheFlagWebSocketController extends AbstractController
             'controller_name' => 'FindTheFlagWebsocketController',
             'user' => $user,
             'data' => $game,
+            'bootstrap' => false,
             'icon' => '/assets/img/items/flag.svg',
             'script' => 'assets/js/find-the-flag.js',
             'host' => $_SERVER['HTTP_HOST']
