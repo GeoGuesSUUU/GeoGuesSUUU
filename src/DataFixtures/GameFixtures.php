@@ -21,7 +21,7 @@ class GameFixtures extends Fixture
         );
         $game->setTags('quizz, find-the-flag');
         $game->setImg('https://wallpapercave.com/wp/wp2972402.jpg');
-        $game->setServer('http://localhost:9000/');
+        $game->setServer('http://localhost:8000/api/game-page/find-the-flag');
 
         $levelEasy = new Level();
         $levelEasy->setLabel('EASY');
