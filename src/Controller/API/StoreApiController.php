@@ -219,7 +219,7 @@ class StoreApiController extends AbstractController
     }
 
     /**
-     * Delete user by ID (Only Admin)
+     * Delete storeItem by ID (Only Admin)
      * @OA\Response(
      *     response=204,
      *     description="No Content"
@@ -247,10 +247,10 @@ class StoreApiController extends AbstractController
     }
 
     /**
-     * Buy country by ID
+     * Buy storeItem by ID
      * @OA\Response(
      *     response=200,
-     *     description="Return country",
+     *     description="Return User",
      *     @Model(type=User::class, groups={"country_anti_cr", "score_anti_cr", "user_api_response", "inventory_anti_cr", "item_anti_cr", "user_private", "user_details", "effect_anti_cr"})
      * )
      * @OA\Response(
@@ -262,7 +262,7 @@ class StoreApiController extends AbstractController
      * @param Request $request
      * @return Response
      */
-    #[Route('/{id}/buy', name: 'app_country_api_buy', methods: ['POST'], format: 'application/json')]
+    #[Route('/{id}/buy', name: 'app_store_api_buy', methods: ['POST'], format: 'application/json')]
     public function buy(int $id, StoreService $storeService, Request $request): Response
     {
 
