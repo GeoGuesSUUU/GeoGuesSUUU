@@ -15,7 +15,7 @@ class Game
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(groups: ['game_api_response', 'game_anti_cr'])]
+    #[Groups(groups: ['game_api_response', 'game_anti_cr', 'user_details'])]
     private int $id;
 
     #[ORM\Column(length: 255)]
@@ -26,7 +26,7 @@ class Game
         minMessage: "The title must be at least {{ limit }} characters long",
         maxMessage: "The title cannot be longer than {{ limit }} characters"
     )]
-    #[Groups(groups: ['game_api_response', 'api_new', 'api_edit', 'game_anti_cr'])]
+    #[Groups(groups: ['game_api_response', 'api_new', 'api_edit', 'game_anti_cr', 'user_details'])]
     private string $title;
 
     #[ORM\Column(length: 1024, nullable: true)]
@@ -42,7 +42,7 @@ class Game
         max: 255,
         maxMessage: "The img cannot be longer than {{ limit }} characters"
     )]
-    #[Groups(groups: ['game_api_response', 'api_new', 'api_edit', 'game_anti_cr'])]
+    #[Groups(groups: ['game_api_response', 'api_new', 'api_edit', 'game_anti_cr', 'user_details'])]
     private string $img;
 
     #[ORM\Column(length: 1024, nullable: true)]

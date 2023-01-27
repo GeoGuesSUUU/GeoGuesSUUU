@@ -13,23 +13,23 @@ class Score
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(groups: ['score_api_response', 'score_anti_cr'])]
+    #[Groups(groups: ['score_api_response', 'score_anti_cr', 'user_details'])]
     private int $id;
 
     #[ORM\Column]
-    #[Groups(groups: ['score_api_response', 'api_new', 'api_edit', 'score_anti_cr'])]
+    #[Groups(groups: ['score_api_response', 'api_new', 'api_edit', 'score_anti_cr', 'user_details'])]
     private int $score;
 
     #[ORM\Column]
-    #[Groups(groups: ['score_api_response', 'score_anti_cr'])]
+    #[Groups(groups: ['score_api_response', 'score_anti_cr', 'user_details'])]
     private \DateTimeImmutable $createdAt;
 
     #[ORM\Column]
-    #[Groups(groups: ['score_api_response', 'api_new', 'api_edit', 'score_anti_cr'])]
+    #[Groups(groups: ['score_api_response', 'api_new', 'api_edit', 'score_anti_cr', 'user_details'])]
     private int $time;
 
     #[ORM\ManyToOne(inversedBy: 'scores')]
-    #[Groups(groups: ['score_api_response', 'api_new', 'api_edit'])]
+    #[Groups(groups: ['score_api_response', 'api_new', 'api_edit', 'user_details'])]
     private Level $level;
 
     #[ORM\ManyToOne(inversedBy: 'scores')]
