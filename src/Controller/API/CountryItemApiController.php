@@ -29,8 +29,8 @@ class CountryItemApiController extends AbstractController
      * @OA\Parameter(name="quantity", in="query")
      * @OA\Response(
      *     response=200,
-     *     description="Return new itemType",
-     *     @Model(type=ItemType::class, groups={"country_anti_cr", "item_api_response"})
+     *     description="Return updated Country",
+     *     @Model(type=ItemType::class, groups={"user_anti_cr", "country_api_response", "country_item_anti_cr", "item_anti_cr", "effect_anti_cr"})
      * )
      * @OA\Response(
      *     response=400,
@@ -63,8 +63,14 @@ class CountryItemApiController extends AbstractController
             throw new ItemTypeNotFoundApiException();
         }
 
-        $countryService->addItemFromInventory($country, $user, $item);
+        $updatedCountry = $countryService->addItemFromInventory($country, $user, $item);
+        $updatedCountry = $countryService->calculatePrice($updatedCountry);
 
-        return $this->json(ApiResponse::get(null, Response::HTTP_NO_CONTENT));
+        return $this->json(ApiResponse::get($updatedCountry, Response::HTTP_OK),
+            200,
+            [],
+            ['groups' => [
+                'user_anti_cr', 'country_api_response', 'country_item_anti_cr', 'item_anti_cr', 'effect_anti_cr'
+            ]]);
     }
 }
