@@ -15,11 +15,11 @@ class Level
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(groups: ['level_api_response', 'level_anti_cr'])]
+    #[Groups(groups: ['level_api_response', 'level_anti_cr', 'user_details'])]
     private int $id;
 
     #[ORM\Column]
-    #[Groups(groups: ['level_api_response', 'api_new', 'api_edit', 'level_anti_cr'])]
+    #[Groups(groups: ['level_api_response', 'api_new', 'api_edit', 'level_anti_cr', 'user_details'])]
     private int $difficulty = 0;
 
     #[ORM\Column(length: 255)]
@@ -30,7 +30,7 @@ class Level
         minMessage: "The label must be at least {{ limit }} characters long",
         maxMessage: "The label cannot be longer than {{ limit }} characters"
     )]
-    #[Groups(groups: ['level_api_response', 'api_new', 'api_edit', 'level_anti_cr'])]
+    #[Groups(groups: ['level_api_response', 'api_new', 'api_edit', 'level_anti_cr', 'user_details'])]
     private string $label;
 
     #[ORM\Column(length: 1024, nullable: true)]
@@ -42,7 +42,7 @@ class Level
     private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'levels')]
-    #[Groups(groups: ['level_api_response', 'api_new', 'api_edit'])]
+    #[Groups(groups: ['level_api_response', 'api_new', 'api_edit', 'user_details'])]
     private Game $game;
 
     #[ORM\OneToMany(mappedBy: 'level', targetEntity: Score::class, orphanRemoval: true)]

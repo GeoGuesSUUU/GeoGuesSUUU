@@ -85,7 +85,7 @@ class UserApiController extends AbstractController
         return $this->json(ApiResponse::get($user),
             200,
             [],
-            ['groups' => ['country_anti_cr', 'score_anti_cr', 'user_api_response', 'user_details']]
+            ['groups' => ['country_anti_cr', 'user_api_response', 'user_details']]
         );
     }
 
