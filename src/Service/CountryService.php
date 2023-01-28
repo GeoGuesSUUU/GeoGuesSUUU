@@ -355,7 +355,7 @@ class CountryService
         $link->setQuantity($link->getQuantity() + 1);
 
         $this->countryItemRepository->save($link);
-        $this->userService->removeItemById($user, $item->getId(), true);
+        $this->userService->removeItemById($user, $item->getId(), $link->getQuantity(), true);
 
         return $country;
     }
