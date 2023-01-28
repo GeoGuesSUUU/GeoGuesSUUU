@@ -1,0 +1,16 @@
+{% block body %}
+    {% for store_item_saved in store_items %}
+        {% include 'store_item/show.html.twig' with {'id': store_item_saved.id} %}
+    {% endfor %}
+
+    {% include 'store_item/new.html.twig' %}
+
+{#    {% if store_items|length >= 5 %}#}
+{#        {% include 'store_item/new.html.twig' %}#}
+{#    {% else %}#}
+{#        {% for i in 0..5 - store_items|length %}#}
+{#            {% include 'store_item/new.html.twig' %}#}
+{#        {% endfor %}#}
+{#    {% endif %}#}
+
+{% endblock %}

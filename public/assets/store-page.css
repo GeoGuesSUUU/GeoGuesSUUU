@@ -1,0 +1,86 @@
+.store-page {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 50px;
+    justify-content: center;
+}
+
+.store-page-card {
+    width: 300px;
+    height: 350px;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.store-page-card img {
+    width: 50%;
+}
+
+.store-page-card .promotion {
+     position: absolute;
+     top: 10px;
+     right: 10px;
+     background-color: #f93e3e;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     border-radius: 50px;
+     width: 50px;
+     height: 50px;
+}
+
+.store-page-card .trend {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+}
+
+.store-page-card .promotion p {
+    margin-bottom: 0;
+    font-size: 17px;
+    font-weight: bold;
+    color: #FFFFFF;
+}
+
+.store-page-card .buttons {
+    padding: 0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.store-page-card .buttons svg {
+    width: 25px;
+    height: 25px;
+}
+
+.store-page-card .card-text {
+    max-height: 69px;
+    overflow: auto;
+}
+
+.store-page-card .new {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.store-page-card .new:hover svg {
+    transform: scale(1.2);
+}
+
+.store-page-card .new svg {
+    width: 50px;
+    height: 50px
+}
