@@ -45,6 +45,7 @@ class LevelController extends AbstractController
     {
         return $this->render('level/show.html.twig', [
             'level' => $level,
+            'game' => $level->getGame()
         ]);
     }
 
