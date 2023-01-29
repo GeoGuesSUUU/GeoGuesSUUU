@@ -68,7 +68,7 @@ class UserApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return user by Id",
-     *     @Model(type=User::class, groups={"country_anti_cr", "score_anti_cr", "user_api_response", "user_details"})
+     *     @Model(type=User::class, groups={"country_anti_cr", "score_anti_cr", "user_api_response", "user_details", "country_item_anti_cr", "effect_anti_cr", "item_anti_cr"})
      * )
      * @OA\Response(
      *     response=404,
@@ -85,7 +85,7 @@ class UserApiController extends AbstractController
         return $this->json(ApiResponse::get($user),
             200,
             [],
-            ['groups' => ['country_anti_cr', 'user_api_response', 'user_details']]
+            ['groups' => ['country_anti_cr', 'user_api_response', 'user_details', 'country_item_anti_cr', 'effect_anti_cr', 'item_anti_cr']]
         );
     }
 
@@ -94,7 +94,7 @@ class UserApiController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Return user by Id",
-     *     @Model(type=User::class, groups={"country_anti_cr", "score_anti_cr", "user_api_response", "inventory_anti_cr", "item_anti_cr", "user_private", "user_details"})
+     *     @Model(type=User::class, groups={"country_anti_cr", "score_anti_cr", "user_api_response", "inventory_anti_cr", "item_anti_cr", "user_private", "user_details", "country_item_anti_cr", "effect_anti_cr"})
      * )
      * @OA\Response(
      *     response=404,
@@ -118,7 +118,7 @@ class UserApiController extends AbstractController
         return $this->json(ApiResponse::get($user),
             200,
             [],
-            ['groups' => ['country_anti_cr', 'score_anti_cr', 'user_api_response', 'inventory_anti_cr', 'item_anti_cr', 'user_private', 'user_details']]
+            ['groups' => ['country_anti_cr', 'score_anti_cr', 'user_api_response', 'inventory_anti_cr', 'item_anti_cr', 'user_private', 'user_details', 'country_item_anti_cr', 'effect_anti_cr']]
         );
     }
 

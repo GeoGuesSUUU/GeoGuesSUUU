@@ -124,7 +124,7 @@ class StoreApiController extends AbstractController
             /** @var ItemType $item */
             $item = $itemTypeRepository->findOneBy(["id" => $itemId]);
 
-            if (!is_null($item)) $body->setItem($item);
+            if (!is_null($item)) $body->setItemType($item);
             else throw new ItemTypeNotFoundApiException();
         } else throw new StoreItemNotValidApiException("The item field is required");
 
@@ -196,7 +196,7 @@ class StoreApiController extends AbstractController
             /** @var ItemType $item */
             $item = $itemTypeRepository->findOneBy(["id" => $itemId]);
 
-            if (!is_null($item)) $body->setItem($item);
+            if (!is_null($item)) $body->setItemType($item);
             else throw new ItemTypeNotFoundApiException();
         }
 
