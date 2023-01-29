@@ -59,7 +59,8 @@ class ItemTypeType extends AbstractType
                 'entry_options' => ['label' => false],
                 'allow_add' => true,
                 'allow_delete' => true,
-                'label' => false
+                'label' => false,
+                'by_reference' => false
             ])
         ;
     }
@@ -68,6 +69,7 @@ class ItemTypeType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => ItemType::class,
+            'cascade_validation' => true
         ]);
     }
 }

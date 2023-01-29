@@ -29,6 +29,7 @@ class ItemTypeController extends AbstractController
     {
         $itemType = new ItemType();
         $form = $this->createForm(ItemTypeType::class, $itemType);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -115,6 +116,7 @@ class ItemTypeController extends AbstractController
     {
         return $this->render('item_type/show.html.twig', [
             'item_type' => $itemType,
+            'effects' => $itemType->getEffects()
         ]);
     }
 
