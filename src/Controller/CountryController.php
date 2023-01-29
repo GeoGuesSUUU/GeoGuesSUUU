@@ -45,6 +45,7 @@ class CountryController extends AbstractController
     {
         return $this->render('country/show.html.twig', [
             'country' => $country,
+            'effects' => $country->getEffects()
         ]);
     }
 

@@ -29,7 +29,6 @@ class ItemTypeController extends AbstractController
     {
         $itemType = new ItemType();
         $form = $this->createForm(ItemTypeType::class, $itemType);
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
