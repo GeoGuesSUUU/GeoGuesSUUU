@@ -18,7 +18,8 @@ class StoreItem
     #[Groups(groups: ['store_api_response', 'store_anti_cr'])]
     private ?int $id = null;
 
-    #[ORM\OneToOne(inversedBy: 'storeItem',targetEntity: ItemType::class, cascade: ['persist'])]
+    #[ORM\OneToOne(inversedBy: 'storeItem', cascade: ['persist'])]
+    #[Groups(groups: ['store_api_response', 'api_new', 'api_edit'])]
     private ?ItemType $itemType = null;
 
     #[Assert\Length(
