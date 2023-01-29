@@ -115,6 +115,7 @@ class ItemTypeController extends AbstractController
     {
         return $this->render('item_type/show.html.twig', [
             'item_type' => $itemType,
+            'effects' => $itemType->getEffects()
         ]);
     }
 

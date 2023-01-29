@@ -107,7 +107,7 @@ class Country
     #[Groups(groups: ['country_api_response', 'country_anti_cr'])]
     private ?DateTimeImmutable $claimDate;
 
-    #[ORM\OneToMany(mappedBy: 'country', targetEntity: Effect::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'country', targetEntity: Effect::class, cascade: ['persist'], orphanRemoval: true)]
     #[Groups(groups: ['country_api_response', 'api_new', 'api_edit', 'country_anti_cr'])]
     private Collection $effects;
 
