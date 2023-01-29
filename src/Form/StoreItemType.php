@@ -39,7 +39,8 @@ class StoreItemType extends AbstractType
                 ]
             ])
             ->add('trending', CheckboxType::class, [
-                'label' => 'On trend'
+                'label' => 'On trend',
+                'required' => false
             ])
             ->add('promotion', RangeType::class, [
                 'constraints' => [
@@ -54,6 +55,10 @@ class StoreItemType extends AbstractType
                 'class' => ItemType::class,
                 'query_builder' => function () {
                     $unAvailableItems = $this->storeItemRepository->findAll();
+
+                    if (sizeof($unAvailableItems) === 0) {
+                        return $this->itemTypeRepository->createQueryBuilder('i');
+                    }
 
                     $unAvailableItemsId = [];
 
