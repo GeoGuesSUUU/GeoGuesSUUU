@@ -55,6 +55,10 @@ class StoreItemType extends AbstractType
                 'query_builder' => function () {
                     $unAvailableItems = $this->storeItemRepository->findAll();
 
+                    if (sizeof($unAvailableItems) === 0) {
+                        return $this->itemTypeRepository->createQueryBuilder('i');
+                    }
+
                     $unAvailableItemsId = [];
 
                     foreach ($unAvailableItems as $item) {
