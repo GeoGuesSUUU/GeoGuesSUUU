@@ -1,16 +1,24 @@
 // Function
 const gameBody = document.getElementById('game-body')
 const btnSinglePLay = document.getElementById('btn-single-play')
+const btnCreateMulti = document.getElementById('btn-create-multi')
+const btnJoinMulti = document.getElementById('btn-join-multi')
 const cardModes = document.getElementsByClassName('card-mode')
 const levelInput = document.getElementById('level-input')
+const userOnline = document.getElementById('user-online')
+const roomData = document.getElementById('room-data-multi')
 
 const DEFAULT_USER_IMG='https://media.tenor.com/ZgsyS1epGSYAAAAd/siuuu-ronaldo.gif';
+
+const adminBadge = '<span title="Admin"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-globe-americas" viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0ZM2.04 4.326c.325 1.329 2.532 2.54 3.717 3.19.48.263.793.434.743.484-.08.08-.162.158-.242.234-.416.396-.787.749-.758 1.266.035.634.618.824 1.214 1.017.577.188 1.168.38 1.286.983.082.417-.075.988-.22 1.52-.215.782-.406 1.48.22 1.48 1.5-.5 3.798-3.186 4-5 .138-1.243-2-2-3.5-2.5-.478-.16-.755.081-.99.284-.172.15-.322.279-.51.216-.445-.148-2.5-2-1.5-2.5.78-.39.952-.171 1.227.182.078.099.163.208.273.318.609.304.662-.132.723-.633.039-.322.081-.671.277-.867.434-.434 1.265-.791 2.028-1.12.712-.306 1.365-.587 1.579-.88A7 7 0 1 1 2.04 4.327Z"/></svg></span>';
+const verifiedBadge = '<span title="Verified User"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#00DB87" class="bi bi-patch-check-fill" viewBox="0 0 16 16"> <path d="M10.067.87a2.89 2.89 0 0 0-4.134 0l-.622.638-.89-.011a2.89 2.89 0 0 0-2.924 2.924l.01.89-.636.622a2.89 2.89 0 0 0 0 4.134l.637.622-.011.89a2.89 2.89 0 0 0 2.924 2.924l.89-.01.622.636a2.89 2.89 0 0 0 4.134 0l.622-.637.89.011a2.89 2.89 0 0 0 2.924-2.924l-.01-.89.636-.622a2.89 2.89 0 0 0 0-4.134l-.637-.622.011-.89a2.89 2.89 0 0 0-2.924-2.924l-.89.01-.622-.636zm.287 5.984-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708.708z"/></svg></span>';
 
 if (!userId) throw new Error('Please init "userId" variable !')
 
 let room = {
     name: null,
-    members: null
+    members: [],
+    results: []
 }
 
 function hideElement(element) {
@@ -30,11 +38,19 @@ function showElement(element) {
 }
 
 function leave() {
+    roomData.innerHTML = ''
     gameBody.innerHTML = ''
     for (let cardModeKey of cardModes) {
         showElement(cardModeKey)
     }
     hideElement(gameBody)
+    room = {
+        name: null,
+        members: [],
+        results: []
+    }
+    btnCreateMulti.disabled = false;
+    btnJoinMulti.disabled = false;
 }
 
 let guess = []
@@ -86,6 +102,7 @@ async function loadingGame() {
 }
 
 function play() {
+    roomData.innerHTML = '';
     for (let cardModeKey of cardModes) {
         hideElement(cardModeKey)
     }
@@ -113,6 +130,80 @@ function clearGameMain() {
     document.getElementById('game-main').innerHTML = '';
 }
 
+function upRoomData() {
+    document.getElementById('room-members').innerHTML = '';
+    room.members.forEach(member => {
+        const hasAdminBadge = member.isAdmin ? adminBadge : '';
+        const hasVerifiedBadge = member.isVerified ? verifiedBadge : '';
+        const img = `<img src="${member.img ?? DEFAULT_USER_IMG}" alt="img-user-${member.id}" class="rounded-circle" width="35" height="35" />`;
+        const li = document.createElement('li')
+        li.innerHTML = `${img} ${member.name} ${hasAdminBadge} ${hasVerifiedBadge}`
+        li.classList.add('list-group-item', 'text-bg-secondary')
+        document.getElementById('room-members')?.append(li)
+    })
+    document.getElementById('room-members-count').innerHTML = room.members.length.toString()
+}
+
+function addMember(member) {
+    const index = room.members.findIndex(_member => _member.id === member.id)
+    if (index === -1) {
+        room.members.push(member)
+        upRoomData()
+    }
+}
+
+function removeMember(member) {
+    const index = room.members.findIndex(_member => _member.id === member.id)
+    if (index !== -1) {
+        room.members.splice(index,1)
+        upRoomData()
+    }
+}
+
+function openRoomData(data) {
+    roomData.innerHTML = `<div class="col-md-12 mt-4">
+                        <div class="h-100 p-5 text-bg-secondary rounded-3">
+                            <div class="row align-items-md-stretch mb-4">
+                                <button id="btn-leave-room" type="button" class="btn btn-outline-light my-3">
+                                    Leave Room
+                                </button>
+                                <div id="room-data-main" class="d-flex flex-column  align-items-center w-100">
+                                    <h2>Room : ${data.name}</h2>
+                                    <h3>Difficulty : ${data.difficulty}</h3>
+                                    <div class="d-flex flex-rom w-50 w-75-m w-100-s justify-content-between my-2">
+                                        <div class="px-3">
+                                            <h3>
+                                                Members
+                                                <span id="room-members-count" class="badge bg-dark">
+                                                    0
+                                                </span>
+                                            </h3>
+                                            <ul id="room-members" class="list-group list-group-flush">
+                                            </ul>
+                                        </div>
+                                        <button id="btn-game-start" class="btn btn-outline-light px-2 mx-3" type="button">Game Start</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+    roomData.scrollIntoView();
+    if (Array.isArray(data.members)) {
+        data.members.forEach(member => addMember(member))
+    } else  {
+        Object.values(data.members).forEach(member => addMember(member))
+    }
+    document.getElementById('btn-leave-room').onclick = () => leaveRoomEmit();
+    document.getElementById('btn-game-start').onclick = () => {
+        const request = {
+            event: '@StartGameMulti',
+            room_name: room.name,
+            user_id: userId,
+        }
+        socket.send(JSON.stringify(request));
+    };
+}
+
 // WebSocket
 
 let socket = new WebSocket("ws://localhost:9000");
@@ -124,12 +215,26 @@ socket.onopen = () => {
 socket.onmessage = async (event) => {
     try {
         const response = JSON.parse(event.data);
-        console.log(response)
         switch (response.event) {
+            case '@ConnectionCount':
+                userOnline.innerHTML = response.response.count
+                break;
+            case '@RoomCreatedOrJoined':
+                btnCreateMulti.disabled = true;
+                btnJoinMulti.disabled = true;
+                room = { name: response.name, members: [], results: [] }
+                openRoomData(response)
+                break;
+            case '@NewRoomConnection':
+                addMember(response.member)
+                break;
+            case '@RemoveRoomConnection':
+                removeMember(response.member)
+                break;
             case '@GameStart':
                 guess = [];
                 guess.push(...response.guess)
-                room = { name: response.room }
+                room = { ...room, name: response.room }
                 await loadingGame();
                 break;
             case '@RoomLeaved':
@@ -141,6 +246,11 @@ socket.onmessage = async (event) => {
             case '@GameFinished':
                 finishEvent(response);
                 break;
+            case '@UserResult':
+                room.results?.push(response);
+                upUsersResult();
+                break;
+
         }
     } catch (e) {
         // Catch any errors
@@ -178,6 +288,41 @@ btnSinglePLay.onclick = () => {
         user_id: userId,
         level_id: levelId,
         difficulty: diff
+    }
+    socket.send(JSON.stringify(request));
+}
+
+btnCreateMulti.onclick = () => {
+    let levelId = +levelInput?.value.split('-')[0]
+    let diff = +levelInput?.value.split('-')[1] ?? 1;
+    if (!diff || typeof diff !== 'number' || diff < 1) {
+        diff = 1
+    }
+    else if (diff > 25) {
+        diff = 25
+    }
+
+    const room_name = prompt("Room Name...", '');
+    if (room_name === null) return;
+
+    const request = {
+        event: '@CreateOrJoinRoom',
+        room_name: room_name,
+        user_id: userId,
+        level_id: levelId,
+        difficulty: diff
+    }
+    socket.send(JSON.stringify(request));
+}
+
+btnJoinMulti.onclick = () => {
+    const room_name = prompt("Room Name...", '');
+    if (room_name === null) return;
+
+    const request = {
+        event: '@CreateOrJoinRoom',
+        room_name: room_name,
+        user_id: userId
     }
     socket.send(JSON.stringify(request));
 }
@@ -238,7 +383,6 @@ function guessEvent(isCorrect = false) {
 
 function finish() {
     const gameTime = Date.now() - time;
-    console.log(gameTime)
     time = 0;
     const request = {
         event: '@FinishGame',
@@ -249,10 +393,35 @@ function finish() {
     socket.send(JSON.stringify(request));
 }
 
+function upUsersResult() {
+    if (room.results === undefined || room.results === null) return
+    const base = document.getElementById('score-other-users');
+    base.innerHTML = '';
+    if (room.members?.length > 1) base.innerHTML = `<h4 class="my-2">Members Results : [ ${room.results.length} / ${room.members.length - 1} ] ${(room.members.length  - 1) > room.results.length ? 'In Game, please wait...' : ''} </h4>`;
+    if (Array.isArray(room.results)) {
+        room.results?.forEach(result => {
+            const hasAdminBadge = result.user.isAdmin ? adminBadge : '';
+            const hasVerifiedBadge = result.user.isVerified ? verifiedBadge : '';
+            const resultCard = document.createElement('div')
+            resultCard.classList.add('card-mode', 'h-100', 'p-5', 'text-bg-secondary', 'rounded-3');
+            resultCard.innerHTML = `<div class="d-flex flex-column align-items-center justify-content-center">
+                                        <img src="${result.user.img ?? DEFAULT_USER_IMG}" alt="img-user-${result.user.id}" class="rounded-circle object-fit-cover" width="90" height="90" />
+                                        <span class="fs-3 my-1">${result.user.name} ${hasAdminBadge} ${hasVerifiedBadge}</span>
+                                        <span class="fs-4 mb-3"><strong>Score : </strong>${result.game.score}</span>
+                                        <span class="fs-4 mb-3"><strong>Time : </strong>${result.game.time.chrono}</span>
+                                        <span class="fs-5 mb-3"><strong>Answers : </strong>${result.game.result.correct} / ${result.game.result.total}</span>
+                                    </div>`;
+            base.append(resultCard)
+        })
+    } else {
+        Object.values(room.results)
+    }
+}
+
 function finishEvent(response) {
     let answerDivs = '';
-    const adminBadge = response.user.isAdmin ? '<span title="Admin"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-globe-americas" viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0ZM2.04 4.326c.325 1.329 2.532 2.54 3.717 3.19.48.263.793.434.743.484-.08.08-.162.158-.242.234-.416.396-.787.749-.758 1.266.035.634.618.824 1.214 1.017.577.188 1.168.38 1.286.983.082.417-.075.988-.22 1.52-.215.782-.406 1.48.22 1.48 1.5-.5 3.798-3.186 4-5 .138-1.243-2-2-3.5-2.5-.478-.16-.755.081-.99.284-.172.15-.322.279-.51.216-.445-.148-2.5-2-1.5-2.5.78-.39.952-.171 1.227.182.078.099.163.208.273.318.609.304.662-.132.723-.633.039-.322.081-.671.277-.867.434-.434 1.265-.791 2.028-1.12.712-.306 1.365-.587 1.579-.88A7 7 0 1 1 2.04 4.327Z"/></svg></span>' : '';
-    const verifiedBadge = response.user.isVerified ? '<span title="Verified User"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#00DB87" class="bi bi-patch-check-fill" viewBox="0 0 16 16"> <path d="M10.067.87a2.89 2.89 0 0 0-4.134 0l-.622.638-.89-.011a2.89 2.89 0 0 0-2.924 2.924l.01.89-.636.622a2.89 2.89 0 0 0 0 4.134l.637.622-.011.89a2.89 2.89 0 0 0 2.924 2.924l.89-.01.622.636a2.89 2.89 0 0 0 4.134 0l.622-.637.89.011a2.89 2.89 0 0 0 2.924-2.924l-.01-.89.636-.622a2.89 2.89 0 0 0 0-4.134l-.637-.622.011-.89a2.89 2.89 0 0 0-2.924-2.924l-.89.01-.622-.636zm.287 5.984-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708.708z"/></svg></span>' : '';
+    const hasAdminBadge = response.user.isAdmin ? adminBadge : '';
+    const hasVerifiedBadge = response.user.isVerified ? verifiedBadge : '';
     response.game.answers.forEach((answer, index) => {
         answerDivs += `
             <div class="d-flex flex-row align-items-center justify-content-start py-2">
@@ -291,8 +460,8 @@ function finishEvent(response) {
                     <div class="d-flex flex-column align-items-center justify-content-center">
                         <span class="fs-3 mb-3"><strong>Score : </strong>${response.game.score}</span>
                         <span class="fs-4 mb-3"><strong>Time : </strong>${response.game.time.chrono}</span>
-                        <img src="${response.user.img ?? DEFAULT_USER_IMG}" alt="img-user-${response.user.id}" class="img-fluid rounded-circle object-fit-cover" width="150" />
-                        <span class="fs-4 my-1">${response.user.name} ${adminBadge} ${verifiedBadge}</span>
+                        <img src="${response.user.img ?? DEFAULT_USER_IMG}" alt="img-user-${response.user.id}" class="rounded-circle object-fit-cover" width="150" height="150" />
+                        <span class="fs-4 my-1">${response.user.name} ${hasAdminBadge} ${hasVerifiedBadge}</span>
                         <ul style="list-style: none" class="my-3">
                             <li class="fs-5 m-2">
                                 <span><strong>XP : </strong>${response.user.xp}</span>
@@ -304,8 +473,12 @@ function finishEvent(response) {
                             </li>
                         </ul>
                     </div>
+                    <div id="score-other-users">
+                        
+                    </div>
                 </div>
             </div>
         </div>
     `;
+    upUsersResult();
 }

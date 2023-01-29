@@ -59,3 +59,13 @@
 #### Request
 
 #### Response
+
+## Emits
+
+### @ConnectionCount
+
+### @NewRoomConnection
+
+### @RemoveRoomConnection
+
+### @

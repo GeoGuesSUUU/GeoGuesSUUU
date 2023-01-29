@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Exception\GameNotStartException;
 use App\Utils\CountriesISO;
+use Exception;
 
 class FindTheFlagRoom extends GameRoom
 {
@@ -16,6 +17,10 @@ class FindTheFlagRoom extends GameRoom
     /** @var FindTheFlagUserGuess[] $userGuess  */
     private array $userGuess = [];
 
+    private int $multiplier = 1;
+
+    private int $difficulty = 1;
+
     public function clearGame(): void
     {
         $this->guess = [];
@@ -23,12 +28,14 @@ class FindTheFlagRoom extends GameRoom
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function initGame(int $difficulty = 1): void
     {
-        $guessCount = $difficulty * 3;
+        $this->difficulty = $difficulty;
+        $guessCount = $this->difficulty * 3;
         $this->clearGame();
+        $this->initMultiplier();
 
         $guessArray = [];
         $answerArray = [];
@@ -101,5 +108,33 @@ class FindTheFlagRoom extends GameRoom
         $this->userGuess[$userId]->addAnswer($iso, $this->answers[$iso], $response);
 
         return $this->userGuess[$userId]->getAnswer($iso)->isCorrect();
+    }
+
+    /**
+     * @return int
+     */
+    public function getMultiplier(): int
+    {
+        return $this->multiplier;
+    }
+
+    /**
+     * @return FindTheFlagRoom
+     */
+    public function initMultiplier(): FindTheFlagRoom
+    {
+        $int = count($this->getConnections());
+        if ($int > 8) $int = 8;
+        elseif ($int < 1) $int = 1;
+        $this->multiplier = $int;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDifficulty(): int
+    {
+        return $this->difficulty;
     }
 }

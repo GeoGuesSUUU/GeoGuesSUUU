@@ -16,6 +16,8 @@ class GameRoom
     /** @var GameConnection[] $connections  */
     private array $connections;
 
+    private bool $inGame = false;
+
     /**
      * @param string $name
      * @param Level $level
@@ -127,5 +129,30 @@ class GameRoom
     public function getUsers(): array
     {
         return array_map(fn($conn) => $conn->getUser(), $this->connections);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInGame(): bool
+    {
+        return $this->inGame;
+    }
+
+    /**
+     * @param bool $inGame
+     * @return GameRoom
+     */
+    public function setInGame(bool $inGame): GameRoom
+    {
+        $this->inGame = $inGame;
+        return $this;
+    }
+
+    public function sendEmitExpectSrc(User $userSrc, array $emit): void {
+        foreach ($this->getConnections() as $connection) {
+            if ($connection->getUser()->getId() === $userSrc->getId()) continue;
+            $connection->getConnection()->send(json_encode($emit));
+        }
     }
 }
