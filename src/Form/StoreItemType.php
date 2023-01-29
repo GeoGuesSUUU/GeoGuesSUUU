@@ -39,7 +39,8 @@ class StoreItemType extends AbstractType
                 ]
             ])
             ->add('trending', CheckboxType::class, [
-                'label' => 'On trend'
+                'label' => 'On trend',
+                'required' => false
             ])
             ->add('promotion', RangeType::class, [
                 'constraints' => [
