@@ -24,7 +24,7 @@ class StoreService
     public function calculateItemPrice(StoreItem $storeItem): StoreItem
     {
         return $storeItem->setPromoPrice(
-            $storeItem->getItem()->getPrice() * (1 - $storeItem->getPromotion() / 100)
+            $storeItem->getItemType()->getPrice() * (1 - $storeItem->getPromotion() / 100)
         );
     }
 
@@ -36,7 +36,7 @@ class StoreService
     {
         foreach ($storeItems as $storeItem) {
             $storeItem->setPromoPrice(
-                $storeItem->getItem()->getPrice() * (1 - $storeItem->getPromotion() / 100)
+                $storeItem->getItemType()->getPrice() * (1 - $storeItem->getPromotion() / 100)
             );
         }
         return $storeItems;
@@ -84,7 +84,7 @@ class StoreService
             throw new UserNotValidApiException("Invalid User coins");
         }
         $user->setCoins($user->getCoins() - $item->getPromoPrice());
-        $user = $this->userService->addItemInInventory($user, $item->getItem(), $quantity);
+        $user = $this->userService->addItemInInventory($user, $item->getItemType(), $quantity);
         $this->userService->save($user, true);
         return $user;
     }

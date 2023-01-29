@@ -117,7 +117,7 @@ class Country
     // ==============================//
 
     #[ORM\OneToMany(mappedBy: 'country', targetEntity: CountryItem::class, orphanRemoval: true)]
-    #[Groups(groups: ['country_api_response'])]
+    #[Groups(groups: ['country_api_response', 'user_api_response'])]
     private Collection $countryItems;
 
     #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'countries')]

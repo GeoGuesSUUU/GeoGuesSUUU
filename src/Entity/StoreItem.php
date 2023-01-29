@@ -9,18 +9,18 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: StoreItemRepository::class)]
-#[UniqueEntity(fields: ['item'], message: 'There is already this item in the store')]
+#[UniqueEntity(fields: ['itemType'], message: 'There is already this item in the store')]
 class StoreItem
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     #[Groups(groups: ['store_api_response', 'store_anti_cr'])]
-    private int $id;
+    private ?int $id = null;
 
-    #[ORM\OneToOne(inversedBy: 'storeItem')]
+    #[ORM\OneToOne(inversedBy: 'storeItem', cascade: ['persist'])]
     #[Groups(groups: ['store_api_response', 'api_new', 'api_edit'])]
-    private ?ItemType $item = null;
+    private ?ItemType $itemType = null;
 
     #[Assert\Length(
         min: 1,
@@ -47,39 +47,34 @@ class StoreItem
     private int $promoPrice = 0;
     // ==============================//
 
-    /**
-     * @param int $id
-     * @return StoreItem
-     */
-    public function setId(int $id): StoreItem
-    {
-        $this->id = $id;
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
     /**
-     * @return ItemType
+     * @param int|null $id
      */
-    public function getItem(): ItemType
+    public function setId(?int $id): void
     {
-        return $this->item;
+        $this->id = $id;
     }
 
     /**
-     * @param ItemType $item
+     * @return ItemType | null
+     */
+    public function getItemType(): ?ItemType
+    {
+        return $this->itemType;
+    }
+
+    /**
+     * @param ItemType $itemType
      * @return $this
      */
-    public function setItem(ItemType $item): self
+    public function setItemType(ItemType $itemType): self
     {
-        $this->item = $item;
+        $this->itemType = $itemType;
 
         return $this;
     }

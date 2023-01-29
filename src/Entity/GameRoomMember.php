@@ -104,4 +104,15 @@ class GameRoomMember
             $user->isVerified()
         );
     }
+
+    public static function convertUserToArray(User $user): array
+    {
+        return [
+            'id' => $user->getId(),
+            'name' => $user->getName(),
+            'isAdmin' => $user->isAdmin(),
+            'isVerified' => $user->isVerified(),
+            'img' => $user->getImg()
+        ];
+    }
 }
