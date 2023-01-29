@@ -87,7 +87,7 @@ class ItemType
     #[Groups(groups: ['item_api_response'])]
     private Collection $countryItems;
 
-    #[ORM\OneToOne(mappedBy: 'item', cascade: ['persist'], orphanRemoval: true)]
+    #[ORM\OneToOne(mappedBy: 'itemType', cascade: ['persist'], orphanRemoval: true)]
     #[Groups(groups: ['item_api_response'])]
     private ?StoreItem $storeItem = null;
 

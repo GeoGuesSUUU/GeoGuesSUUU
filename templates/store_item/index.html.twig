@@ -1,0 +1,7 @@
+{% block body %}
+    {% for store_item_saved in store_items %}
+        {% include 'store_item/show.html.twig' with {'id': store_item_saved.id} %}
+    {% endfor %}
+
+    {% include 'store_item/new.html.twig' %}
+{% endblock %}
