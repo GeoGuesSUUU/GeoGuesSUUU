@@ -63,7 +63,24 @@
             </tr>
             <tr>
                 <th>Effects</th>
-                <td>{{ country.effects ? country.effects|json_encode : '' }}</td>
+                <td>
+                    <table class="table table-striped border">
+                        <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Value</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for effect in effects %}
+                            <tr>
+                                <td>{{ effect.type }}</td>
+                                <td>{{ effect.value }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </td>
             </tr>
             </tbody>
         </table>
