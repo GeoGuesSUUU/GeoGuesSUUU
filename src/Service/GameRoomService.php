@@ -95,9 +95,10 @@ class GameRoomService
     /**
      * @return GameRoomMember[]
      */
-    public function getMembers(): array
+    public function getMembers(GameRoom $room, bool $array = false): array
     {
-        return array_map(fn($conn) => GameRoomMember::convertUser($conn->getUsers()) , $this->rooms);
+        if ($array) return array_map(fn($user) => GameRoomMember::convertUserToArray($user) , $room->getUsers());
+        return array_map(fn($user) => GameRoomMember::convertUser($user) , $room->getUsers());
     }
 
     public function removeRoomByName(string $name): GameRoomService

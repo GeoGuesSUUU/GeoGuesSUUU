@@ -11,6 +11,7 @@ use App\Exception\LevelNotFoundApiException;
 use App\Repository\LevelRepository;
 use App\Repository\ScoreRepository;
 use App\Utils\GameRoomVisibility;
+use DateTimeImmutable;
 use Exception;
 use Ratchet\ConnectionInterface;
 use SplObjectStorage;
@@ -39,13 +40,10 @@ class FindTheFlagGameService extends WebSocketService
     {
         $res = [
             'event' => '@NewRoomConnection',
-            'user' => GameRoomMember::convertUser($user)
+            'member' => GameRoomMember::convertUserToArray($user)
         ];
 
-        foreach ($room->getConnections() as $connection) {
-            if ($connection->getUser()->getId() === $user->getId()) continue;
-            $connection->getConnection()->send(json_encode($res));
-        }
+        $room->sendEmitExpectSrc($user, $res);
     }
 
     /**
@@ -57,27 +55,25 @@ class FindTheFlagGameService extends WebSocketService
     {
         $res = [
             'event' => '@RemoveRoomConnection',
-            'user' => GameRoomMember::convertUser($user)
+            'member' => GameRoomMember::convertUserToArray($user)
         ];
 
-        foreach ($room->getConnections() as $connection) {
-            if ($connection->getUser()->getId() === $user->getId()) continue;
-            $connection->getConnection()->send(json_encode($res));
-        }
+        $room->sendEmitExpectSrc($user, $res);
     }
 
     public function createOrJoinRoom(ConnectionInterface $from, array $data): array
     {
-        $roomName = $data['roomName'];
+        $roomName = $data['room_name'];
 
         try {
             $user = $this->userService->getById($data['user_id']);
-            $level = $this->levelRepository->findOneBy(['id' => $data['level_id']]);
-            if (is_null($level)) throw new LevelNotFoundApiException();
 
             $room = $this->gameRoomService->getRoomByName($roomName);
             if (is_null($room)) {
+                $level = $this->levelRepository->findOneBy(['id' => $data['level_id']]);
+                if (is_null($level)) throw new LevelNotFoundApiException();
                 $room = $this->gameRoomService->createFindTheFlagRoom($roomName, $level, GameRoomVisibility::PUBLIC);
+                $room->initGame($data['difficulty']);
             }
 
             $newConnection = new GameConnection($user, $from);
@@ -88,7 +84,8 @@ class FindTheFlagGameService extends WebSocketService
             return [
                 'event' => '@RoomCreatedOrJoined',
                 'name' => $room->getName(),
-                'members' => $this->gameRoomService->getMembers()
+                'difficulty' => $room->getDifficulty(),
+                'members' => $this->gameRoomService->getMembers($room, true)
             ];
         } catch (Exception $ex) {
             //
@@ -149,6 +146,41 @@ class FindTheFlagGameService extends WebSocketService
         }
     }
 
+    public function startGame(array $data): array
+    {
+        $roomName = $data['room_name'];
+        $room = $this->gameRoomService
+            ->getRoomByName($roomName);
+
+        if (is_null($room)) return [
+            'exception' => [
+                'code' => 404,
+                'message' => 'Room not Found'
+            ]
+        ];
+
+        try {
+            $user = $this->userService->getById($data['user_id']);
+
+            $room->setInGame(true);
+            $res = [
+                'event' => '@GameStart',
+                'room' => $room->getName(),
+                'guess' => $room->getGuess()
+            ];
+
+            $room->sendEmitExpectSrc($user, $res);
+            return $res;
+        } catch (Exception $ex) {
+            return [
+                'exception' => [
+                    'code' => $ex->getCode(),
+                    'message' => $ex->getMessage()
+                ]
+            ];
+        }
+    }
+
     public function createPrivateRoomAndStartGame(ConnectionInterface $from, array $data): array
     {
         try {
@@ -166,8 +198,7 @@ class FindTheFlagGameService extends WebSocketService
             return [
                 'event' => '@GameStart',
                 'room' => $room->getName(),
-                'guess' => $room->getGuess(),
-                'n' => count($this->gameRoomService->getRooms())
+                'guess' => $room->getGuess()
             ];
         } catch (Exception $ex) {
             //
@@ -244,12 +275,14 @@ class FindTheFlagGameService extends WebSocketService
             $s->setUser($user);
             $s->setLevel($room->getLevel());
             $s->setTime($time);
-            $s->setCreatedAt(new \DateTimeImmutable());
+            $s->setCreatedAt(new DateTimeImmutable());
 
             $this->scoreRepository->save($s);
 
-            $coins = round($score / 20);
-            $xp = round($score / 100 * 2);
+            $multiplier = $room->getMultiplier();
+
+            $coins = round(($score / 20) * $multiplier);
+            $xp = round(($score / 100 * 2) * $multiplier);
 
             $user->addScore($s);
             $user->setCoins($oldCoins + $coins);
@@ -270,6 +303,28 @@ class FindTheFlagGameService extends WebSocketService
             $input = floor($input / 60);
             $hours = $input % 60;
             if ($hours < 10) $hours = '0' . $hours;
+
+            $room->sendEmitExpectSrc($user, [
+                'event' => '@UserResult',
+                'user' => [
+                    'id' => $user->getId(),
+                    'name' => $user->getName(),
+                    'isAdmin' => in_array('ROLE_ADMIN', $user->getRoles()),
+                    'isVerified' => $user->isVerified(),
+                    'img' => $user->getImg(),
+                ],
+                'game' => [
+                    'score' => $trueScore,
+                    'time' => [
+                        'ms' => $time,
+                        'chrono' => $hours . ':' . $minutes . ':' . $seconds . '.' . $uSec
+                    ],
+                    'result' => [
+                        'correct' => $score / 1000,
+                        'total' => count($userGuess->getAnswers())
+                    ]
+                ]
+            ]);
 
             return [
                 'event' => '@GameFinished',
@@ -294,6 +349,7 @@ class FindTheFlagGameService extends WebSocketService
                       'chrono' => $hours . ':' . $minutes . ':' . $seconds . '.' . $uSec
                     ],
                     'rewards' => [
+                        'multiplier' => $multiplier,
                         'xp' => $xp,
                         'coins' => $coins
                     ],
@@ -314,5 +370,15 @@ class FindTheFlagGameService extends WebSocketService
                 ]
             ];
         }
+    }
+
+    public function getCountConnection(): array
+    {
+        return [
+            'event' => '@ConnectionCount',
+            'response' => [
+                'count' => $this->connections->count()
+            ]
+        ];
     }
 }

@@ -37,6 +37,8 @@ class FindTheFlagGameHandler implements MessageComponentInterface
     {
         $this->connections->attach($conn);
         $this->logger->info('Find The Flag - Connection Opened');
+        $res = $this->findTheFlagGameService->getCountConnection();
+        $this->findTheFlagGameService->sendToEveryone(json_encode($res));
     }
 
     public function onMessage(ConnectionInterface $from, $msg)
@@ -46,6 +48,10 @@ class FindTheFlagGameHandler implements MessageComponentInterface
         switch ($json['event']) {
             case '@StartGameSingle':
                 $res = $this->findTheFlagGameService->createPrivateRoomAndStartGame($from, $json);
+                $from->send(json_encode($res));
+                break;
+            case '@StartGameMulti':
+                $res = $this->findTheFlagGameService->startGame($json);
                 $from->send(json_encode($res));
                 break;
             case '@CreateOrJoinRoom':
@@ -73,6 +79,8 @@ class FindTheFlagGameHandler implements MessageComponentInterface
         $this->connections->detach($conn);
         $this->findTheFlagGameService->extractConnection($conn);
         $this->logger->info('Find The Flag - Connection Error');
+        $res = $this->findTheFlagGameService->getCountConnection();
+        $this->findTheFlagGameService->sendToEveryone(json_encode($res));
     }
 
     public function onError(ConnectionInterface $conn, Exception $e)
@@ -81,6 +89,8 @@ class FindTheFlagGameHandler implements MessageComponentInterface
         $this->findTheFlagGameService->extractConnection($conn);
         $conn->close();
         $this->logger->error('Find The Flag - Connection Closed');
+        $res = $this->findTheFlagGameService->getCountConnection();
+        $this->findTheFlagGameService->sendToEveryone(json_encode($res));
     }
 }
 
