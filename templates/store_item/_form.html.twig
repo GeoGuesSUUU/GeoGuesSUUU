@@ -1,0 +1,44 @@
+<div>
+    {{ form_start(form, {
+        'attr': {
+            'class': 'd-flex flex-column align-items-center'
+        }
+    }) }}
+
+    <div class="w-100">
+        {{ form_label(form.itemType) }}
+        {{ form_widget(form.itemType, {
+            'attr': {
+                'class': 'form-select'
+            }
+        }) }}
+    </div>
+    <div class="w-100">
+        {{ form_label(form.type) }}
+        {{ form_widget(form.type, {
+            'attr': {
+                'class': 'form-select',
+            }
+        }) }}
+    </div>
+    <div class="form-outline w-100">
+        {{ form_label(form.promotion) }}
+         -<output id="range-value">0</output>%
+        {{ form_widget(form.promotion, {
+            'attr': {
+                'class': 'form-range'
+            }
+        }) }}
+    </div>
+    <div class="form-check">
+        {{ form_widget(form.trending, {
+            'attr': {
+                'class': 'form-check-input'
+            }
+        }) }}
+        {{ form_label(form.trending) }}
+    </div>
+
+    <button class="btn btn-primary mt-3">Save</button>
+    {{ form_end(form) }}
+</div>
