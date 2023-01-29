@@ -135,7 +135,7 @@ function upRoomData() {
     room.members.forEach(member => {
         const hasAdminBadge = member.isAdmin ? adminBadge : '';
         const hasVerifiedBadge = member.isVerified ? verifiedBadge : '';
-        const img = `<img src="${member.img ?? DEFAULT_USER_IMG}" alt="img-user-${member.id}" class="img-fluid rounded-circle object-fit-cover" width="35" />`;
+        const img = `<img src="${member.img ?? DEFAULT_USER_IMG}" alt="img-user-${member.id}" class="rounded-circle" width="35" height="35" />`;
         const li = document.createElement('li')
         li.innerHTML = `${img} ${member.name} ${hasAdminBadge} ${hasVerifiedBadge}`
         li.classList.add('list-group-item', 'text-bg-secondary')
@@ -405,7 +405,7 @@ function upUsersResult() {
             const resultCard = document.createElement('div')
             resultCard.classList.add('card-mode', 'h-100', 'p-5', 'text-bg-secondary', 'rounded-3');
             resultCard.innerHTML = `<div class="d-flex flex-column align-items-center justify-content-center">
-                                        <img src="${result.user.img ?? DEFAULT_USER_IMG}" alt="img-user-${result.user.id}" class="img-fluid rounded-circle object-fit-cover" width="90" />
+                                        <img src="${result.user.img ?? DEFAULT_USER_IMG}" alt="img-user-${result.user.id}" class="rounded-circle object-fit-cover" width="90" height="90" />
                                         <span class="fs-3 my-1">${result.user.name} ${hasAdminBadge} ${hasVerifiedBadge}</span>
                                         <span class="fs-4 mb-3"><strong>Score : </strong>${result.game.score}</span>
                                         <span class="fs-4 mb-3"><strong>Time : </strong>${result.game.time.chrono}</span>
@@ -460,7 +460,7 @@ function finishEvent(response) {
                     <div class="d-flex flex-column align-items-center justify-content-center">
                         <span class="fs-3 mb-3"><strong>Score : </strong>${response.game.score}</span>
                         <span class="fs-4 mb-3"><strong>Time : </strong>${response.game.time.chrono}</span>
-                        <img src="${response.user.img ?? DEFAULT_USER_IMG}" alt="img-user-${response.user.id}" class="img-fluid rounded-circle object-fit-cover" width="150" />
+                        <img src="${response.user.img ?? DEFAULT_USER_IMG}" alt="img-user-${response.user.id}" class="rounded-circle object-fit-cover" width="150" height="150" />
                         <span class="fs-4 my-1">${response.user.name} ${hasAdminBadge} ${hasVerifiedBadge}</span>
                         <ul style="list-style: none" class="my-3">
                             <li class="fs-5 m-2">
