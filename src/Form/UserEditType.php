@@ -30,6 +30,19 @@ class UserEditType extends UserType
                     'Admin' => 'ROLE_ADMIN',
                 ],
             ])
+            ->add('locale', ChoiceType::class, [
+                'required' => true,
+                'multiple' => false,
+                'expanded' => false,
+                'choices' => [
+                    'English' => 'en-US',
+                    'French' => 'fr',
+                    'Spanish' => 'es',
+                    'German' => 'de',
+                    'Italian' => 'it',
+                    'Chinese' => 'zh-CN',
+                ]
+            ])
             ->add('isVerified');
 
         $builder->get('roles')
