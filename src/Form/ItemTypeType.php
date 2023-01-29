@@ -68,8 +68,7 @@ class ItemTypeType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => ItemType::class,
-            'cascade_validation' => true
+            'data_class' => ItemType::class
         ]);
     }
 }
